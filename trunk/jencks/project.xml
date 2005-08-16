@@ -2,8 +2,11 @@
 <project>
   <pomVersion>3</pomVersion>
 
-  <name>ServiceMix :: Jencks</name>
-  <id>servicemix-jencks</id>
+  <name>Jencks</name>
+  <id>jencks</id>
+  <groupId>jencks</groupId>
+  <currentVersion>1.0-SNAPSHOT</currentVersion>
+
   <shortDescription>Spring and POJO enhancements to the Geronimo JCA container to implement Message Driven POJOs.</shortDescription>
   <description>
 The code consists of example POJOs which should be usable inside a JMS container.
@@ -13,10 +16,53 @@ Its pretty easy to write useful Message POJOs without any API dependencies whats
 There's also a couple of helper classes you can use to provide some JMS helper methods.
   </description>
 
+
+  <url>http://www.jencks.org/</url>
+  <issueTrackingUrl>http://jira.logicblaze.com/jira/browse/JCA</issueTrackingUrl>
+
+  <siteAddress>jencks.org</siteAddress>
+  <siteDirectory>/home/projects/jencks/public_html/maven</siteDirectory>
+  <distributionSite>dist.codehaus.org</distributionSite>
+  <distributionDirectory>/dist</distributionDirectory>
+
+  <repository>
+    <connection>scm:cvs:pserver:anonymous@cvs.jencks.org:/home/projects/jencks/scm:jencks</connection>
+    <developerConnection>scm:cvs:ext:${maven.username}@cvs.jencks.org:/home/projects/jencks/scm:jencks</developerConnection>
+    <url>http://cvs.jencks.org/jencks/</url>
+  </repository>
+
+  <mailingLists>
+    <mailingList>
+      <name>Jencks Developer List</name>
+      <subscribe>dev-subscribe@jencks.codehaus.org</subscribe>
+      <unsubscribe>dev-unsubscribe@jencks.codehaus.org</unsubscribe>
+      <!--
+      <archive>http://archive.jencks.codehaus.org/dev/</archive>
+      -->
+      <archive>http://dir.gmane.org/gmane.comp.java.jencks.devel</archive>
+    </mailingList>
+    <mailingList>
+      <name>Jencks User List</name>
+      <subscribe>user-subscribe@jencks.codehaus.org</subscribe>
+      <unsubscribe>user-unsubscribe@jencks.codehaus.org</unsubscribe>
+      <!--
+      <archive>http://archive.jencks.codehaus.org/user/</archive>
+      -->
+      <archive>http://dir.gmane.org/gmane.comp.java.jencks.user</archive>
+    </mailingList>
+    <mailingList>
+      <name>Jencks SCM List</name>
+      <subscribe>scm-subscribe@jencks.codehaus.org</subscribe>
+      <unsubscribe>scm-unsubscribe@jencks.codehaus.org</unsubscribe>
+      <archive>http://archive.jencks.codehaus.org/scm/</archive>
+    </mailingList>
+  </mailingLists>
+
+
   <package>org.jencks</package>
   <packageGroups>
     <packageGroup>
-      <title>ServiceMix Jencks</title>
+      <title>Jencks</title>
       <packages>org.jencks</packages>
     </packageGroup>
   </packageGroups>
@@ -26,114 +72,88 @@ There's also a couple of helper classes you can use to provide some JMS helper m
   <!-- ============ -->
   <dependencies>
 
-    <!-- J2EE jars -->
+    <!-- J2EE Spec jars -->
     <dependency>
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-j2ee-connector</artifactId>
       <version>1.5-rc4</version>
       <properties>
-        <rar.bundle>false</rar.bundle>
-        <lib>true</lib>
+        <alljar.module>true</alljar.module>
       </properties>
     </dependency>
-
     <dependency>
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-jms</artifactId>
       <version>1.1-rc4</version>
       <properties>
-        <rar.bundle>false</rar.bundle>
-        <lib>true</lib>
-        <war.bundle>true</war.bundle>
-        <!--  <eclipse.dependency>true</eclipse.dependency> -->
+        <alljar.module>true</alljar.module>
       </properties>
     </dependency>
-
     <dependency>
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-jta</artifactId>
       <version>1.0.1B-rc4</version>
       <properties>
-        <rar.bundle>false</rar.bundle>
-        <lib>true</lib>
-        <war.bundle>true</war.bundle>
-        <!--  <eclipse.dependency>true</eclipse.dependency> -->
+        <alljar.module>true</alljar.module>
       </properties>
     </dependency>
-
     <dependency>
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-j2ee-management</artifactId>
       <version>1.0-rc4</version>
       <properties>
-        <rar.bundle>false</rar.bundle>
-        <lib>true</lib>
-        <war.bundle>true</war.bundle>
-        <!--  <eclipse.dependency>true</eclipse.dependency> -->
+        <alljar.module>true</alljar.module>
       </properties>
     </dependency>
-
     <dependency>
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-servlet</artifactId>
       <version>2.4-rc4</version>
       <properties>
-        <war.bundle>false</war.bundle>
-        <!-- <eclipse.dependency>true</eclipse.dependency> -->
+        <!--
+        <alljar.module>true</alljar.module>
+        -->
       </properties>
     </dependency>
-
 
 
     <!-- Geronimo JCA and Transaction Manager -->
     <dependency>
       <groupId>geronimo</groupId>
       <artifactId>geronimo-kernel</artifactId>
-      <version>1.0-M4</version>
+      <version>${geronimo_version}</version>
       <properties>
-        <rar.bundle>false</rar.bundle>
-        <lib>true</lib>
-        <war.bundle>true</war.bundle>
-        <!--  <eclipse.dependency>true</eclipse.dependency> -->
+        <alljar.module>true</alljar.module>
       </properties>
     </dependency>
     <dependency>
       <groupId>geronimo</groupId>
       <artifactId>geronimo-connector</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${geronimo_version}</version>
       <properties>
-        <rar.bundle>false</rar.bundle>
-        <lib>true</lib>
-        <war.bundle>true</war.bundle>
-        <!--  <eclipse.dependency>true</eclipse.dependency> -->
+        <alljar.module>true</alljar.module>
       </properties>
     </dependency>
     <dependency>
       <groupId>geronimo</groupId>
       <artifactId>geronimo-transaction</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${geronimo_version}</version>
       <properties>
-        <rar.bundle>false</rar.bundle>
-        <lib>true</lib>
-        <war.bundle>true</war.bundle>
-        <!--  <eclipse.dependency>true</eclipse.dependency> -->
+        <alljar.module>true</alljar.module>
       </properties>
     </dependency>
-
     <dependency>
       <groupId>geronimo</groupId>
       <artifactId>geronimo-security</artifactId>
-      <version>1.0-M4</version>
+      <version>${geronimo_version}</version>
       <properties>
-        <war.bundle>false</war.bundle>
-        <!-- <eclipse.dependency>true</eclipse.dependency> -->
+        <alljar.module>true</alljar.module>
       </properties>
     </dependency>
-
     <dependency>
       <groupId>geronimo</groupId>
       <artifactId>geronimo-j2ee</artifactId>
-      <version>1.0-M4</version>
+      <version>${geronimo_version}</version>
       <properties>
         <war.bundle>false</war.bundle>
         <!-- <eclipse.dependency>true</eclipse.dependency> -->
@@ -238,7 +258,7 @@ There's also a couple of helper classes you can use to provide some JMS helper m
 
 
   <build>
-    <nagEmailAddress>dev@servicemix.codehaus.org</nagEmailAddress>
+    <nagEmailAddress>dev@jencks.codehaus.org</nagEmailAddress>
     <sourceDirectory>src/main/java</sourceDirectory>
     <unitTestSourceDirectory>src/test/java</unitTestSourceDirectory>
 
