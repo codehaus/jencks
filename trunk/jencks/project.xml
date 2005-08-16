@@ -117,6 +117,14 @@ There's also a couple of helper classes you can use to provide some JMS helper m
     </dependency>
 
 
+        <dependency>
+            <groupId>mx4j</groupId>
+            <artifactId>mx4j</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+
+
+
     <!-- Geronimo JCA and Transaction Manager -->
     <dependency>
       <groupId>geronimo</groupId>
