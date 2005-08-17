@@ -50,7 +50,7 @@
 
         <!-- lets explicitly specify the work manager configuration and transaction manager -->
         <property name="workManager">
-          <bean class="org.apache.geronimo.connector.work.GeronimoWorkManager">
+          <bean class="org.jencks.factory.WorkManagerFactoryBean">
             <property name="transactionContextManager">
               <bean class="org.jencks.factory.TransactionContextManagerFactoryBean">
                 <property name="transactionManagerImpl" ref="transactionManagerImpl"/>
