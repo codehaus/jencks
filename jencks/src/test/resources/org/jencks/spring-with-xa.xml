@@ -4,10 +4,9 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <!--
-  || The TransactionManager
-  -->
+  <!-- START SNIPPET: tm -->
   <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
+  <!-- END SNIPPET: tm -->
 
   <!--
   || ActiveMQ Broker
@@ -41,9 +40,7 @@
   </bean>
 
 
-  <!--
-    || an inbound message connector using a stateless, thread safe MessageListener
-    -->
+  <!-- START SNIPPET: inbound -->
   <bean id="inboundMessageA" factory-method="addConnector" factory-bean="jencks" singleton="true">
 
     <!-- subscription details -->
@@ -57,9 +54,9 @@
     <!-- use XA transactions -->
     <property name="transactionManager" ref="transactionManager"/>
 
-    <!-- This example uses a  -->
     <property name="ref" value="echoBean"/>
   </bean>
+  <!-- END SNIPPET: inbound -->
 
   <!--
     || an inbound message connector using a stateful, pooled  MessageListener

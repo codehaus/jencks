@@ -13,7 +13,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="servicemix" />
     <orderEntry type="library" name="geronimo-spec-jta-1.0.1B-rc4" level="application" />
     <orderEntry type="library" name="geronimo-spec-servlet-2.4-rc4" level="application" />
     <orderEntry type="library" name="geronimo-spec-jms-1.1-rc4" level="application" />
