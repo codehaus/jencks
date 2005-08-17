@@ -64,6 +64,7 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean {
 
     public void afterPropertiesSet() throws Exception {
         workManager = createWorkManager();
+        workManager.doStart();
     }
 
     public GeronimoWorkManager getWorkManager() throws Exception {

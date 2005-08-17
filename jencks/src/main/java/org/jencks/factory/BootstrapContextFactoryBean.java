@@ -59,7 +59,6 @@ public class BootstrapContextFactoryBean implements FactoryBean, InitializingBea
 
     public void afterPropertiesSet() throws Exception {
         bootstrapContext = new BootstrapContextImpl(getWorkManager());
-        getWorkManager().doStart();
     }
 
 
