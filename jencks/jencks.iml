@@ -4,6 +4,7 @@
   <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/classes" />
     <exclude-output />
+    <output-test url="file://$MODULE_DIR$/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="false" />
@@ -32,11 +33,16 @@
     <orderEntry type="library" name="geronimo-security-1.0-M4" level="application" />
     <orderEntry type="library" name="geronimo-kernel-1.0-M4" level="application" />
     <orderEntry type="library" name="geronimo-transaction-1.0-SNAPSHOT" level="application" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/src/test/resources" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntryProperties />
-  </component>
-  <component name="VcsManagerConfiguration">
-    <option name="ACTIVE_VCS_NAME" value="" />
-    <option name="USE_PROJECT_VCS" value="false" />
   </component>
 </module>
 

@@ -39,18 +39,23 @@ import javax.transaction.xa.XAException;
  *
  * @version $Revision$
  */
-public class BootstrapContextFactoryBean implements FactoryBean, InitializingBean {
+public class WorkManagerFactoryBean implements FactoryBean, InitializingBean {
 
-    private BootstrapContext bootstrapContext;
     private GeronimoWorkManager workManager;
-    private WorkManagerFactoryBean workManagerFactory = new WorkManagerFactoryBean();
+    private TransactionContextManager transactionContextManager;
+    private int threadPoolSize = 30;
+    private ExtendedTransactionManager transactionManager;
+    private XidImporter xidImporter;
+    private int defaultTransactionTimeoutSeconds = 600;
+    private TransactionLog transactionLog;
+    private ReferenceCollection resourceManagers;
 
     public Object getObject() throws Exception {
-        return bootstrapContext;
+        return workManager;
     }
 
     public Class getObjectType() {
-        return BootstrapContext.class;
+        return WorkManager.class;
     }
 
     public boolean isSingleton() {
@@ -58,77 +63,91 @@ public class BootstrapContextFactoryBean implements FactoryBean, InitializingBea
     }
 
     public void afterPropertiesSet() throws Exception {
-        bootstrapContext = new BootstrapContextImpl(getWorkManager());
-        getWorkManager().doStart();
+        workManager = createWorkManager();
     }
 
-
-    // Properties
-    //-------------------------------------------------------------------------
     public GeronimoWorkManager getWorkManager() throws Exception {
         if (workManager == null) {
-            workManager = workManagerFactory.getWorkManager();
+            afterPropertiesSet();
         }
         return workManager;
     }
 
-    public void setWorkManager(GeronimoWorkManager workManager) {
-        this.workManager = workManager;
-    }
-
     public TransactionContextManager getTransactionContextManager() throws XAException {
-        return workManagerFactory.getTransactionContextManager();
+        if (transactionContextManager == null) {
+            transactionContextManager = createTransactionContextManager();
+        }
+        return transactionContextManager;
     }
 
     public void setTransactionContextManager(TransactionContextManager transactionContextManager) {
-        workManagerFactory.setTransactionContextManager(transactionContextManager);
+        this.transactionContextManager = transactionContextManager;
     }
 
     public int getThreadPoolSize() {
-        return workManagerFactory.getThreadPoolSize();
+        return threadPoolSize;
     }
 
     public void setThreadPoolSize(int threadPoolSize) {
-        workManagerFactory.setThreadPoolSize(threadPoolSize);
+        this.threadPoolSize = threadPoolSize;
     }
 
     public ExtendedTransactionManager getTransactionManager() throws XAException {
-        return workManagerFactory.getTransactionManager();
+        if (transactionManager == null) {
+            transactionManager = new TransactionManagerImpl(getDefaultTransactionTimeoutSeconds(), getTransactionLog(), getResourceManagers());
+        }
+        return transactionManager;
     }
 
     public void setTransactionManager(ExtendedTransactionManager transactionManager) {
-        workManagerFactory.setTransactionManager(transactionManager);
+        this.transactionManager = transactionManager;
     }
 
     public XidImporter getXidImporter() {
-        return workManagerFactory.getXidImporter();
+        if (xidImporter == null && transactionManager instanceof XidImporter) {
+            xidImporter = (XidImporter) transactionManager;
+        }
+        return xidImporter;
     }
 
     public void setXidImporter(XidImporter xidImporter) {
-        workManagerFactory.setXidImporter(xidImporter);
+        this.xidImporter = xidImporter;
     }
 
     public int getDefaultTransactionTimeoutSeconds() {
-        return workManagerFactory.getDefaultTransactionTimeoutSeconds();
+        return defaultTransactionTimeoutSeconds;
     }
 
     public void setDefaultTransactionTimeoutSeconds(int defaultTransactionTimeoutSeconds) {
-        workManagerFactory.setDefaultTransactionTimeoutSeconds(defaultTransactionTimeoutSeconds);
+        this.defaultTransactionTimeoutSeconds = defaultTransactionTimeoutSeconds;
     }
 
     public TransactionLog getTransactionLog() {
-        return workManagerFactory.getTransactionLog();
+        if (transactionLog == null) {
+            transactionLog = new UnrecoverableLog();
+        }
+        return transactionLog;
     }
 
     public void setTransactionLog(TransactionLog transactionLog) {
-        workManagerFactory.setTransactionLog(transactionLog);
+        this.transactionLog = transactionLog;
     }
 
     public ReferenceCollection getResourceManagers() {
-        return workManagerFactory.getResourceManagers();
+        return resourceManagers;
     }
 
     public void setResourceManagers(ReferenceCollection resourceManagers) {
-        workManagerFactory.setResourceManagers(resourceManagers);
+        this.resourceManagers = resourceManagers;
+    }
+
+    // Implementation methods
+    //-------------------------------------------------------------------------
+    protected TransactionContextManager createTransactionContextManager() throws XAException {
+        return new TransactionContextManager(getTransactionManager(), getXidImporter());
+    }
+
+    protected GeronimoWorkManager createWorkManager() throws XAException {
+        return new GeronimoWorkManager(getThreadPoolSize(), getTransactionContextManager());
     }
 }

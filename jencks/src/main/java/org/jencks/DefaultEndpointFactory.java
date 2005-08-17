@@ -24,7 +24,9 @@ import org.springframework.beans.factory.InitializingBean;
 
 import javax.jms.MessageListener;
 import javax.resource.spi.UnavailableException;
+import javax.resource.spi.LocalTransaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
 
 /**
  * A factory of {@link javax.resource.spi.endpoint.MessageEndpoint} instances, either using XA transactions,
@@ -34,8 +36,8 @@ import javax.transaction.TransactionManager;
  * {@link #setTransactionManager(javax.transaction.TransactionManager)}
  * method.
  * <p/>
- * To use a local JMS transaction, then the XAResouce object passed in the {@see #createEndpoint(XAResource)}
- * call must implement {@see javax.resource.spi.LocalTransaction}.
+ * To use a local JMS transaction, then the XAResouce object passed in the {@link #createEndpoint(XAResource)}
+ * call must implement {@link LocalTransaction}.
  *
  * @version $Revision$
  */
