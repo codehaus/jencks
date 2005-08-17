@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- START SNIPPET: spring -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <!-- START SNIPPET: tm -->
+  <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
+  <!-- END SNIPPET: tm -->
+
+  <!--
+  || ActiveMQ Broker
+  -->
+  <bean id="broker" class="org.activemq.spring.BrokerFactoryBean" singleton="true">
+    <property name="config" value="classpath:org/jencks/broker.xml"/>
+  </bean>
+
+  <!--
+  || Jencks JCA Container
+  -->
+  <bean id="jencks" class="org.jencks.JCAContainer">
+
+    <property name="bootstrapContext">
+      <bean class="org.jencks.factory.BootstrapContextFactoryBean">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="threadPoolSize" value="25"/>
+      </bean>
+    </property>
+
+    <!-- the JCA Resource Adapter -->
+    <property name="resourceAdapter">
+      <bean id="activeMQResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
+        <property name="serverUrl" value="tcp://localhost:61616"/>
+
+        <!-- use polling or ASF -->
+        <property name="endpointWorkerType" value="asf"/>
+      </bean>
+    </property>
+
+  </bean>
+
+
+  <!-- START SNIPPET: inbound -->
+  <bean id="inboundMessageA" factory-method="addConnector" factory-bean="jencks" singleton="true">
+
+    <!-- subscription details -->
+    <property name="activationSpec">
+      <bean class="org.activemq.ra.ActiveMQActivationSpec">
+        <property name="destination" value="test.spring.inboundMessageA"/>
+        <property name="destinationType" value="javax.jms.Topic"/>
+      </bean>
+    </property>
+
+    <!-- use XA transactions -->
+    <property name="transactionManager" ref="transactionManager"/>
+
+    <property name="ref" value="echoBean"/>
+  </bean>
+  <!-- END SNIPPET: inbound -->
+
+  <!--
+    || an inbound message connector using a stateful, pooled  MessageListener
+    -->
+  <bean id="inboundMessageB" factory-method="addConnector" factory-bean="jencks" singleton="true">
+
+    <!-- subscription details -->
+    <property name="activationSpec">
+      <bean class="org.activemq.ra.ActiveMQActivationSpec">
+        <property name="destination" value="test.spring.inboundMessageB"/>
+        <property name="destinationType" value="javax.jms.Queue"/>
+      </bean>
+    </property>
+
+    <!-- use XA transactions -->
+    <property name="transactionManager" ref="transactionManager"/>
+
+    <!-- This example uses a pooled bean -->
+    <property name="ref" value="pooledEchoBean"/>
+  </bean>
+
+  <!--
+    || Message Driven POJOs
+    -->
+
+  <!-- a thread safe non-pooled MessageListener -->
+  <bean id="echoBean" class="org.jencks.TestBean" singleton="true">
+  </bean>
+
+  <!-- a pooled, non-thread safe MessageListener using ProxyFactoryBean -->
+  <bean id="pooledEchoBean" class="org.jencks.TargetSourceMessageListener">
+    <property name="targetSource">
+      <bean id="pooledEchoBeanTargetSource" class="org.springframework.aop.target.CommonsPoolTargetSource">
+        <property name="targetBeanName">
+          <value>pooledEchoBeanTarget</value>
+        </property>
+        <property name="maxSize">
+          <value>25</value>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="pooledEchoBeanTarget" class="org.jencks.TestBean" singleton="false">
+  </bean>
+
+</beans>
+
+        <!-- END SNIPPET: spring -->
