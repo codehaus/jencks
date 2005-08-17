@@ -41,12 +41,12 @@
 
 
   <!-- START SNIPPET: inbound -->
-  <bean id="inboundMessageA" factory-method="addConnector" factory-bean="jencks" singleton="true">
+  <bean id="inboundConnectorA" factory-method="addConnector" factory-bean="jencks" singleton="true">
 
     <!-- subscription details -->
     <property name="activationSpec">
       <bean class="org.activemq.ra.ActiveMQActivationSpec">
-        <property name="destination" value="test.spring.inboundMessageA"/>
+        <property name="destination" value="test.spring.inboundConnectorA"/>
         <property name="destinationType" value="javax.jms.Topic"/>
       </bean>
     </property>
@@ -61,12 +61,12 @@
   <!--
     || an inbound message connector using a stateful, pooled  MessageListener
     -->
-  <bean id="inboundMessageB" factory-method="addConnector" factory-bean="jencks" singleton="true">
+  <bean id="inboundConnectorB" factory-method="addConnector" factory-bean="jencks" singleton="true">
 
     <!-- subscription details -->
     <property name="activationSpec">
       <bean class="org.activemq.ra.ActiveMQActivationSpec">
-        <property name="destination" value="test.spring.inboundMessageB"/>
+        <property name="destination" value="test.spring.inboundConnectorB"/>
         <property name="destinationType" value="javax.jms.Queue"/>
       </bean>
     </property>

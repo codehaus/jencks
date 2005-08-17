@@ -42,7 +42,7 @@ public class JCAContainerTest extends JCAContainerTestSupport {
 
     public void testMessageDeliveryUsingSharedMesssageListener() throws Exception {
         TextMessage message = session.createTextMessage("Hello! " + new Date());
-        Destination destination = session.createTopic("test.spring.inboundMessageA");
+        Destination destination = session.createTopic("test.spring.inboundConnectorA");
         producer.send(destination, message);
 
         System.out.println("message sent on: " + destination + " of type: " + destination.getClass());
@@ -60,7 +60,7 @@ public class JCAContainerTest extends JCAContainerTestSupport {
 
     public void testMessageDeliveryUsingPooledMesssageListener() throws Exception {
         TextMessage message = session.createTextMessage("Hello! " + new Date());
-        Destination destination = session.createQueue("test.spring.inboundMessageB");
+        Destination destination = session.createQueue("test.spring.inboundConnectorB");
         producer.send(destination, message);
 
         System.out.println("message sent on: " + destination);
