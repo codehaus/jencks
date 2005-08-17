@@ -29,8 +29,7 @@ import javax.jms.Session;
 /**
  * @version $Revision$
  */
-public class JCAContainerTestSupport extends TestCase {
-    protected ConfigurableApplicationContext applicationContext;
+public class JCAContainerTestSupport extends SpringTestSupport {
 
     // to send some messages
     protected Connection connection;
@@ -38,7 +37,7 @@ public class JCAContainerTestSupport extends TestCase {
     protected MessageProducer producer;
 
     protected void setUp() throws Exception {
-        applicationContext = createApplicationContext();
+        super.setUp();
 
         // now lets create the JMS connection
         connection = createConnection();
@@ -55,17 +54,15 @@ public class JCAContainerTestSupport extends TestCase {
         if (connection != null) {
             connection.close();
         }
-        if (applicationContext != null) {
-            applicationContext.close();
-        }
+        super.tearDown();
     }
 
     protected String getBrokerURL() {
         return "tcp://localhost:61616";
     }
 
-    protected ConfigurableApplicationContext createApplicationContext() {
-        return new ClassPathXmlApplicationContext("org/jencks/spring.xml");
+    protected String getApplicationContextXml() {
+        return "org/jencks/spring.xml";
     }
 
     protected Connection createConnection() throws Exception {
