@@ -5,16 +5,26 @@
   <name>Jencks</name>
   <id>jencks</id>
   <groupId>jencks</groupId>
-  <currentVersion>1.0-SNAPSHOT</currentVersion>
+  <currentVersion>1.0-M1</currentVersion>
 
-  <shortDescription>Spring and POJO enhancements to the Geronimo JCA container to implement Message Driven POJOs.</shortDescription>
+  <organization>
+    <name>LogicBlaze, Inc.</name>
+    <url>http://www.logicblaze.com/</url>
+    <logo></logo>
+  </organization>
+  <logo></logo>
+
+  <shortDescription>Spring and POJO enhancements to the Geronimo JCA container to implement Message Driven
+    POJOs.</shortDescription>
   <description>
-The code consists of example POJOs which should be usable inside a JMS container.
-i.e. there are no API dependencies on the container whatnosever.
+    The code consists of example POJOs which should be usable inside a JMS container.
+    i.e. there are no API dependencies on the container whatnosever.
 
-Its pretty easy to write useful Message POJOs without any API dependencies whatsoever.
-There's also a couple of helper classes you can use to provide some JMS helper methods.
+    Its pretty easy to write useful Message POJOs without any API dependencies whatsoever.
+    There's also a couple of helper classes you can use to provide some JMS helper methods.
   </description>
+
+  <inceptionYear>2005</inceptionYear>
 
 
   <url>http://www.jencks.org/</url>
@@ -27,7 +37,8 @@ There's also a couple of helper classes you can use to provide some JMS helper m
 
   <repository>
     <connection>scm:cvs:pserver:anonymous@cvs.jencks.org:/home/projects/jencks/scm:jencks</connection>
-    <developerConnection>scm:cvs:ext:${maven.username}@cvs.jencks.org:/home/projects/jencks/scm:jencks</developerConnection>
+    <developerConnection>
+      scm:cvs:ext:${maven.username}@cvs.jencks.org:/home/projects/jencks/scm:jencks</developerConnection>
     <url>http://cvs.jencks.org/jencks/</url>
   </repository>
 
@@ -59,11 +70,29 @@ There's also a couple of helper classes you can use to provide some JMS helper m
   </mailingLists>
 
 
+  <versions>
+    <version>
+      <id>1.0-M1</id>
+      <name>1.0-M1</name>
+      <tag>JENCKS_1_0_M1</tag>
+    </version>
+  </versions>
+
+  <branches></branches>
+
   <package>org.jencks</package>
   <packageGroups>
     <packageGroup>
-      <title>Jencks</title>
+      <title>Jencks JCA Container</title>
       <packages>org.jencks</packages>
+    </packageGroup>
+    <packageGroup>
+      <title>Spring Factory Beans for creating Geronimo components</title>
+      <packages>org.jencks.factory</packages>
+    </packageGroup>
+    <packageGroup>
+      <title>Spring Interceptors</title>
+      <packages>org.jencks.interceptor</packages>
     </packageGroup>
   </packageGroups>
 
@@ -117,12 +146,11 @@ There's also a couple of helper classes you can use to provide some JMS helper m
     </dependency>
 
 
-        <dependency>
-            <groupId>mx4j</groupId>
-            <artifactId>mx4j</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-
+    <dependency>
+      <groupId>mx4j</groupId>
+      <artifactId>mx4j</artifactId>
+      <version>3.0.1</version>
+    </dependency>
 
 
     <!-- Geronimo JCA and Transaction Manager -->
@@ -163,7 +191,7 @@ There's also a couple of helper classes you can use to provide some JMS helper m
       <artifactId>geronimo-j2ee</artifactId>
       <version>${geronimo_version}</version>
       <properties>
-        <war.bundle>false</war.bundle>
+        <alljar.module>true</alljar.module>
         <!-- <eclipse.dependency>true</eclipse.dependency> -->
       </properties>
     </dependency>
