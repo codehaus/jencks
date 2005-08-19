@@ -23,14 +23,11 @@ import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PoolingSup
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.TransactionSupport;
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTracker;
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrackingCoordinator;
-import org.apache.geronimo.security.bridge.RealmBridge;
 import org.apache.geronimo.transaction.context.TransactionContextManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.resource.spi.ConnectionManager;
-import javax.security.auth.Subject;
-import javax.security.auth.login.LoginException;
 
 /**
  * This FactoryBean creates a local JCA connection factory outside
@@ -51,11 +48,11 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
 
     private TransactionSupport transactionSupport;
     private PoolingSupport poolingSupport;
-    private RealmBridge realmBridge;
     private TransactionContextManager transactionContextManager;
     private ConnectionTracker connectionTracker;
 
     private ConnectionManager connectionManager;
+    private boolean containerManagedSecurity;
 
     public Object getObject() throws Exception {
         return connectionManager;
@@ -78,15 +75,6 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
      */
     public void setPoolingSupport(PoolingSupport support) {
         poolingSupport = support;
-    }
-
-    /**
-     * Set the realm bridge for the Geronimo Connection Manager. This
-     * mechnism allows the application to map the application subject
-     * with the subject used by the EIS.
-     */
-    public void setRealmBridge(RealmBridge bridge) {
-        realmBridge = bridge;
     }
 
     /**
@@ -117,6 +105,13 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
     }
 
     /**
+     * Enables/disables container managed security
+     */
+    public void setContainerManagedSecurity(boolean containerManagedSecurity) {
+        this.containerManagedSecurity = containerManagedSecurity;
+    }
+
+    /**
      * This method checks all the needed parameters to construct
      * the Geronimo connection manager which is implemented by the
      * GenericConnectionManager class.
@@ -126,6 +121,7 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
      * configures the connection manager with the no pool value.
      * If the realm bridge is not set, the method configure
      * the connection manager with an identity realm bridge.
+     *
      * @see GenericConnectionManager
      */
     public void afterPropertiesSet() throws Exception {
@@ -138,14 +134,6 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
             //No pool
             this.poolingSupport = new NoPool();
         }
-        if (this.realmBridge == null) {
-            //Identity subject bridge
-            this.realmBridge = new RealmBridge() {
-                public Subject mapSubject(Subject subject) throws LoginException {
-                    return subject;
-                }
-            };
-        }
         if (this.connectionTracker == null) {
             //Instanciate the Geronimo Connection Track implementation
             this.connectionTracker = new ConnectionTrackingCoordinator();
@@ -153,8 +141,8 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
 
         //Instanciate the Geronimo Connection Manager
         this.connectionManager = new GenericConnectionManager(this.transactionSupport, this.poolingSupport,
-                this.realmBridge, this.connectionTracker, this.transactionContextManager,
+                containerManagedSecurity, this.connectionTracker, this.transactionContextManager,
                 getClass().getName(), getClass().getClassLoader());
-	}
+    }
 
 }
