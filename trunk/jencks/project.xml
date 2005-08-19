@@ -180,14 +180,6 @@
     </dependency>
     <dependency>
       <groupId>geronimo</groupId>
-      <artifactId>geronimo-security</artifactId>
-      <version>${geronimo_version}</version>
-      <properties>
-        <alljar.module>true</alljar.module>
-      </properties>
-    </dependency>
-    <dependency>
-      <groupId>geronimo</groupId>
       <artifactId>geronimo-j2ee</artifactId>
       <version>${geronimo_version}</version>
       <properties>
