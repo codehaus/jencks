@@ -48,11 +48,10 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
 
     private TransactionSupport transactionSupport;
     private PoolingSupport poolingSupport;
+    private boolean containerManagedSecurity;
     private TransactionContextManager transactionContextManager;
     private ConnectionTracker connectionTracker;
-
     private ConnectionManager connectionManager;
-    private boolean containerManagedSecurity;
 
     public Object getObject() throws Exception {
         return connectionManager;
@@ -141,7 +140,7 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
 
         //Instanciate the Geronimo Connection Manager
         this.connectionManager = new GenericConnectionManager(this.transactionSupport, this.poolingSupport,
-                containerManagedSecurity, this.connectionTracker, this.transactionContextManager,
+                this.containerManagedSecurity, this.connectionTracker, this.transactionContextManager,
                 getClass().getName(), getClass().getClassLoader());
     }
 

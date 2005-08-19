@@ -95,7 +95,7 @@ public class HandWiredJencksTest extends TestCase {
         ActiveMQActivationSpec as = new ActiveMQActivationSpec();
         as.setDestination("TEST");
         as.setDestinationType(Queue.class.getName());
-        ActivationSpecWrapper asWrapper = new ActivationSpecWrapper(as, raWrapper);
+            ActivationSpecWrapper asWrapper = new ActivationSpecWrapper(as, raWrapper);
 
         final Latch messageDelivered = new Latch();
         MessageEndpointFactory messageEndpointFactory = new MessageEndpointFactory() {

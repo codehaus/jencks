@@ -19,7 +19,6 @@ package org.jencks.factory;
 
 import org.apache.geronimo.connector.BootstrapContextImpl;
 import org.apache.geronimo.connector.work.GeronimoWorkManager;
-import org.apache.geronimo.gbean.ReferenceCollection;
 import org.apache.geronimo.transaction.ExtendedTransactionManager;
 import org.apache.geronimo.transaction.context.TransactionContextManager;
 import org.apache.geronimo.transaction.log.UnrecoverableLog;
@@ -32,6 +31,7 @@ import org.springframework.beans.factory.InitializingBean;
 import javax.resource.spi.BootstrapContext;
 import javax.resource.spi.work.WorkManager;
 import javax.transaction.xa.XAException;
+import java.util.Collection;
 
 /**
  * A Spring {@link FactoryBean} for creating a {@link BootstrapContext} for the JCA container
@@ -48,7 +48,7 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean {
     private XidImporter xidImporter;
     private int defaultTransactionTimeoutSeconds = 600;
     private TransactionLog transactionLog;
-    private ReferenceCollection resourceManagers;
+    private Collection resourceManagers;
 
     public Object getObject() throws Exception {
         return workManager;
@@ -134,11 +134,11 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean {
         this.transactionLog = transactionLog;
     }
 
-    public ReferenceCollection getResourceManagers() {
+    public Collection getResourceManagers() {
         return resourceManagers;
     }
 
-    public void setResourceManagers(ReferenceCollection resourceManagers) {
+    public void setResourceManagers(Collection resourceManagers) {
         this.resourceManagers = resourceManagers;
     }
 
