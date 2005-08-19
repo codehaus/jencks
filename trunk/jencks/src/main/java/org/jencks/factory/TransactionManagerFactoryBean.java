@@ -16,12 +16,13 @@
 
 package org.jencks.factory;
 
-import org.apache.geronimo.gbean.ReferenceCollection;
 import org.apache.geronimo.transaction.log.UnrecoverableLog;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+
+import java.util.Collection;
 
 /**
  * This FactoryBean creates and configures the Geronimo implementation
@@ -35,7 +36,7 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
 
     private int defaultTransactionTimeoutSeconds = 600;
     private TransactionLog transactionLog;
-    private ReferenceCollection resourceManagers;
+    private Collection resourceManagers;
 
     private TransactionManagerImpl transactionManagerImpl;
 
@@ -65,14 +66,14 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
         transactionLog = log;
     }
 
-    public ReferenceCollection getResourceManagers() {
+    public Collection getResourceManagers() {
         return resourceManagers;
     }
 
     /**
      * Set the resource managers
      */
-    public void setResourceManagers(ReferenceCollection resourceManagers) {
+    public void setResourceManagers(Collection resourceManagers) {
         this.resourceManagers = resourceManagers;
     }
 
