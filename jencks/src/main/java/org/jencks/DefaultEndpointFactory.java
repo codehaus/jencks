@@ -53,10 +53,11 @@ public class DefaultEndpointFactory extends EndpointFactorySupport implements In
         this.ref = ref;
     }
 
-    public DefaultEndpointFactory(BeanFactory beanFactory, String ref, TransactionManager transactionManager) {
+    public DefaultEndpointFactory(BeanFactory beanFactory, String ref, TransactionManager transactionManager, String name) {
         this.beanFactory = beanFactory;
         this.ref = ref;
         this.transactionManager = transactionManager;
+        setName(name);
     }
 
     public void afterPropertiesSet() throws Exception {

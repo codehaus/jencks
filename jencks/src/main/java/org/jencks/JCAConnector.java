@@ -23,6 +23,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.BeanNameAware;
 
 import javax.resource.spi.ActivationSpec;
 import javax.resource.spi.BootstrapContext;
@@ -36,7 +37,7 @@ import javax.transaction.TransactionManager;
  *
  * @version $Revision$
  */
-public class JCAConnector implements InitializingBean, DisposableBean, BeanFactoryAware {
+public class JCAConnector implements InitializingBean, DisposableBean, BeanFactoryAware, BeanNameAware {
     private static final transient Log log = LogFactory.getLog(JCAConnector.class);
 
     private ActivationSpec activationSpec;
@@ -46,6 +47,7 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
     private String ref;
     private TransactionManager transactionManager;
     private BeanFactory beanFactory;
+    private String name;
 
     public JCAConnector() {
     }
@@ -78,7 +80,7 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
                 throw new IllegalArgumentException("either the endpointFactory or ref properties must be set");
             }
             if (transactionManager != null) {
-                endpointFactory = new DefaultEndpointFactory(beanFactory, ref, transactionManager);
+                endpointFactory = new DefaultEndpointFactory(beanFactory, ref, transactionManager, getName());
             }
             else {
                 // TODO should we have some way of finding a ManagedConnection or other local transaction hook?
@@ -97,6 +99,15 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
 
     // Properties
     //-------------------------------------------------------------------------
+
+    public String getName() {
+        return name;
+    }
+
+    public void setBeanName(String name) {
+        this.name = name;
+    }
+
     public ActivationSpec getActivationSpec() {
         return activationSpec;
     }
