@@ -17,6 +17,9 @@
  **/
 package org.jencks;
 
+import org.apache.geronimo.transaction.manager.NamedXAResource;
+import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
+
 import javax.jms.MessageListener;
 import javax.resource.spi.LocalTransaction;
 import javax.resource.spi.UnavailableException;
@@ -24,6 +27,8 @@ import javax.resource.spi.endpoint.MessageEndpoint;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
+import javax.transaction.xa.XAException;
 import java.lang.reflect.Method;
 
 /**
@@ -31,9 +36,11 @@ import java.lang.reflect.Method;
  */
 public abstract class EndpointFactorySupport implements MessageEndpointFactory {
     protected TransactionManager transactionManager;
+    private String name = "defaultEndpoint";
 
     public MessageEndpoint createEndpoint(XAResource xaResource) throws UnavailableException {
         MessageListener messageListener = createMessageListener();
+        xaResource = wrapXAResource(xaResource);
         if (transactionManager != null) {
             return new XAEndpoint(messageListener, xaResource, transactionManager);
         }
@@ -61,7 +68,30 @@ public abstract class EndpointFactorySupport implements MessageEndpointFactory {
         this.transactionManager = transactionManager;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     // Implementation methods
     //-------------------------------------------------------------------------
     protected abstract MessageListener createMessageListener() throws UnavailableException;
+
+    /**
+     * {@link XAResource} instances must be named to support recovery, so either pass
+     * {@link NamedXAResource} instances through or wrap with the Spring name.
+     * 
+     * @param xaResource
+     * @return the wrapped XAResource instance
+     */
+    protected XAResource wrapXAResource(XAResource xaResource) {
+        if (xaResource instanceof NamedXAResource) {
+            return xaResource;
+        }
+        return new WrapperNamedXAResource(xaResource, getName());
+    }
+
 }
