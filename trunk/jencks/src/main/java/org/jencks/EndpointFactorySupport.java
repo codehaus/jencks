@@ -36,7 +36,7 @@ import java.lang.reflect.Method;
  */
 public abstract class EndpointFactorySupport implements MessageEndpointFactory {
     protected TransactionManager transactionManager;
-    private String name = "defaultEndpoint";
+    private String name;
 
     public MessageEndpoint createEndpoint(XAResource xaResource) throws UnavailableException {
         MessageListener messageListener = createMessageListener();
@@ -83,15 +83,16 @@ public abstract class EndpointFactorySupport implements MessageEndpointFactory {
     /**
      * {@link XAResource} instances must be named to support recovery, so either pass
      * {@link NamedXAResource} instances through or wrap with the Spring name.
-     * 
+     *
      * @param xaResource
      * @return the wrapped XAResource instance
      */
     protected XAResource wrapXAResource(XAResource xaResource) {
-        if (xaResource instanceof NamedXAResource) {
+        String name = getName();
+        if (xaResource instanceof NamedXAResource || name == null) {
             return xaResource;
         }
-        return new WrapperNamedXAResource(xaResource, getName());
+        return new WrapperNamedXAResource(xaResource, name);
     }
 
 }
