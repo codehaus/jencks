@@ -170,6 +170,25 @@
         <alljar.module>true</alljar.module>
       </properties>
     </dependency>
+    <dependency>
+      <id>tranql</id>
+      <artifactId>tranql-connector</artifactId>
+      <version>${geronimo_version}</version>
+      <url>http://tranql.codehaus.org/</url>
+      <properties>
+        <alljar.module>true</alljar.module>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <id>jencks</id>
+      <artifactId>xapool-without-pool</artifactId>
+      <version>1.4</version>
+      <url>http://xapool.experlog.com/</url>
+      <properties>
+        <alljar.module>true</alljar.module>
+      </properties>
+    </dependency>
 
     <dependency>
       <groupId>concurrent</groupId>
@@ -209,6 +228,26 @@
 
     <!-- testing stuff -->
     <dependency>
+      <id>hsqldb</id>
+      <artifactId>hsqldb</artifactId>
+      <version>1.7.3.3</version>
+      <url>http://www.springframework.org</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+
+    <dependency>
+      <id>springframework</id>
+      <artifactId>spring-mock</artifactId>
+      <version>1.2</version>
+      <url>http://www.springframework.org</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+
+    <dependency>
       <groupId>activemq</groupId>
       <artifactId>activemq-core</artifactId>
       <version>3.1-M6</version>
@@ -232,6 +271,14 @@
     <dependency>
       <id>commons-pool</id>
       <artifactId>commons-pool</artifactId>
+      <version>1.2</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+    </dependency>
+    <dependency>
+      <id>commons-dbcp</id>
+      <artifactId>commons-dbcp</artifactId>
       <version>1.2</version>
       <properties>
         <war.bundle>true</war.bundle>
@@ -290,6 +337,7 @@
         <include>**/*Test.*</include>
       </includes>
       <excludes>
+        <exclude>**/Abstract*Test*.*</exclude>
       </excludes>
     </unitTest>
   </build>
