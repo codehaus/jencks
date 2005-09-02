@@ -2,3 +2,5 @@ target
 .project
 .classpath
 junit*.properties
+bin
+.settings
