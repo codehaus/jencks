@@ -24,6 +24,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 import javax.resource.spi.ActivationSpec;
 import javax.resource.spi.BootstrapContext;
@@ -45,6 +46,7 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
     private MessageEndpointFactory endpointFactory;
     private ResourceAdapter resourceAdapter;
     private String ref;
+    private JtaTransactionManager jtaTransactionManager;
     private TransactionManager transactionManager;
     private BeanFactory beanFactory;
     private String name;
@@ -79,7 +81,9 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
             if (ref == null) {
                 throw new IllegalArgumentException("either the endpointFactory or ref properties must be set");
             }
-            if (transactionManager != null) {
+            if (jtaTransactionManager != null) {
+                endpointFactory = new DefaultEndpointFactory(beanFactory, ref, jtaTransactionManager, getName());
+            } else if (transactionManager != null) {
                 endpointFactory = new DefaultEndpointFactory(beanFactory, ref, transactionManager, getName());
             }
             else {
@@ -169,4 +173,12 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
     public void setBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
+
+	public JtaTransactionManager getJtaTransactionManager() {
+		return jtaTransactionManager;
+	}
+
+	public void setJtaTransactionManager(JtaTransactionManager jtaTransactionManager) {
+		this.jtaTransactionManager = jtaTransactionManager;
+	}
 }

@@ -16,12 +16,22 @@
 
 package org.jencks.factory;
 
+import java.util.HashSet;
+
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrackingCoordinator;
+import org.apache.geronimo.transaction.DefaultInstanceContext;
+import org.apache.geronimo.transaction.context.OnlineUserTransaction;
 import org.apache.geronimo.transaction.context.TransactionContextManager;
 import org.apache.geronimo.transaction.context.UserTransactionImpl;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.resource.ResourceException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 /**
@@ -77,10 +87,65 @@ public class UserTransactionFactoryBean implements FactoryBean, InitializingBean
      * can used it.
      */
     public void afterPropertiesSet() throws Exception {
-        this.userTransaction = new UserTransactionImpl();
-        ((UserTransactionImpl) this.userTransaction).setUp(transactionContextManager,
+    	this.userTransaction = new GeronimoUserTransaction();
+    }
+    
+    /**
+     * This wrapper around the OnlineUserTransaction performs per-thread
+     * initialization of the geronimo transaction layer.
+     * 
+     * @author gnt
+     */
+    public class GeronimoUserTransaction implements UserTransaction {
+    	
+    	private OnlineUserTransaction userTransaction;
+    	
+    	public GeronimoUserTransaction() {
+    		this.userTransaction = new OnlineUserTransaction();
+    		this.userTransaction.setUp(transactionContextManager,
                 connectionTrackingCoordinator);
-        ((UserTransactionImpl) this.userTransaction).setOnline(true);
+    	}
+
+		public void begin() throws NotSupportedException, SystemException {
+			ensureContext();
+			userTransaction.begin();
+		}
+
+		public void commit() throws HeuristicMixedException, HeuristicRollbackException, IllegalStateException, RollbackException, SecurityException, SystemException {
+			ensureContext();
+			userTransaction.commit();
+		}
+
+		public int getStatus() throws SystemException {
+			ensureContext();
+			return userTransaction.getStatus();
+		}
+
+		public void rollback() throws IllegalStateException, SecurityException, SystemException {
+			ensureContext();
+			userTransaction.rollback();
+		}
+
+		public void setRollbackOnly() throws IllegalStateException, SystemException {
+			ensureContext();
+			userTransaction.setRollbackOnly();
+		}
+
+		public void setTransactionTimeout(int arg0) throws SystemException {
+			ensureContext();
+			userTransaction.setTransactionTimeout(arg0);
+		}
+
+		private void ensureContext() throws SystemException {
+			if (transactionContextManager.getContext() == null) {
+				try {
+					transactionContextManager.newUnspecifiedTransactionContext();
+					connectionTrackingCoordinator.enter(new DefaultInstanceContext(new HashSet(), new HashSet()));
+				} catch (ResourceException e) {
+					throw (SystemException) new SystemException().initCause(e);
+				}
+			}
+		}
     }
 
 
