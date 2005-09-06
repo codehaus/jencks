@@ -19,6 +19,7 @@ package org.jencks;
 
 import org.apache.geronimo.transaction.manager.NamedXAResource;
 import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 import javax.jms.MessageListener;
 import javax.resource.spi.LocalTransaction;
@@ -36,12 +37,15 @@ import java.lang.reflect.Method;
  */
 public abstract class EndpointFactorySupport implements MessageEndpointFactory {
     protected TransactionManager transactionManager;
+    protected JtaTransactionManager jtaTransactionManager;
     private String name;
 
     public MessageEndpoint createEndpoint(XAResource xaResource) throws UnavailableException {
         MessageListener messageListener = createMessageListener();
         xaResource = wrapXAResource(xaResource);
-        if (transactionManager != null) {
+        if (jtaTransactionManager != null) {
+            return new SpringEndpoint(messageListener, xaResource, jtaTransactionManager);
+        } else if (transactionManager != null) {
             return new XAEndpoint(messageListener, xaResource, transactionManager);
         }
         else if (xaResource instanceof LocalTransaction) {
@@ -57,7 +61,7 @@ public abstract class EndpointFactorySupport implements MessageEndpointFactory {
     // Properties
     //-------------------------------------------------------------------------
     public boolean isDeliveryTransacted(Method method) throws NoSuchMethodException {
-        return transactionManager != null;
+        return transactionManager != null || jtaTransactionManager != null;
     }
 
     public TransactionManager getTransactionManager() {
@@ -94,5 +98,13 @@ public abstract class EndpointFactorySupport implements MessageEndpointFactory {
         }
         return new WrapperNamedXAResource(xaResource, name);
     }
+
+	public JtaTransactionManager getJtaTransactionManager() {
+		return jtaTransactionManager;
+	}
+
+	public void setJtaTransactionManager(JtaTransactionManager jtaTransactionManager) {
+		this.jtaTransactionManager = jtaTransactionManager;
+	}
 
 }

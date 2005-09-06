@@ -21,6 +21,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 import javax.jms.MessageListener;
 import javax.resource.spi.UnavailableException;
@@ -57,6 +58,13 @@ public class DefaultEndpointFactory extends EndpointFactorySupport implements In
         this.beanFactory = beanFactory;
         this.ref = ref;
         this.transactionManager = transactionManager;
+        setName(name);
+    }
+
+    public DefaultEndpointFactory(BeanFactory beanFactory, String ref, JtaTransactionManager jtaTransactionManager, String name) {
+        this.beanFactory = beanFactory;
+        this.ref = ref;
+        this.jtaTransactionManager = jtaTransactionManager;
         setName(name);
     }
 
