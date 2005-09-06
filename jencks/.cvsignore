@@ -4,3 +4,4 @@ target
 junit*.properties
 bin
 .settings
+ActiveMQ

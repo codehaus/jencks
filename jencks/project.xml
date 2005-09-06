@@ -310,6 +310,12 @@
       <artifactId>regexp</artifactId>
       <version>1.3</version>
     </dependency>
+    
+    <!-- Generic JMS Resource Adapter -->
+    <dependency>
+      <id>genericjmsra</id>
+      <jar>genericra.jar</jar>
+    </dependency>
 
     <!-- this should be an optional dependency now, when 1.1.2 of Spring is out -->
   </dependencies>

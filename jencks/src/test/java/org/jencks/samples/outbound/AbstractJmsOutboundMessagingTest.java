@@ -62,7 +62,7 @@ public abstract class AbstractJmsOutboundMessagingTest extends AbstractDependenc
 		checkIfMessageExist(TEST_MESSAGE);
 	}
 
-	private void checkIfMessageExist(String sentMessage) {
+	protected void checkIfMessageExist(String sentMessage) {
 		JmsTemplate template=new JmsTemplate(getConnectionFactory());
 		template.setReceiveTimeout(10);
 		String receivedMessage=(String)template.receiveAndConvert(queue);
@@ -89,7 +89,7 @@ public abstract class AbstractJmsOutboundMessagingTest extends AbstractDependenc
 		checkIfMessageNotExist();
 	}
 
-	private void checkIfMessageNotExist() {
+	protected void checkIfMessageNotExist() {
 		JmsTemplate template=new JmsTemplate(getConnectionFactory());
 		template.setReceiveTimeout(10);
 		String receivedMessage=null;
