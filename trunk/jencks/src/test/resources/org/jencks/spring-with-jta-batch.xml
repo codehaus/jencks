@@ -26,7 +26,7 @@
 
     <property name="bootstrapContext">
       <bean class="org.jencks.factory.BootstrapContextFactoryBean">
-	    <property name="transactionContextManager" ref="transactionContextManager"/>
+        <property name="transactionContextManager" ref="transactionContextManager"/>
         <property name="threadPoolSize" value="25"/>
       </bean>
     </property>
@@ -52,6 +52,8 @@
       <bean class="org.activemq.ra.ActiveMQActivationSpec">
         <property name="destination" value="test.spring.inboundConnectorA"/>
         <property name="destinationType" value="javax.jms.Topic"/>
+        <property name="enableBatch" value="true" />
+        <property name="maxMessagesPerBatch" value="20"/>
       </bean>
     </property>
 
@@ -72,6 +74,7 @@
       <bean class="org.activemq.ra.ActiveMQActivationSpec">
         <property name="destination" value="test.spring.inboundConnectorB"/>
         <property name="destinationType" value="javax.jms.Queue"/>
+        <property name="enableBatch" value="true" />
       </bean>
     </property>
 

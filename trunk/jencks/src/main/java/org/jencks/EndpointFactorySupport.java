@@ -17,9 +17,7 @@
  **/
 package org.jencks;
 
-import org.apache.geronimo.transaction.manager.NamedXAResource;
-import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
-import org.springframework.transaction.jta.JtaTransactionManager;
+import java.lang.reflect.Method;
 
 import javax.jms.MessageListener;
 import javax.resource.spi.LocalTransaction;
@@ -28,24 +26,21 @@ import javax.resource.spi.endpoint.MessageEndpoint;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
-import javax.transaction.xa.XAException;
-import java.lang.reflect.Method;
+
+import org.apache.geronimo.transaction.manager.NamedXAResource;
+import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
 
 /**
  * @version $Revision$
  */
 public abstract class EndpointFactorySupport implements MessageEndpointFactory {
     protected TransactionManager transactionManager;
-    protected JtaTransactionManager jtaTransactionManager;
     private String name;
 
     public MessageEndpoint createEndpoint(XAResource xaResource) throws UnavailableException {
         MessageListener messageListener = createMessageListener();
         xaResource = wrapXAResource(xaResource);
-        if (jtaTransactionManager != null) {
-            return new SpringEndpoint(messageListener, xaResource, jtaTransactionManager);
-        } else if (transactionManager != null) {
+        if (transactionManager != null) {
             return new XAEndpoint(messageListener, xaResource, transactionManager);
         }
         else if (xaResource instanceof LocalTransaction) {
@@ -61,7 +56,7 @@ public abstract class EndpointFactorySupport implements MessageEndpointFactory {
     // Properties
     //-------------------------------------------------------------------------
     public boolean isDeliveryTransacted(Method method) throws NoSuchMethodException {
-        return transactionManager != null || jtaTransactionManager != null;
+        return transactionManager != null;
     }
 
     public TransactionManager getTransactionManager() {
@@ -98,13 +93,5 @@ public abstract class EndpointFactorySupport implements MessageEndpointFactory {
         }
         return new WrapperNamedXAResource(xaResource, name);
     }
-
-	public JtaTransactionManager getJtaTransactionManager() {
-		return jtaTransactionManager;
-	}
-
-	public void setJtaTransactionManager(JtaTransactionManager jtaTransactionManager) {
-		this.jtaTransactionManager = jtaTransactionManager;
-	}
 
 }

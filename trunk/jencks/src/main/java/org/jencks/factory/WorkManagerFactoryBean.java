@@ -17,7 +17,13 @@
  **/
 package org.jencks.factory;
 
-import org.apache.geronimo.connector.BootstrapContextImpl;
+import java.util.Collection;
+import java.util.Map;
+
+import javax.resource.spi.BootstrapContext;
+import javax.resource.spi.work.WorkManager;
+import javax.transaction.xa.XAException;
+
 import org.apache.geronimo.connector.work.GeronimoWorkManager;
 import org.apache.geronimo.transaction.ExtendedTransactionManager;
 import org.apache.geronimo.transaction.context.TransactionContextManager;
@@ -27,11 +33,8 @@ import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.geronimo.transaction.manager.XidImporter;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-
-import javax.resource.spi.BootstrapContext;
-import javax.resource.spi.work.WorkManager;
-import javax.transaction.xa.XAException;
-import java.util.Collection;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * A Spring {@link FactoryBean} for creating a {@link BootstrapContext} for the JCA container
@@ -39,8 +42,9 @@ import java.util.Collection;
  *
  * @version $Revision$
  */
-public class WorkManagerFactoryBean implements FactoryBean, InitializingBean {
+public class WorkManagerFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
 
+	private ApplicationContext applicationContext;
     private GeronimoWorkManager workManager;
     private TransactionContextManager transactionContextManager;
     private int threadPoolSize = 30;
@@ -61,6 +65,10 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean {
     public boolean isSingleton() {
         return true;
     }
+    
+    public void setApplicationContext(ApplicationContext applicationContext) {
+    	this.applicationContext = applicationContext;
+    }
 
     public void afterPropertiesSet() throws Exception {
         workManager = createWorkManager();
@@ -75,9 +83,16 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean {
     }
 
     public TransactionContextManager getTransactionContextManager() throws XAException {
-        if (transactionContextManager == null) {
-            transactionContextManager = createTransactionContextManager();
-        }
+		if (transactionContextManager == null) {
+			Map map = applicationContext.getBeansOfType(TransactionContextManager.class);
+			if (map.size() > 1) {
+				throw new IllegalStateException("only one TransactionContextManager can be registered");
+			} else if (map.size() == 1) {
+				transactionContextManager = (TransactionContextManager) map.values().iterator().next();
+			} else {
+	            transactionContextManager = createTransactionContextManager();
+			}
+		}
         return transactionContextManager;
     }
 
@@ -94,9 +109,16 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean {
     }
 
     public ExtendedTransactionManager getTransactionManager() throws XAException {
-        if (transactionManager == null) {
-            transactionManager = new TransactionManagerImpl(getDefaultTransactionTimeoutSeconds(), getTransactionLog(), getResourceManagers());
-        }
+		if (transactionManager == null) {
+			Map map = applicationContext.getBeansOfType(ExtendedTransactionManager.class);
+			if (map.size() > 1) {
+				throw new IllegalStateException("only one ExtendedTransactionManager can be registered");
+			} else if (map.size() == 1) {
+				transactionManager = (ExtendedTransactionManager) map.values().iterator().next();
+			} else {
+	            transactionManager = new TransactionManagerImpl(getDefaultTransactionTimeoutSeconds(), getTransactionLog(), getResourceManagers());
+			}
+		}
         return transactionManager;
     }
 

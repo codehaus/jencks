@@ -17,21 +17,22 @@
  **/
 package org.jencks.factory;
 
-import org.apache.geronimo.connector.BootstrapContextImpl;
-import org.apache.geronimo.connector.work.GeronimoWorkManager;
-import org.apache.geronimo.transaction.ExtendedTransactionManager;
-import org.apache.geronimo.transaction.context.TransactionContextManager;
-import org.apache.geronimo.transaction.log.UnrecoverableLog;
-import org.apache.geronimo.transaction.manager.TransactionLog;
-import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
-import org.apache.geronimo.transaction.manager.XidImporter;
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.InitializingBean;
+import java.util.Collection;
 
 import javax.resource.spi.BootstrapContext;
 import javax.resource.spi.work.WorkManager;
 import javax.transaction.xa.XAException;
-import java.util.Collection;
+
+import org.apache.geronimo.connector.BootstrapContextImpl;
+import org.apache.geronimo.connector.work.GeronimoWorkManager;
+import org.apache.geronimo.transaction.ExtendedTransactionManager;
+import org.apache.geronimo.transaction.context.TransactionContextManager;
+import org.apache.geronimo.transaction.manager.TransactionLog;
+import org.apache.geronimo.transaction.manager.XidImporter;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * A Spring {@link FactoryBean} for creating a {@link BootstrapContext} for the JCA container
@@ -39,8 +40,9 @@ import java.util.Collection;
  *
  * @version $Revision$
  */
-public class BootstrapContextFactoryBean implements FactoryBean, InitializingBean {
+public class BootstrapContextFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
 
+	private ApplicationContext applicationContext;
     private BootstrapContext bootstrapContext;
     private GeronimoWorkManager workManager;
     private WorkManagerFactoryBean workManagerFactory = new WorkManagerFactoryBean();
@@ -61,11 +63,16 @@ public class BootstrapContextFactoryBean implements FactoryBean, InitializingBea
         bootstrapContext = new BootstrapContextImpl(getWorkManager());
     }
 
+    public void setApplicationContext(ApplicationContext applicationContext) {
+    	this.applicationContext = applicationContext;
+    }
+
 
     // Properties
     //-------------------------------------------------------------------------
     public GeronimoWorkManager getWorkManager() throws Exception {
         if (workManager == null) {
+        	workManagerFactory.setApplicationContext(applicationContext);
             workManager = workManagerFactory.getWorkManager();
         }
         return workManager;
