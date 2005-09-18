@@ -41,9 +41,11 @@ import javax.transaction.UserTransaction;
  * This factory is based on the Geronimo Transaction Context Manager
  * and Connection Tracking Coordinator.
  *
+ * @deprecated Use GeronimoTransactionManagerFactoryBean instead
  * @author ttemplier
  * @see UserTransactionImpl#setUp(TransactionContextManager, org.apache.geronimo.transaction.TrackedConnectionAssociator)
  * @see UserTransactionImpl#setOnline(boolean)
+ * @see GeronimoTransactionManagerFactoryBean
  */
 public class UserTransactionFactoryBean implements FactoryBean, InitializingBean {
 

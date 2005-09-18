@@ -53,7 +53,7 @@
           <bean class="org.jencks.factory.WorkManagerFactoryBean">
             <property name="transactionContextManager">
               <bean class="org.jencks.factory.TransactionContextManagerFactoryBean">
-                <property name="transactionManagerImpl" ref="transactionManagerImpl"/>
+                <property name="transactionManager" ref="transactionManagerImpl"/>
               </bean>
             </property>
           </bean>

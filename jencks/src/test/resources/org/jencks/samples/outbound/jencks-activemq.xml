@@ -10,47 +10,10 @@
 
    -->
 
-
-  <bean id="connectionTracker"
-        class="org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrackingCoordinator"/>
-
-  <bean id="transactionManagerImpl" class="org.jencks.factory.TransactionManagerFactoryBean">
-    <property name="defaultTransactionTimeoutSeconds">
-      <value>600</value>
-    </property>
-    <property name="transactionLog">
-      <bean class="org.apache.geronimo.transaction.log.UnrecoverableLog"/>
-    </property>
-  </bean>
-
-  <bean id="transactionContextManager" class="org.jencks.factory.TransactionContextManagerFactoryBean">
-    <property name="transactionManagerImpl">
-      <ref local="transactionManagerImpl"/>
-    </property>
-  </bean>
-
-  <bean id="userTransaction" class="org.jencks.factory.UserTransactionFactoryBean">
-    <property name="transactionContextManager">
-      <ref local="transactionContextManager"/>
-    </property>
-    <property name="connectionTrackingCoordinator">
-      <ref local="connectionTracker"/>
-    </property>
-  </bean>
-
+  <bean id="transactionContextManager" class="org.jencks.factory.TransactionContextManagerFactoryBean"/>
+  <bean id="userTransaction" class="org.jencks.factory.GeronimoTransactionManagerFactoryBean"/>
   <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
-    <property name="userTransaction">
-      <ref local="userTransaction"/>
-    </property>
-    <property name="transactionManager">
-      <ref local="transactionManagerImpl"/>
-    </property>
-  </bean>
-
-  <bean id="transactionContextInitializer" class="org.jencks.interceptor.TransactionContextInitializer">
-    <property name="associator">
-      <ref local="connectionTracker"/>
-    </property>
+    <property name="userTransaction" ref="userTransaction"/>
   </bean>
 
   <!--
@@ -99,12 +62,6 @@
     </property>
     <property name="poolingSupport">
       <ref local="poolingSupport"/>
-    </property>
-    <property name="transactionContextManager">
-      <ref local="transactionContextManager"/>
-    </property>
-    <property name="connectionTracker">
-      <ref local="connectionTracker"/>
     </property>
   </bean>
 

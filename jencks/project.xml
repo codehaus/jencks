@@ -250,17 +250,21 @@
     <dependency>
       <groupId>activemq</groupId>
       <artifactId>activemq-core</artifactId>
-      <version>3.1-M6</version>
+      <version>3.2-SNAPSHOT</version>
       <properties>
+        <!--
         <eclipse.dependency>true</eclipse.dependency>
+        -->
       </properties>
     </dependency>
     <dependency>
       <groupId>activemq</groupId>
       <artifactId>activemq-ra</artifactId>
-      <version>3.1-M6</version>
+      <version>3.2-SNAPSHOT</version>
       <properties>
+        <!--
         <eclipse.dependency>true</eclipse.dependency>
+        -->
       </properties>
     </dependency>
     <dependency>
@@ -315,6 +319,16 @@
     <dependency>
       <id>genericjmsra</id>
       <jar>genericra.jar</jar>
+    </dependency>
+    
+    <!-- Log4j -->
+    <dependency>
+      <id>log4j</id>
+      <artifactId>log4j</artifactId>
+      <version>1.2.8</version>
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
     </dependency>
 
     <!-- this should be an optional dependency now, when 1.1.2 of Spring is out -->

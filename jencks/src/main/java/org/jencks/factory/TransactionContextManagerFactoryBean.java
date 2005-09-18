@@ -16,10 +16,21 @@
 
 package org.jencks.factory;
 
+import java.util.Collection;
+import java.util.Map;
+
+import javax.transaction.xa.XAException;
+
+import org.apache.geronimo.transaction.ExtendedTransactionManager;
 import org.apache.geronimo.transaction.context.TransactionContextManager;
+import org.apache.geronimo.transaction.log.UnrecoverableLog;
+import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
+import org.apache.geronimo.transaction.manager.XidImporter;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * This FactoryBean creates and configures the TransactionManagerContext
@@ -29,10 +40,15 @@ import org.springframework.beans.factory.InitializingBean;
  * @see org.apache.geronimo.transaction.log.UnrecoverableLog
  * @see org.apache.geronimo.transaction.log.HOWLLog
  */
-public class TransactionContextManagerFactoryBean implements FactoryBean, InitializingBean {
+public class TransactionContextManagerFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
 
-    private TransactionManagerImpl transactionManagerImpl;
+	private XidImporter xidImporter;
+    private ExtendedTransactionManager transactionManager;
+	private ApplicationContext applicationContext;
     private TransactionContextManager transactionContextManager;
+    private int defaultTransactionTimeoutSeconds = 600;
+    private TransactionLog transactionLog;
+    private Collection resourceManagers;
 
     public Object getObject() throws Exception {
         return transactionContextManager;
@@ -46,29 +62,86 @@ public class TransactionContextManagerFactoryBean implements FactoryBean, Initia
         return true;
     }
 
-    public TransactionManagerImpl getTransactionManagerImpl() {
-        return transactionManagerImpl;
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+	}
+
+    public ExtendedTransactionManager getTransactionManager() throws XAException {
+		if (transactionManager == null) {
+			Map map = applicationContext.getBeansOfType(ExtendedTransactionManager.class);
+			if (map.size() > 1) {
+				throw new IllegalStateException("only one ExtendedTransactionManager can be registered");
+			} else if (map.size() == 1) {
+				transactionManager = (ExtendedTransactionManager) map.values().iterator().next();
+			} else {
+	            transactionManager = new TransactionManagerImpl(getDefaultTransactionTimeoutSeconds(), getTransactionLog(), getResourceManagers());
+			}
+		}
+        return transactionManager;
     }
 
-    public void setTransactionManagerImpl(TransactionManagerImpl transactionManagerImpl) {
-        this.transactionManagerImpl = transactionManagerImpl;
+    public void setTransactionManager(ExtendedTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+
+    public XidImporter getXidImporter() throws XAException {
+		if (xidImporter == null) {
+			if (getTransactionManager() instanceof XidImporter) {
+				xidImporter = (XidImporter) getTransactionManager(); 
+			} else {
+				Map map = applicationContext.getBeansOfType(XidImporter.class);
+				if (map.size() > 1) {
+					throw new IllegalStateException("only one XidImporter can be registered");
+				} else if (map.size() == 1) {
+					transactionManager = (ExtendedTransactionManager) map.values().iterator().next();
+				} else {
+					throw new IllegalStateException("no XidImporter is registered");
+				}
+			}
+		}
+        return xidImporter;
+    }
+    
+    public void setXidImporter(XidImporter xidImporter) {
+    	this.xidImporter = xidImporter;
+    }
+
+    public int getDefaultTransactionTimeoutSeconds() {
+        return defaultTransactionTimeoutSeconds;
+    }
+
+    public void setDefaultTransactionTimeoutSeconds(int defaultTransactionTimeoutSeconds) {
+        this.defaultTransactionTimeoutSeconds = defaultTransactionTimeoutSeconds;
+    }
+
+    public TransactionLog getTransactionLog() {
+        if (transactionLog == null) {
+            transactionLog = new UnrecoverableLog();
+        }
+        return transactionLog;
+    }
+
+    public void setTransactionLog(TransactionLog transactionLog) {
+        this.transactionLog = transactionLog;
+    }
+
+    public Collection getResourceManagers() {
+        return resourceManagers;
+    }
+
+    public void setResourceManagers(Collection resourceManagers) {
+        this.resourceManagers = resourceManagers;
     }
 
     /**
      * This method initializes the transaction context manager basing on
      * the Geronimo implementation of the transaction manager and a dedicated
      * transaction log.
-     * <p/>
-     * It specifies too an unspecified transaction context for the transaction
-     * context manager instanciated.
      */
     public void afterPropertiesSet() throws Exception {
-        //Instanciate the transaction context manager
-        this.transactionContextManager = new TransactionContextManager(this.transactionManagerImpl,
-                this.transactionManagerImpl);
-
-        //TODO to uncomment?!
-        this.transactionContextManager.newUnspecifiedTransactionContext();
+        // Instanciate the transaction context manager
+        this.transactionContextManager = new TransactionContextManager(getTransactionManager(), getXidImporter());
     }
+    
 
 }

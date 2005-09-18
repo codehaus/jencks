@@ -16,18 +16,21 @@
 
 package org.jencks.factory;
 
+import java.util.Map;
+
+import javax.resource.spi.ConnectionManager;
+
 import org.apache.geronimo.connector.outbound.GenericConnectionManager;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.NoPool;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.NoTransactions;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PoolingSupport;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.TransactionSupport;
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTracker;
-import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrackingCoordinator;
 import org.apache.geronimo.transaction.context.TransactionContextManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-
-import javax.resource.spi.ConnectionManager;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * This FactoryBean creates a local JCA connection factory outside
@@ -44,8 +47,9 @@ import javax.resource.spi.ConnectionManager;
  * @see PartitionedPoolFactoryBean
  * @see SinglePoolFactoryBean
  */
-public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBean {
+public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
 
+	private ApplicationContext applicationContext;
     private TransactionSupport transactionSupport;
     private PoolingSupport poolingSupport;
     private boolean containerManagedSecurity;
@@ -64,6 +68,10 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
     public boolean isSingleton() {
         return true;
     }
+
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+	}
 
     /**
      * Set the pooling support for the Geronimo Connection Manager.
@@ -124,24 +132,46 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
      * @see GenericConnectionManager
      */
     public void afterPropertiesSet() throws Exception {
-        //Apply the default value for property if necessary
+        // Apply the default value for property if necessary
         if (this.transactionSupport == null) {
-            //No transaction
+            // No transaction
             this.transactionSupport = NoTransactions.INSTANCE;
         }
         if (this.poolingSupport == null) {
-            //No pool
+            // No pool
             this.poolingSupport = new NoPool();
         }
-        if (this.connectionTracker == null) {
-            //Instanciate the Geronimo Connection Track implementation
-            this.connectionTracker = new ConnectionTrackingCoordinator();
-        }
-
-        //Instanciate the Geronimo Connection Manager
-        this.connectionManager = new GenericConnectionManager(this.transactionSupport, this.poolingSupport,
-                this.containerManagedSecurity, this.connectionTracker, this.transactionContextManager,
-                getClass().getName(), getClass().getClassLoader());
+        // Instanciate the Geronimo Connection Manager
+        this.connectionManager = new GenericConnectionManager(
+        		this.transactionSupport, 
+        		this.poolingSupport,
+                this.containerManagedSecurity, 
+                getConnectionTracker(), 
+                getTransactionContextManager(),
+                getClass().getName(), 
+                getClass().getClassLoader());
     }
+
+	public ConnectionTracker getConnectionTracker() {
+		if (connectionTracker == null) {
+			Map map = applicationContext.getBeansOfType(ConnectionTracker.class);
+			if (map.size() == 1) {
+				connectionTracker = (ConnectionTracker) map.values().iterator().next();
+			}
+		}
+		return connectionTracker;
+	}
+
+	public TransactionContextManager getTransactionContextManager() {
+		if (transactionContextManager == null) {
+			Map map = applicationContext.getBeansOfType(TransactionContextManager.class);
+			if (map.size() == 1) {
+				transactionContextManager = (TransactionContextManager) map.values().iterator().next();
+			} else {
+				throw new IllegalStateException("no TransactionContextManager is registered");
+			}
+		}
+		return transactionContextManager;
+	}
 
 }
