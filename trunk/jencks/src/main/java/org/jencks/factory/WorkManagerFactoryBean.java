@@ -83,15 +83,16 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean, Ap
     }
 
     public TransactionContextManager getTransactionContextManager() throws XAException {
-		if (transactionContextManager == null) {
+		if (transactionContextManager == null && applicationContext != null) {
 			Map map = applicationContext.getBeansOfType(TransactionContextManager.class);
 			if (map.size() > 1) {
 				throw new IllegalStateException("only one TransactionContextManager can be registered");
 			} else if (map.size() == 1) {
 				transactionContextManager = (TransactionContextManager) map.values().iterator().next();
-			} else {
-	            transactionContextManager = createTransactionContextManager();
 			}
+		}
+		if (transactionContextManager == null) {
+            transactionContextManager = createTransactionContextManager();
 		}
         return transactionContextManager;
     }
@@ -109,15 +110,16 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean, Ap
     }
 
     public ExtendedTransactionManager getTransactionManager() throws XAException {
-		if (transactionManager == null) {
+		if (transactionManager == null && applicationContext != null) {
 			Map map = applicationContext.getBeansOfType(ExtendedTransactionManager.class);
 			if (map.size() > 1) {
 				throw new IllegalStateException("only one ExtendedTransactionManager can be registered");
 			} else if (map.size() == 1) {
 				transactionManager = (ExtendedTransactionManager) map.values().iterator().next();
-			} else {
-	            transactionManager = new TransactionManagerImpl(getDefaultTransactionTimeoutSeconds(), getTransactionLog(), getResourceManagers());
 			}
+		}
+		if (transactionManager == null) {
+            transactionManager = new TransactionManagerImpl(getDefaultTransactionTimeoutSeconds(), getTransactionLog(), getResourceManagers());
 		}
         return transactionManager;
     }
