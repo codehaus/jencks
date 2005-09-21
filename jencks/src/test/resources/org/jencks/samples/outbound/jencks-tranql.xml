@@ -2,6 +2,7 @@
 
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
+<!-- START SNIPPET: jca -->
 <beans>
 
   <!--
@@ -85,3 +86,4 @@
   </bean>
 
 </beans>
+<!-- END SNIPPET: jca -->
