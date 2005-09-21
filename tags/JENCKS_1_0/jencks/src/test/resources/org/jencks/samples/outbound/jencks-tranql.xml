@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!--
+
+         ###### Transaction manager ######
+
+   -->
+
+
+  <bean id="transactionContextManager" class="org.jencks.factory.TransactionContextManagerFactoryBean"/>
+  <bean id="userTransaction" class="org.jencks.factory.GeronimoTransactionManagerFactoryBean"/>
+  <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+    <property name="userTransaction" ref="userTransaction"/>
+  </bean>
+
+  <!--
+
+         ###### JCA ######
+
+   -->
+
+  <bean id="transactionSupport"
+        class="org.jencks.factory.XATransactionFactoryBean">
+    <property name="useTransactionCaching">
+      <value>true</value>
+    </property>
+    <property name="useThreadCaching">
+      <value>false</value>
+    </property>
+  </bean>
+
+  <bean id="poolingSupport" class="org.jencks.factory.SinglePoolFactoryBean">
+    <property name="maxSize">
+      <value>2</value>
+    </property>
+    <property name="minSize">
+      <value>1</value>
+    </property>
+    <property name="blockingTimeoutMilliseconds">
+      <value>60</value>
+    </property>
+    <property name="idleTimeoutMinutes">
+      <value>60</value>
+    </property>
+    <property name="matchOne">
+      <value>true</value>
+    </property>
+    <property name="matchAll">
+      <value>true</value>
+    </property>
+    <property name="selectOneAssumeMatch">
+      <value>true</value>
+    </property>
+  </bean>
+
+  <bean id="connectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+    <property name="transactionSupport">
+      <ref local="transactionSupport"/>
+    </property>
+    <property name="poolingSupport">
+      <ref local="poolingSupport"/>
+    </property>
+  </bean>
+
+  <!--
+
+         ###### Tranql ######
+
+   -->
+
+ 	<bean id="tranqlManagedConnectionFactory" class="org.jencks.tranql.XAPoolDataSourceMCF">
+		<property name="driverName"><value>org.hsqldb.jdbcDriver</value></property>
+		<property name="url"><value>jdbc:hsqldb:.</value></property>
+		<property name="user"><value>sa</value></property>
+		<property name="password"><value></value></property>
+	</bean>
+ 	
+  <bean id="dataSource" class="org.springframework.jca.support.LocalConnectionFactoryBean">
+    <property name="managedConnectionFactory"><ref local="tranqlManagedConnectionFactory"/></property>
+    <property name="connectionManager"><ref local="connectionManager"/></property>
+  </bean>
+
+</beans>

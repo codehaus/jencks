@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- START SNIPPET: spring -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <!--
+  || ActiveMQ Broker
+  -->
+  <bean id="broker" class="org.activemq.spring.BrokerFactoryBean" singleton="true">
+    <property name="config" value="classpath:org/jencks/broker.xml"/>
+  </bean>
+
+  <!--
+  || Transaction Manager
+  -->
+  <bean id="transactionManagerImpl" class="org.jencks.factory.TransactionManagerFactoryBean">
+    <property name="defaultTransactionTimeoutSeconds" value="600"/>
+    <property name="transactionLog">
+      <bean class="org.apache.geronimo.transaction.log.UnrecoverableLog"/>
+    </property>
+
+    <!--property name="transactionLog">
+        <ref local="howlTransactionLog"/>
+    </property-->
+    <!--property name="resourceManagers">
+        <bean class="org.gbean.geronimo.CollectionReference">
+            <property name="name"><value>ResourceManagers</value></property>
+            <property name="patterns">
+                <set>
+                    <value type="javax.management.ObjectName">*:j2eeType=JCAManagedConnectionFactory,*</value>
+                    <value type="javax.management.ObjectName">*:j2eeType=ActivationSpec,*</value>
+                    <value>*:j2eeType=JCAManagedConnectionFactory,*</value>
+                    <value>*:j2eeType=ActivationSpec,*</value>
+                </set>
+            </property>
+            <property name="type"><value>org.apache.geronimo.transaction.manager.ResourceManager</value></property>
+        </bean>
+    </property-->
+  </bean>
+
+  <!--
+  || Jencks JCA Container
+  -->
+  <bean id="jencks" class="org.jencks.JCAContainer">
+
+    <!-- lets configure the work manager and transaction manager -->
+    <property name="bootstrapContext">
+      <bean class="org.jencks.factory.BootstrapContextFactoryBean">
+
+        <!-- lets explicitly specify the work manager configuration and transaction manager -->
+        <property name="workManager">
+          <bean class="org.jencks.factory.WorkManagerFactoryBean">
+            <property name="transactionContextManager">
+              <bean class="org.jencks.factory.TransactionContextManagerFactoryBean">
+                <property name="transactionManager" ref="transactionManagerImpl"/>
+              </bean>
+            </property>
+          </bean>
+        </property>
+      </bean>
+    </property>
+
+
+    <!-- the JCA Resource Adapter -->
+    <property name="resourceAdapter">
+      <bean id="activeMQResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
+        <property name="serverUrl" value="tcp://localhost:61616"/>
+      </bean>
+    </property>
+  </bean>
+
+
+  <!--
+  || A JmsTemplate used to publish from inside a JCA message consumption thread
+  -->
+  <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory">
+
+      <!-- use the same JMS Session to publish on -->
+      <bean class="org.activemq.ra.jms.ConnectionProxyFactory"/>
+    </property>
+  </bean>
+
+  <!--
+    || an inbound message connector using a stateful, pooled  MessageListener
+    -->
+  <bean id="requestResponseMEP" factory-method="addConnector" factory-bean="jencks">
+
+    <!-- subscription details -->
+    <property name="activationSpec">
+      <bean class="org.activemq.ra.ActiveMQActivationSpec">
+        <property name="destination">
+          <value>org.jencks.JCAContainerRequestReplyTest</value>
+        </property>
+        <property name="destinationType">
+          <value>javax.jms.Queue</value>
+        </property>
+      </bean>
+    </property>
+
+    <!-- This example uses a pooled bean -->
+    <property name="ref" value="pooledReplyBean"/>
+  </bean>
+
+  <!-- a pooled, non-thread safe MessageListener using ProxyFactoryBean -->
+  <bean id="pooledReplyBean" class="org.jencks.TargetSourceMessageListener">
+    <property name="targetSource">
+      <bean id="pooledReplyBeanTargetSource" class="org.springframework.aop.target.CommonsPoolTargetSource">
+        <property name="targetBeanName">
+          <value>pooledReplyBeanTarget</value>
+        </property>
+        <property name="maxSize">
+          <value>25</value>
+        </property>
+      </bean>
+    </property>
+  </bean>
+  <bean id="pooledReplyBeanTarget" class="org.jencks.TestReplyBean" singleton="false">
+    <property name="jmsTemplate">
+      <ref bean="jmsTemplate"/>
+    </property>
+  </bean>
+
+</beans>
+
+        <!-- END SNIPPET: spring -->
