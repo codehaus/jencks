@@ -76,6 +76,11 @@
       <name>1.0-M1</name>
       <tag>JENCKS_1_0_M1</tag>
     </version>
+    <version>
+      <id>1.0</id>
+      <name>1.0</name>
+      <tag>JENCKS_1_0</tag>
+    </version>
   </versions>
 
   <branches></branches>
