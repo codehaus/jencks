@@ -322,7 +322,8 @@
     
     <!-- Generic JMS Resource Adapter -->
     <dependency>
-      <id>genericjmsra</id>
+      <groupId>jencks</groupId>
+      <artifactId>genericra</artifactId>
       <jar>genericra.jar</jar>
     </dependency>
     
