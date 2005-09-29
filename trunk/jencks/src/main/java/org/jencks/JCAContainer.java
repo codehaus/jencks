@@ -21,12 +21,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jencks.factory.BootstrapContextFactoryBean;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import javax.resource.spi.BootstrapContext;
 import javax.resource.spi.ResourceAdapter;
@@ -41,12 +39,15 @@ import javax.resource.spi.ResourceAdapter;
  *
  * @version $Revision$
  */
-public class JCAContainer implements InitializingBean, DisposableBean, BeanFactoryAware {
+public class JCAContainer implements InitializingBean, DisposableBean, ApplicationContextAware {
     private static final transient Log log = LogFactory.getLog(JCAContainer.class);
     private BootstrapContext bootstrapContext;
     private ResourceAdapter resourceAdapter;
-    private BeanFactory beanFactory;
+	private ApplicationContext applicationContext;
     private boolean lazyLoad = false;
+    
+    public JCAContainer() {
+    }
 
     public JCAConnector addConnector() {
         return new JCAConnector(getBootstrapContext(), getResourceAdapter());
@@ -64,19 +65,11 @@ public class JCAContainer implements InitializingBean, DisposableBean, BeanFacto
         resourceAdapter.start(bootstrapContext);
 
         // now lets start all of the JCAConnector instances
-        if (beanFactory == null) {
-            throw new IllegalArgumentException("beanFactory should have been set by Spring");
-        }
-        else if (!lazyLoad && beanFactory instanceof BeanDefinitionRegistry) {
-            BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
-            String[] names = registry.getBeanDefinitionNames();
-            for (int i = 0; i < names.length; i++) {
-                String name = names[i];
-                BeanDefinition definition = registry.getBeanDefinition(name);
-                if (!definition.isAbstract()) {
-                    beanFactory.getBean(name);
-                }
-            }
+        if (!lazyLoad) {
+	        if (applicationContext == null) {
+	            throw new IllegalArgumentException("applicationContext should have been set by Spring");
+	        }
+        	applicationContext.getBeansOfType(JCAConnector.class);
         }
 
         String version = null;
@@ -96,12 +89,12 @@ public class JCAContainer implements InitializingBean, DisposableBean, BeanFacto
 
     // Properties
     //-------------------------------------------------------------------------
-    public BeanFactory getBeanFactory() {
-        return beanFactory;
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
     }
 
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
     public ResourceAdapter getResourceAdapter() {

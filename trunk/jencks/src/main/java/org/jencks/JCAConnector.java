@@ -48,6 +48,7 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
     private TransactionManager transactionManager;
     private BeanFactory beanFactory;
     private String name;
+    private JCAContainer jcaContainer;
 
     public JCAConnector() {
     }
@@ -62,15 +63,21 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
             throw new IllegalArgumentException("activationSpec must be set");
         }
 
-        ResourceAdapter temp = activationSpec.getResourceAdapter();
-        if (temp == null && resourceAdapter != null) {
+        if (resourceAdapter == null) {
+        	resourceAdapter = activationSpec.getResourceAdapter();
+        }
+        if (resourceAdapter == null && jcaContainer != null) {
+        	resourceAdapter = jcaContainer.getResourceAdapter();
+        }
+        if (resourceAdapter == null) {
+            throw new IllegalArgumentException("resourceAdapter property must be set on the activationSpec object");
+        }
+        if (activationSpec.getResourceAdapter() == null) {
             activationSpec.setResourceAdapter(resourceAdapter);
         }
-        else if (resourceAdapter == null) {
-            resourceAdapter = activationSpec.getResourceAdapter();
-            if (resourceAdapter == null) {
-                throw new IllegalArgumentException("resourceAdapter property must be set on the activationSpec object");
-            }
+
+        if (bootstrapContext == null && jcaContainer != null) {
+            bootstrapContext = jcaContainer.getBootstrapContext();
         }
         if (bootstrapContext == null) {
             throw new IllegalArgumentException("bootstrapContext must be set");
@@ -168,4 +175,12 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
     public void setBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
+
+	public JCAContainer getJcaContainer() {
+		return jcaContainer;
+	}
+
+	public void setJcaContainer(JCAContainer jcaConnector) {
+		this.jcaContainer = jcaConnector;
+	}
 }

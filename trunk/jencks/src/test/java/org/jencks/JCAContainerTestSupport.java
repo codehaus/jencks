@@ -17,19 +17,16 @@
  **/
 package org.jencks;
 
-import junit.framework.TestCase;
-import org.activemq.ActiveMQConnectionFactory;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import javax.jms.Connection;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 
+import org.activemq.ActiveMQConnectionFactory;
+
 /**
  * @version $Revision$
  */
-public class JCAContainerTestSupport extends SpringTestSupport {
+public abstract class JCAContainerTestSupport extends SpringTestSupport {
 
     // to send some messages
     protected Connection connection;

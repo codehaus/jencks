@@ -51,6 +51,10 @@ public class TransactionContextManagerFactoryBean implements FactoryBean, Initia
     private Collection resourceManagers;
 
     public Object getObject() throws Exception {
+    	if (transactionContextManager == null) {
+            // Instanciate the transaction context manager
+            this.transactionContextManager = new TransactionContextManager(getTransactionManager(), getXidImporter());
+    	}
         return transactionContextManager;
     }
 
@@ -139,8 +143,6 @@ public class TransactionContextManagerFactoryBean implements FactoryBean, Initia
      * transaction log.
      */
     public void afterPropertiesSet() throws Exception {
-        // Instanciate the transaction context manager
-        this.transactionContextManager = new TransactionContextManager(getTransactionManager(), getXidImporter());
     }
     
 

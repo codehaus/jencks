@@ -53,17 +53,19 @@
     </property>
 
     <!-- the JCA Resource Adapter for ActiveMQ -->
-    <property name="resourceAdapter">
-      <bean id="activeMQResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
-        <property name="serverUrl" value="tcp://localhost:61616"/>
-      </bean>
-    </property>
+    <property name="resourceAdapter" ref="activeMQResourceAdapter"/>
   </bean>
+  
+    <bean id="activeMQResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
+      <property name="serverUrl" value="tcp://localhost:61616"/>
+    </bean>
 
   <!--
     || an inbound message connector using a stateful, pooled  MessageListener
     -->
-  <bean id="requestResponseMEP" factory-method="addConnector" factory-bean="jencks" singleton="true">
+  <bean id="requestResponseMEP" class="org.jencks.JCAConnector">
+
+	<property name="jcaContainer" ref="jencks" />
 
     <!-- subscription details -->
     <property name="activationSpec">

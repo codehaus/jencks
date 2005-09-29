@@ -58,6 +58,17 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
     private ConnectionManager connectionManager;
 
     public Object getObject() throws Exception {
+    	if (connectionManager == null) {
+	        // Instanciate the Geronimo Connection Manager
+	        this.connectionManager = new GenericConnectionManager(
+	        		this.transactionSupport, 
+	        		this.poolingSupport,
+	                this.containerManagedSecurity, 
+	                getConnectionTracker(), 
+	                getTransactionContextManager(),
+	                getClass().getName(), 
+	                getClass().getClassLoader());
+    	}
         return connectionManager;
     }
 
@@ -141,15 +152,6 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
             // No pool
             this.poolingSupport = new NoPool();
         }
-        // Instanciate the Geronimo Connection Manager
-        this.connectionManager = new GenericConnectionManager(
-        		this.transactionSupport, 
-        		this.poolingSupport,
-                this.containerManagedSecurity, 
-                getConnectionTracker(), 
-                getTransactionContextManager(),
-                getClass().getName(), 
-                getClass().getClassLoader());
     }
 
 	public ConnectionTracker getConnectionTracker() {

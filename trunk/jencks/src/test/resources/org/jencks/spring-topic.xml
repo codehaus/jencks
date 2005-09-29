@@ -33,7 +33,9 @@
   </bean>
 
   <!-- inbound message connector -->
-  <bean id="messageConnector" factory-method="addConnector" factory-bean="jencks">
+  <bean id="messageConnector" class="org.jencks.JCAConnector">
+
+	<property name="jcaContainer" ref="jencks" />
 
     <!-- subscription details -->
     <property name="activationSpec">

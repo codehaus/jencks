@@ -4,7 +4,6 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Queue;
 
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -96,5 +95,4 @@ public abstract class AbstractJmsOutboundMessagingTest extends AbstractDependenc
 		receivedMessage=(String)template.receiveAndConvert(queue);
 		assertNull(receivedMessage);
 	}
-
 }

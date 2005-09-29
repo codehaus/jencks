@@ -78,7 +78,7 @@
 
   <bean id="jmsResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
     <property name="serverUrl">
-      <value>tcp://localhost:61616</value>
+      <value>vm://localhost</value>
     </property>
     <!--property name="useEmbeddedBroker">
       <value>true</value>

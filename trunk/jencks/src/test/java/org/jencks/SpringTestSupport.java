@@ -4,8 +4,6 @@ import junit.framework.TestCase;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import javax.jms.Session;
-
 /**
  * @version $Revision$
  */
