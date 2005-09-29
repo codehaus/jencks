@@ -37,7 +37,7 @@
   <!-- START SNIPPET: inbound -->
   <bean id="inboundConnectorA" class="org.jencks.JCAConnector">
 
-	<property name="jcaContainer" ref="jencks" />
+    <property name="jcaContainer" ref="jencks" />
 
     <!-- subscription details -->
     <property name="activationSpec">
