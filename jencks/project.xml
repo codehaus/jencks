@@ -216,7 +216,7 @@
     <dependency>
       <id>springframework</id>
       <artifactId>spring</artifactId>
-      <version>1.2</version>
+      <version>1.2.5</version>
       <url>http://www.springframework.org</url>
       <properties>
         <war.bundle>true</war.bundle>
