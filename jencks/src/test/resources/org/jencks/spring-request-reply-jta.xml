@@ -62,7 +62,9 @@
   <!--
     || an inbound message connector using a stateful, pooled  MessageListener
     -->
-  <bean id="requestResponseMEP" factory-method="addConnector" factory-bean="jencks" singleton="true">
+  <bean id="requestResponseMEP" class="org.jencks.JCAConnector">
+
+	<property name="jcaContainer" ref="jencks" />
 
     <!-- subscription details -->
     <property name="activationSpec">

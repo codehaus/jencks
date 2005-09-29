@@ -43,6 +43,9 @@ public class GeronimoTransactionManagerFactoryBean implements FactoryBean, Initi
     private TransactionContextManager transactionContextManager;
 	
 	public Object getObject() throws Exception {
+		if (transactionManager == null) {
+			transactionManager = new GeronimoTransactionManager(getTransactionContextManager());
+		}
 		return transactionManager;
 	}
 
@@ -55,7 +58,6 @@ public class GeronimoTransactionManagerFactoryBean implements FactoryBean, Initi
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		transactionManager = new GeronimoTransactionManager(getTransactionContextManager());
 	}
 
 	public void setApplicationContext(ApplicationContext applicationContext) {

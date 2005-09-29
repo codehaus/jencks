@@ -48,6 +48,9 @@ public class BootstrapContextFactoryBean implements FactoryBean, InitializingBea
     private WorkManagerFactoryBean workManagerFactory = new WorkManagerFactoryBean();
 
     public Object getObject() throws Exception {
+    	if (bootstrapContext == null) {
+            bootstrapContext = new BootstrapContextImpl(getWorkManager());
+    	}
         return bootstrapContext;
     }
 
@@ -60,7 +63,6 @@ public class BootstrapContextFactoryBean implements FactoryBean, InitializingBea
     }
 
     public void afterPropertiesSet() throws Exception {
-        bootstrapContext = new BootstrapContextImpl(getWorkManager());
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) {

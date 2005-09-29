@@ -55,7 +55,7 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean, Ap
     private Collection resourceManagers;
 
     public Object getObject() throws Exception {
-        return workManager;
+        return getWorkManager();
     }
 
     public Class getObjectType() {
@@ -71,13 +71,12 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean, Ap
     }
 
     public void afterPropertiesSet() throws Exception {
-        workManager = createWorkManager();
-        workManager.doStart();
     }
 
     public GeronimoWorkManager getWorkManager() throws Exception {
         if (workManager == null) {
-            afterPropertiesSet();
+            workManager = createWorkManager();
+            workManager.doStart();
         }
         return workManager;
     }

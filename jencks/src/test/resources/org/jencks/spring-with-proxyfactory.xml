@@ -34,7 +34,9 @@
   <!--
     || an inbound message connector using a stateless, thread safe MessageListener
     -->
-  <bean id="inboundConnectorA" factory-method="addConnector" factory-bean="jencks" singleton="true">
+  <bean id="inboundConnectorA" class="org.jencks.JCAConnector">
+
+	<property name="jcaContainer" ref="jencks" />
 
     <!-- subscription details -->
     <property name="activationSpec">
@@ -51,7 +53,9 @@
   <!--
     || an inbound message connector using a stateful, pooled  MessageListener
     -->
-  <bean id="inboundConnectorB" factory-method="addConnector" factory-bean="jencks" singleton="true">
+  <bean id="inboundConnectorB" class="org.jencks.JCAConnector">
+
+	<property name="jcaContainer" ref="jencks" />
 
     <!-- subscription details -->
     <property name="activationSpec">

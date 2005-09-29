@@ -35,7 +35,7 @@ public class JCAContainerUsingSpringJtaBatchTest extends JCAContainerTest {
         return new ClassPathXmlApplicationContext("org/jencks/spring-with-jta-batch.xml");
     }
 
-    public void testMessageDeliveryUsingSharedMesssageListener() throws Exception {
+    public void testMessageDeliveryUsingSharedMessageListener() throws Exception {
     	int number = 100;
     	long start = System.currentTimeMillis();
         Destination destination = session.createTopic("test.spring.inboundConnectorA");

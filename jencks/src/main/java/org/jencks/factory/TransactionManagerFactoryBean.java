@@ -41,6 +41,10 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
     private TransactionManagerImpl transactionManagerImpl;
 
     public Object getObject() throws Exception {
+    	if (transactionManagerImpl == null) {
+            this.transactionManagerImpl = new TransactionManagerImpl(defaultTransactionTimeoutSeconds,
+                    transactionLog, resourceManagers);
+    	}
         return transactionManagerImpl;
     }
 
@@ -81,8 +85,6 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
         if (transactionLog == null) {
             transactionLog = new UnrecoverableLog();
         }
-        this.transactionManagerImpl = new TransactionManagerImpl(defaultTransactionTimeoutSeconds,
-                transactionLog, resourceManagers);
     }
 
 }
