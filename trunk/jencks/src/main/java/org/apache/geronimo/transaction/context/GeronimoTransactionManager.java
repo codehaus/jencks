@@ -119,6 +119,10 @@ public class GeronimoTransactionManager implements UserTransaction, TransactionM
 	}
 
 	public void resume(Transaction tx) throws IllegalStateException, InvalidTransactionException, SystemException {
+		// Create a context if none has been set yet
+		if (transactionContextManager.getContext() == null) {
+			transactionContextManager.newUnspecifiedTransactionContext();
+		}
 		if (tx instanceof GeronimoTransactionDelegate == false) {
 			throw new InvalidTransactionException("invalid transaction specified");
 		}
