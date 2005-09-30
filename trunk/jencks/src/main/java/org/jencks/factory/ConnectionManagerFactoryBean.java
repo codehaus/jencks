@@ -155,7 +155,7 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
     }
 
 	public ConnectionTracker getConnectionTracker() {
-		if (connectionTracker == null) {
+		if (connectionTracker == null && applicationContext != null) {
 			Map map = applicationContext.getBeansOfType(ConnectionTracker.class);
 			if (map.size() == 1) {
 				connectionTracker = (ConnectionTracker) map.values().iterator().next();
@@ -166,11 +166,15 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
 
 	public TransactionContextManager getTransactionContextManager() {
 		if (transactionContextManager == null) {
-			Map map = applicationContext.getBeansOfType(TransactionContextManager.class);
-			if (map.size() == 1) {
-				transactionContextManager = (TransactionContextManager) map.values().iterator().next();
+			if (applicationContext != null) {
+				Map map = applicationContext.getBeansOfType(TransactionContextManager.class);
+				if (map.size() == 1) {
+					transactionContextManager = (TransactionContextManager) map.values().iterator().next();
+				} else {
+					throw new IllegalStateException("no TransactionContextManager is registered");
+				}
 			} else {
-				throw new IllegalStateException("no TransactionContextManager is registered");
+				throw new IllegalStateException("no TransactionContextManager is set");
 			}
 		}
 		return transactionContextManager;
