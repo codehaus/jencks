@@ -115,7 +115,12 @@ public class GeronimoTransactionManager implements UserTransaction, TransactionM
 	}
 	
 	public Transaction getTransaction() throws SystemException {
-		return ((GeronimoTransactionContext) transactionContextManager.getContext()).getTransactionDelegate();
+		GeronimoTransactionContext context = (GeronimoTransactionContext) transactionContextManager.getContext();
+		if (context == null) {
+			return null;
+		} else {
+			return context.getTransactionDelegate();
+		}
 	}
 
 	public void resume(Transaction tx) throws IllegalStateException, InvalidTransactionException, SystemException {
