@@ -115,11 +115,13 @@ public class GeronimoTransactionManager implements UserTransaction, TransactionM
 	}
 	
 	public Transaction getTransaction() throws SystemException {
-		GeronimoTransactionContext context = (GeronimoTransactionContext) transactionContextManager.getContext();
-		if (context == null) {
+		Object context = transactionContextManager.getContext();
+		if (context == null || context instanceof UnspecifiedTransactionContext) {
 			return null;
+		} else if (context instanceof GeronimoTransactionContext){
+			return ((GeronimoTransactionContext) context).getTransactionDelegate();
 		} else {
-			return context.getTransactionDelegate();
+			throw new IllegalStateException("unrecognized transaction context");
 		}
 	}
 

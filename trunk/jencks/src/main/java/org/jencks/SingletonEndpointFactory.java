@@ -21,6 +21,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import javax.jms.MessageListener;
 import javax.resource.spi.UnavailableException;
+import javax.transaction.TransactionManager;
 
 /**
  * An implementation of {@link javax.resource.spi.endpoint.MessageEndpointFactory} which always
@@ -37,6 +38,11 @@ public class SingletonEndpointFactory extends EndpointFactorySupport implements 
 
     public SingletonEndpointFactory(MessageListener messageListener) {
         this.messageListener = messageListener;
+    }
+
+    public SingletonEndpointFactory(MessageListener messageListener, TransactionManager tm) {
+        this.messageListener = messageListener;
+        this.transactionManager = tm;
     }
 
     public void afterPropertiesSet() throws Exception {
