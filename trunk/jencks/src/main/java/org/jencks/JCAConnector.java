@@ -32,9 +32,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * Represents a connector in the JCA container - which represents
- * a single activation specification on a resource adapter
- *
+ * Represents a connector in the JCA container - which represents a single
+ * activation specification on a resource adapter
+ * 
  * @version $Revision$
  */
 public class JCAConnector implements InitializingBean, DisposableBean, BeanFactoryAware, BeanNameAware {
@@ -64,10 +64,10 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
         }
 
         if (resourceAdapter == null) {
-        	resourceAdapter = activationSpec.getResourceAdapter();
+            resourceAdapter = activationSpec.getResourceAdapter();
         }
         if (resourceAdapter == null && jcaContainer != null) {
-        	resourceAdapter = jcaContainer.getResourceAdapter();
+            resourceAdapter = jcaContainer.getResourceAdapter();
         }
         if (resourceAdapter == null) {
             throw new IllegalArgumentException("resourceAdapter property must be set on the activationSpec object");
@@ -88,8 +88,10 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
             }
             if (transactionManager != null) {
                 endpointFactory = new DefaultEndpointFactory(beanFactory, ref, transactionManager, getName());
-            } else {
-                // TODO should we have some way of finding a ManagedConnection or other local transaction hook?
+            }
+            else {
+                // TODO should we have some way of finding a ManagedConnection
+                // or other local transaction hook?
                 endpointFactory = new DefaultEndpointFactory(beanFactory, ref);
             }
         }
@@ -104,7 +106,7 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
     }
 
     // Properties
-    //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
     public String getName() {
         return name;
@@ -176,11 +178,11 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
         this.beanFactory = beanFactory;
     }
 
-	public JCAContainer getJcaContainer() {
-		return jcaContainer;
-	}
+    public JCAContainer getJcaContainer() {
+        return jcaContainer;
+    }
 
-	public void setJcaContainer(JCAContainer jcaConnector) {
-		this.jcaContainer = jcaConnector;
-	}
+    public void setJcaContainer(JCAContainer jcaConnector) {
+        this.jcaContainer = jcaConnector;
+    }
 }
