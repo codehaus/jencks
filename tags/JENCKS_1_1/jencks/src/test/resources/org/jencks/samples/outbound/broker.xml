@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC  "-//ACTIVEMQ//DTD//EN" "http://activemq.org/dtd/activemq.dtd">
+<beans>
+
+  <!-- ==================================================================== -->
+  <!-- ActiveMQ Broker Configuration -->
+  <!-- ==================================================================== -->
+  <broker>
+    <connector>
+      <tcpServerTransport uri="tcp://localhost:61616" backlog="1000" useAsyncSend="true" maxOutstandingMessages="50"/>
+    </connector>
+
+    <persistence>
+      <!-- you can point this to a different datasource -->
+      <jdbcPersistence dataSourceRef="hsqldb-ds"/>
+    </persistence>
+  </broker>
+
+  <!-- A simple in memory Hypersonic Datasource for testing -->
+  <bean id="hsqldb-ds" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName">
+      <!--value>org.apache.derby.jdbc.EmbeddedDriver</value-->
+      <value>org.hsqldb.jdbcDriver</value>
+    </property>
+    <property name="url">
+      <!-- Use a URL like 'jdbc:hsqldb:hsql://localhost:9001' if you want to connect to a remote hsqldb -->
+      <!--value>jdbc:derby:derbydb;create=true</value-->
+      <value>jdbc:hsqldb:.</value>
+    </property>
+    <property name="username">
+      <value>sa</value>
+    </property>
+    <property name="password">
+      <value></value>
+    </property>
+    <property name="poolPreparedStatements">
+      <value>true</value>
+    </property>
+  </bean>
+
+</beans>
