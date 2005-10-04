@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="default"
     xmlns:j="jelly:core"
+    xmlns:m="jelly:maven"
     xmlns:u="jelly:util"
     xmlns:ant="jelly:ant"
     xmlns:util="jelly:util"
@@ -11,12 +12,36 @@
     <!-- Default Global Goals -->
     <!-- ==================== -->
     <goal name="default">
-        <attainGoal name="jar:install"/>
+        <attainGoal name="install"/>
     </goal>
 
     <goal name="rebuild">
         <attainGoal name="clean"/>
+        <m:maven descriptor="${basedir}/jencks-all/project.xml" 
+                 goals="clean"/>
         <attainGoal name="default"/>
     </goal>
+    
+    <goal name="install">
+        <attainGoal name="jar:install"/>
+        <m:maven descriptor="${basedir}/jencks-all/project.xml" 
+                 goals="jar:install"/>
+    </goal>
+
+    <goal name="deploy">
+        <attainGoal name="jar:deploy"/>
+        <m:maven descriptor="${basedir}/jencks-all/project.xml" 
+                 goals="jar:deploy"/>
+    </goal>
+    
+    <postGoal name="dist:prepare-bin-filesystem">
+        <m:maven descriptor="${basedir}/jencks-all/project.xml" 
+                 goals="jar:jar"/>
+        <ant:copy todir="${maven.dist.bin.assembly.dir}">
+          <ant:fileset dir="${basedir}/jencks-all/target">
+            <ant:include name="jencks-all-${pom.currentVersion}.jar"/>
+          </ant:fileset>
+        </ant:copy>
+    </postGoal>
 
 </project>
