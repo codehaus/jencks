@@ -26,7 +26,7 @@
     <!-- the JCA Resource Adapter -->
     <property name="resourceAdapter">
       <bean id="activeMQResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
-        <property name="serverUrl" value="tcp://localhost:61616"/>
+        <property name="serverUrl" value="tcp://localhost:51616"/>
       </bean>
     </property>
   </bean>

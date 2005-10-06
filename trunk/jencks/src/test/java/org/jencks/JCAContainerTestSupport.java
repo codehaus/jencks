@@ -55,7 +55,7 @@ public abstract class JCAContainerTestSupport extends SpringTestSupport {
     }
 
     protected String getBrokerURL() {
-        return "tcp://localhost:61616";
+        return "tcp://localhost:51616";
     }
 
     protected String getApplicationContextXml() {

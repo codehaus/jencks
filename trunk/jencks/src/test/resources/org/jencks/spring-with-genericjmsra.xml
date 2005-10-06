@@ -30,7 +30,7 @@
   	<property name="queueClassName" value="org.activemq.message.ActiveMQQueue" />
   	<property name="topicClassName" value="org.activemq.message.ActiveMQTopic" />
 	<property name="supportsXA" value="true" />
-	<property name="connectionFactoryProperties" value="BrokerURL=tcp://localhost:61616" />
+	<property name="connectionFactoryProperties" value="BrokerURL=tcp://localhost:51616" />
   </bean>
   
   <bean id="jencks" class="org.jencks.JCAContainer">
