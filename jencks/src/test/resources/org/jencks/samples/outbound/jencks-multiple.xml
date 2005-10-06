@@ -86,7 +86,7 @@
 
   <bean id="jmsResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
     <property name="serverUrl">
-      <value>tcp://localhost:61616</value>
+      <value>tcp://localhost:51616</value>
     </property>
     <!--property name="useEmbeddedBroker">
       <value>true</value>
@@ -110,7 +110,7 @@
     <property name="jndiEnvironment">
       <props>
         <prop key="java.naming.factory.initial">org.activemq.jndi.ActiveMQInitialContextFactory</prop>
-        <prop key="java.naming.provider.url">tcp://localhost:61616</prop>
+        <prop key="java.naming.provider.url">tcp://localhost:51616</prop>
         <prop key="queue.queue">example.MyQueue</prop>
       </props>
     </property>
