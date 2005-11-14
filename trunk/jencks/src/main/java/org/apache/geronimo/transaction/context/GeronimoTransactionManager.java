@@ -82,7 +82,15 @@ public class GeronimoTransactionManager implements UserTransaction, TransactionM
                 throw new RollbackException();
             }
         } finally {
-            transactionContextManager.setContext(null);
+            TransactionContext oldContext = beanContext.getOldContext();
+            transactionContextManager.setContext(oldContext);
+            if (oldContext != null) {
+                try {
+                    oldContext.resume();
+                } catch (InvalidTransactionException e) {
+                    throw (SystemException)new SystemException("Unable to resume perexisting transaction context").initCause(e);
+                }
+            }
         }
 	}
 	
