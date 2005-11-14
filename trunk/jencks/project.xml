@@ -181,6 +181,14 @@
       </properties>
     </dependency>
     <dependency>
+      <groupId>geronimo</groupId>
+      <artifactId>geronimo-kernel</artifactId>
+      <version>${geronimo_version}</version>
+      <properties>
+        <alljar.module>true</alljar.module>
+      </properties>
+    </dependency>
+    <dependency>
       <id>tranql</id>
       <artifactId>tranql-connector</artifactId>
       <version>${geronimo_version}</version>
@@ -260,7 +268,7 @@
     <dependency>
       <groupId>activemq</groupId>
       <artifactId>activemq-core</artifactId>
-      <version>3.2-SNAPSHOT</version>
+      <version>3.2</version>
       <properties>
         <!--
         <eclipse.dependency>true</eclipse.dependency>
@@ -270,7 +278,7 @@
     <dependency>
       <groupId>activemq</groupId>
       <artifactId>activemq-ra</artifactId>
-      <version>3.2-SNAPSHOT</version>
+      <version>3.2</version>
       <properties>
         <!--
         <eclipse.dependency>true</eclipse.dependency>
@@ -329,7 +337,7 @@
     <dependency>
       <groupId>jencks</groupId>
       <artifactId>genericra</artifactId>
-      <jar>genericra.jar</jar>
+      <jar>genericra-1.0.jar</jar>
     </dependency>
     
     <!-- Log4j -->
@@ -369,7 +377,6 @@
       </includes>
       <excludes>
         <exclude>**/Abstract*Test*.*</exclude>
-        <exclude>**/*GenericJms*.*</exclude>
       </excludes>
     </unitTest>
   </build>
