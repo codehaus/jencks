@@ -53,7 +53,13 @@ public class TransactionContextManagerFactoryBean implements FactoryBean, Initia
     public Object getObject() throws Exception {
     	if (transactionContextManager == null) {
             // Instanciate the transaction context manager
-            this.transactionContextManager = new TransactionContextManager(getTransactionManager(), getXidImporter());
+            getTransactionManager();
+            getXidImporter();
+            // As it appears that factory beans can be called recursively, we must double check
+            // The call to getTransactionManager calls this factory
+            if (this.transactionContextManager == null) {
+                this.transactionContextManager = new TransactionContextManager(getTransactionManager(), getXidImporter());
+            }
     	}
         return transactionContextManager;
     }
