@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC
+        "-//SPRING//DTD BEAN//EN"
+        "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!--
+  || ActiveMQ Broker
+  -->
+  <bean id="broker" class="org.activemq.spring.BrokerFactoryBean" singleton="true">
+    <property name="config" value="classpath:org/jencks/broker.xml"/>
+  </bean>
+
+  <!--
+  || A JCA container
+  -->
+  <bean id="jencks" class="org.jencks.JCAContainer">
+
+    <property name="bootstrapContext">
+      <bean class="org.jencks.factory.BootstrapContextFactoryBean">
+        <property name="threadPoolSize" value="25"/>
+      </bean>
+    </property>
+
+
+    <!-- the JCA Resource Adapter -->
+    <property name="resourceAdapter">
+      <bean id="activeMQResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
+        <property name="serverUrl" value="tcp://localhost:51616"/>
+      </bean>
+    </property>
+  </bean>
+
+  <!-- inbound message connector -->
+  <bean id="messageConnector" class="org.jencks.JCAConnector">
+
+	<property name="jcaContainer" ref="jencks" />
+
+    <!-- subscription details -->
+    <property name="activationSpec">
+      <bean class="org.activemq.ra.ActiveMQActivationSpec">
+        <property name="destination" value="myTopic"/>
+        <property name="destinationType" value="javax.jms.Topic"/>
+      </bean>
+    </property>
+
+    <!-- the bean used to process the message -->
+    <property name="ref" value="consumerBean"/>
+  </bean>
+
+  <bean id="consumerBean" class="org.jencks.TestBean" singleton="true"/>
+
+  <bean id="jmsFactory" class="org.activemq.pool.PooledConnectionFactory" depends-on="broker">
+    <property name="connectionFactory">
+      <bean class="org.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL">
+          <value>tcp://localhost:51616</value>
+        </property>
+      </bean>
+    </property>
+  </bean>
+</beans>

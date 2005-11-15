@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="default"
+    xmlns:j="jelly:core"
+    xmlns:u="jelly:util"
+    xmlns:ant="jelly:ant"
+    xmlns:util="jelly:util"
+    xmlns:artifact="artifact"
+    >
+
+    <!-- ==================== -->
+    <!-- Default Global Goals -->
+    <!-- ==================== -->
+    <goal name="default">
+        <attainGoal name="jar:install"/>
+    </goal>
+
+    <preGoal name="jar:jar">
+
+        <ant:mkdir dir="${maven.build.dir}/timestamps"/>
+
+        <j:forEach var="artifact" items="${pom.artifacts}">
+            <j:set var="dependency" value="${artifact.dependency}"/>
+            <j:if test="${dependency.getProperty('alljar.module') == 'true'}">
+                <u:file var="file" name="${artifact.path}"/>
+                <j:if test="${file.exists()}" >
+                   <j:set var="uptodateFile" value="${maven.build.dir}/timestamps/${artifact.name}.ts"/>
+                   <j:set var="uptodatePropName" value="tests.uptodate"/>
+                   <j:remove var="${uptodatePropName}"/>
+                   <ant:uptodate property="${uptodatePropName}" targetfile="${uptodateFile}" srcfile="${artifact.path}"/>
+                   <j:if test="${context.getVariable(uptodatePropName) != 'true'}">
+                      <unjar dest="${maven.build.dir}/classes" src="${artifact.path}"/>
+                      <touch file="${uptodateFile}"/>
+                   </j:if>
+                </j:if>
+            </j:if>
+        </j:forEach>
+    </preGoal>
+
+    <goal name="rebuild">
+        <attainGoal name="clean"/>
+        <attainGoal name="default"/>
+    </goal>
+
+</project>
