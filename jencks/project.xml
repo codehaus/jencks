@@ -5,7 +5,7 @@
   <name>Jencks</name>
   <id>jencks</id>
   <groupId>jencks</groupId>
-  <currentVersion>1.2-SNAPSHOT</currentVersion>
+  <currentVersion>1.1.2</currentVersion>
 
   <organization>
     <name>LogicBlaze, Inc.</name>
@@ -85,6 +85,16 @@
       <id>1.1</id>
       <name>1.1</name>
       <tag>JENCKS_1_1</tag>
+    </version>
+    <version>
+      <id>1.1.1</id>
+      <name>1.1.1</name>
+      <tag>JENCKS_1_1_1</tag>
+    </version>
+    <version>
+      <id>1.1.2</id>
+      <name>1.1.2</name>
+      <tag>JENCKS_1_1_2</tag>
     </version>
   </versions>
 
@@ -175,14 +185,6 @@
     <dependency>
       <groupId>geronimo</groupId>
       <artifactId>geronimo-transaction</artifactId>
-      <version>${geronimo_version}</version>
-      <properties>
-        <alljar.module>true</alljar.module>
-      </properties>
-    </dependency>
-    <dependency>
-      <groupId>geronimo</groupId>
-      <artifactId>geronimo-kernel</artifactId>
       <version>${geronimo_version}</version>
       <properties>
         <alljar.module>true</alljar.module>
