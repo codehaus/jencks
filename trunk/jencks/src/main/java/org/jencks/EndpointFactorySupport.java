@@ -20,6 +20,7 @@ package org.jencks;
 import java.lang.reflect.Method;
 
 import javax.jms.MessageListener;
+import javax.jms.Session;
 import javax.resource.spi.LocalTransaction;
 import javax.resource.spi.UnavailableException;
 import javax.resource.spi.endpoint.MessageEndpoint;
@@ -34,19 +35,59 @@ import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
  * @version $Revision$
  */
 public abstract class EndpointFactorySupport implements MessageEndpointFactory {
+	
     protected TransactionManager transactionManager;
     private String name;
+    
+    int acknowledgeMode = Session.SESSION_TRANSACTED;
+    
+	public int getAcknowledgeMode() {
+		return acknowledgeMode;
+	}
+	public void setAcknowledgeMode(int acknowledgeMode) {
+		this.acknowledgeMode = acknowledgeMode;
+	}
+
+	public String getAcknowledgeTpe() {
+		switch ( acknowledgeMode ) { 
+		case Session.SESSION_TRANSACTED:  return "SESSION_TRANSACTED";
+		case Session.AUTO_ACKNOWLEDGE:    return "AUTO_ACKNOWLEDGE"; 
+		case Session.DUPS_OK_ACKNOWLEDGE: return "DUPS_OK_ACKNOWLEDGE";
+		case Session.CLIENT_ACKNOWLEDGE:  return "CLIENT_ACKNOWLEDGE";
+		}
+		return "UNKNOWN";
+	}
+	
+	public void setAcknowledgeType(String acknowledgeMode) {
+		if( "SESSION_TRANSACTED".equals(acknowledgeMode) ) {
+			setAcknowledgeMode(Session.SESSION_TRANSACTED);
+		} else if( "AUTO_ACKNOWLEDGE".equals(acknowledgeMode) ) {
+			setAcknowledgeMode(Session.AUTO_ACKNOWLEDGE);
+		} else if( "DUPS_OK_ACKNOWLEDGE".equals(acknowledgeMode) ) {
+			setAcknowledgeMode(Session.DUPS_OK_ACKNOWLEDGE);
+		} else if( "CLIENT_ACKNOWLEDGE".equals(acknowledgeMode) ) {
+			setAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
+		} else {
+			throw new IllegalArgumentException("Value of AcknowledgeType must be set to SESSION_TRANSACTED, AUTO_ACKNOWLEDGE, DUPS_OK_ACKNOWLEDGE, or CLIENT_ACKNOWLEDGE");
+		}
+	}
 
     public MessageEndpoint createEndpoint(XAResource xaResource) throws UnavailableException {
         MessageListener messageListener = createMessageListener();
-        xaResource = wrapXAResource(xaResource);
-        if (transactionManager != null) {
-            return new XAEndpoint(messageListener, xaResource, transactionManager);
+        if( acknowledgeMode == Session.SESSION_TRANSACTED ) {
+	        if (transactionManager != null) {
+	            xaResource = wrapXAResource(xaResource);
+	            return new XAEndpoint(messageListener, xaResource, transactionManager);
+	        } else if (xaResource instanceof LocalTransaction) {
+	            return new LocalTransactionEndpoint(messageListener, (LocalTransaction) xaResource);
+	        } else {
+	        	throw new UnavailableException("Endpoint configured to use transactions but resource could not support this.");
+	        }
+        } else if (acknowledgeMode==Session.DUPS_OK_ACKNOWLEDGE) {
+            return new AcknowledgeEndpoint(messageListener);
+        } else {
+            return new SimpleEndpoint(messageListener);
         }
-        else if (xaResource instanceof LocalTransaction) {
-            return new LocalTransactionEndpoint(messageListener, (LocalTransaction) xaResource);
-        }
-        return new AcknowledgeEndpoint(messageListener);
     }
 
     public String toString() {
@@ -93,5 +134,6 @@ public abstract class EndpointFactorySupport implements MessageEndpointFactory {
         }
         return new WrapperNamedXAResource(xaResource, name);
     }
+
 
 }

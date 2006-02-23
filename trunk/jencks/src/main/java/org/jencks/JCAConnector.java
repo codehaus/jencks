@@ -49,7 +49,8 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
     private BeanFactory beanFactory;
     private String name;
     private JCAContainer jcaContainer;
-
+    private String acknowledgeType = "SESSION_TRANSACTED";
+    
     public JCAConnector() {
     }
 
@@ -57,6 +58,7 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
         this.bootstrapContext = bootstrapContext;
         this.resourceAdapter = resourceAdapter;
     }
+
 
     public void afterPropertiesSet() throws Exception {
         if (activationSpec == null) {
@@ -86,14 +88,12 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
             if (ref == null) {
                 throw new IllegalArgumentException("either the endpointFactory or ref properties must be set");
             }
-            if (transactionManager != null) {
-                endpointFactory = new DefaultEndpointFactory(beanFactory, ref, transactionManager, getName());
-            }
-            else {
-                // TODO should we have some way of finding a ManagedConnection
-                // or other local transaction hook?
-                endpointFactory = new DefaultEndpointFactory(beanFactory, ref);
-            }
+            
+        	DefaultEndpointFactory defaultEF = new DefaultEndpointFactory(beanFactory, ref);
+            defaultEF.setAcknowledgeType(acknowledgeType);
+            defaultEF.setTransactionManager(transactionManager);
+            defaultEF.setName(name);
+            this.endpointFactory = defaultEF;
         }
         log.info("Activating endpoint for activationSpec: " + activationSpec + " using endpointFactory: " + endpointFactory);
         resourceAdapter.endpointActivation(endpointFactory, activationSpec);
@@ -185,4 +185,12 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
     public void setJcaContainer(JCAContainer jcaConnector) {
         this.jcaContainer = jcaConnector;
     }
+
+	public String getAcknowledgeType() {
+		return acknowledgeType;
+	}
+
+	public void setAcknowledgeType(String acknowledgeTpe) {
+		this.acknowledgeType = acknowledgeTpe;
+	}
 }

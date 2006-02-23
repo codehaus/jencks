@@ -5,3 +5,5 @@ junit*.properties
 bin
 .settings
 ActiveMQ
+classes
+test-classes
