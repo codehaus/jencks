@@ -41,6 +41,7 @@ public class JCAContainerTest extends JCAContainerTestSupport {
     }
 
     public void testMessageDeliveryUsingSharedMessageListener() throws Exception {
+        
         TextMessage message = session.createTextMessage("Hello! " + new Date());
         Destination destination = session.createTopic("test.spring.inboundConnectorA");
         producer.send(destination, message);
