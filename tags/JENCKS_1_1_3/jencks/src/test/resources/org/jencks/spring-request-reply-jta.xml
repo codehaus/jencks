@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- START SNIPPET: spring -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <!--
+  || Transaction Manager
+  -->
+
+  <bean id="transactionContextManager" class="org.jencks.factory.TransactionContextManagerFactoryBean"/>
+  <bean id="userTransaction" class="org.jencks.factory.GeronimoTransactionManagerFactoryBean" />
+  <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+    <property name="userTransaction" ref="userTransaction"/>
+  </bean>
+
+  <!--
+  || ActiveMQ Broker
+  -->
+  <bean id="broker" class="org.activemq.spring.BrokerFactoryBean" singleton="true">
+    <property name="config" value="classpath:org/jencks/broker.xml"/>
+  </bean>
+
+  <!--
+    || A JCA container
+    -->
+  <bean id="jencks" class="org.jencks.JCAContainer">
+
+    <!-- lets configure the work manager and transaction manager -->
+    <property name="bootstrapContext">
+      <bean class="org.jencks.factory.BootstrapContextFactoryBean"/>
+    </property>
+
+    <!-- the JCA Resource Adapter for ActiveMQ -->
+    <property name="resourceAdapter" ref="jmsResourceAdapter" />
+  </bean>
+  
+  <bean id="jmsResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
+    <property name="serverUrl" value="tcp://localhost:51616"/>
+  </bean>
+
+  <bean id="connectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+    <property name="transactionSupport">
+	  <bean class="org.jencks.factory.XATransactionFactoryBean">
+	    <property name="useTransactionCaching" value="true" />
+	    <property name="useThreadCaching" value="false" />
+	  </bean>
+    </property>
+    <property name="poolingSupport">
+	  <bean class="org.jencks.factory.SinglePoolFactoryBean">
+	    <property name="maxSize" value="2"/>
+	    <property name="minSize" value="1" />
+	    <property name="blockingTimeoutMilliseconds" value="60" />
+	    <property name="idleTimeoutMinutes" value="60" />
+	    <property name="matchOne" value="true" />
+	    <property name="matchAll" value="true" />
+	    <property name="selectOneAssumeMatch" value="true" />
+	  </bean>
+    </property>
+  </bean>
+
+  <!--
+    || an inbound message connector using a stateful, pooled  MessageListener
+    -->
+  <bean id="requestResponseMEP" class="org.jencks.JCAConnector">
+
+	<property name="jcaContainer" ref="jencks" />
+
+    <!-- subscription details -->
+    <property name="activationSpec">
+      <bean class="org.activemq.ra.ActiveMQActivationSpec">
+        <property name="destination" value="org.jencks.JCAContainerRequestReplyUsingJtaTest"/>
+        <property name="destinationType" value="javax.jms.Queue"/>
+      </bean>
+    </property>
+
+    <!-- use XA transactions -->
+    <property name="transactionManager" ref="userTransaction"/>
+
+    <!-- This example uses a pooled bean -->
+    <property name="ref" value="pooledReplyBean"/>
+  </bean>
+
+  <!-- a pooled, non-thread safe MessageListener using ProxyFactoryBean 
+  <bean id="pooledReplyBean" class="org.jencks.TargetSourceMessageListener">
+    <property name="targetSource" ref="pooledReplyBeanTx"/>
+  </bean>-->
+  <bean id="pooledReplyBean" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+  	<property name="transactionManager" ref="transactionManager"/>
+  	<property name="target" ref="pooledReplyBeanTargetSource"/>
+  	<property name="transactionAttributes">
+      <props>
+        <prop key="onMessage">PROPAGATION_REQUIRED</prop>
+      </props>
+    </property>
+  </bean>
+  <bean id="pooledReplyBeanTargetSource" class="org.springframework.aop.target.CommonsPoolTargetSource">
+    <property name="targetBeanName" value="pooledReplyBeanTarget"/>
+    <property name="maxSize" value="25"/>
+  </bean>
+  <bean id="pooledReplyBeanTarget" class="org.jencks.TestReplyBean" singleton="false">
+    <property name="jmsTemplate" ref="jmsTemplate"/>
+  </bean>
+
+
+
+  <!--
+  || A JmsTemplate used to publish from inside a JCA message consumption thread
+  -->
+  <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory" ref="jmsConnectionFactory" />
+  </bean>
+  
+  <!--  Pooled XA connection factory
+   -->
+  <bean id="jmsManagedConnectionFactory" class="org.activemq.ra.ActiveMQManagedConnectionFactory">
+    <property name="resourceAdapter" ref="jmsResourceAdapter"/>
+  </bean>
+
+  <bean id="jmsConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">
+    <property name="managedConnectionFactory" ref="jmsManagedConnectionFactory"/>
+    <property name="connectionManager" ref="connectionManager"/>
+  </bean>
+
+
+</beans>
+
+        <!-- END SNIPPET: spring -->
