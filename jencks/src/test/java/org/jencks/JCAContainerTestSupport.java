@@ -21,7 +21,7 @@ import javax.jms.Connection;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 
-import org.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ActiveMQConnectionFactory;
 
 /**
  * @version $Revision$

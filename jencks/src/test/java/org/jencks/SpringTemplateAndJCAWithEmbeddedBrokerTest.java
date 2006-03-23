@@ -17,17 +17,18 @@
  **/
 package org.jencks;
 
+import java.util.List;
+
+import javax.jms.ConnectionFactory;
+
 import junit.framework.TestCase;
-import org.activemq.spring.TestingConsumer;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
-
-import javax.jms.ConnectionFactory;
-import java.util.List;
 
 /**
  * @author srt

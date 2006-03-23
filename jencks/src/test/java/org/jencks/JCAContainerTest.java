@@ -17,14 +17,14 @@
  **/
 package org.jencks;
 
-import org.activemq.spring.TestingConsumer;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import java.util.Date;
+import java.util.List;
 
 import javax.jms.Destination;
 import javax.jms.TextMessage;
-import java.util.Date;
-import java.util.List;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @version $Revision$
@@ -44,8 +44,9 @@ public class JCAContainerTest extends JCAContainerTestSupport {
         
         TextMessage message = session.createTextMessage("Hello! " + new Date());
         Destination destination = session.createTopic("test.spring.inboundConnectorA");
+        
+        Thread.sleep(1000);
         producer.send(destination, message);
-
         System.out.println("message sent on: " + destination + " of type: " + destination.getClass());
 
 

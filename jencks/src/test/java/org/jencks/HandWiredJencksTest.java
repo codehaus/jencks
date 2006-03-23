@@ -1,21 +1,6 @@
 package org.jencks;
 
-import EDU.oswego.cs.dl.util.concurrent.CopyOnWriteArrayList;
-import EDU.oswego.cs.dl.util.concurrent.Latch;
-import junit.framework.TestCase;
-import org.activemq.ActiveMQConnectionFactory;
-import org.activemq.message.ActiveMQQueue;
-import org.activemq.ra.ActiveMQActivationSpec;
-import org.activemq.ra.ActiveMQResourceAdapter;
-import org.apache.geronimo.connector.ActivationSpecWrapper;
-import org.apache.geronimo.connector.ResourceAdapterWrapper;
-import org.apache.geronimo.connector.work.GeronimoWorkManager;
-import org.apache.geronimo.transaction.ExtendedTransactionManager;
-import org.apache.geronimo.transaction.context.TransactionContextManager;
-import org.apache.geronimo.transaction.log.UnrecoverableLog;
-import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
-import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
-import org.apache.geronimo.transaction.manager.XidImporter;
+import java.lang.reflect.Method;
 
 import javax.jms.Connection;
 import javax.jms.Message;
@@ -28,7 +13,25 @@ import javax.resource.spi.UnavailableException;
 import javax.resource.spi.endpoint.MessageEndpoint;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.xa.XAResource;
-import java.lang.reflect.Method;
+
+import junit.framework.TestCase;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.activemq.ra.ActiveMQActivationSpec;
+import org.apache.activemq.ra.ActiveMQResourceAdapter;
+import org.apache.geronimo.connector.ActivationSpecWrapper;
+import org.apache.geronimo.connector.ResourceAdapterWrapper;
+import org.apache.geronimo.connector.work.GeronimoWorkManager;
+import org.apache.geronimo.transaction.ExtendedTransactionManager;
+import org.apache.geronimo.transaction.context.TransactionContextManager;
+import org.apache.geronimo.transaction.log.UnrecoverableLog;
+import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
+import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
+import org.apache.geronimo.transaction.manager.XidImporter;
+
+import EDU.oswego.cs.dl.util.concurrent.CopyOnWriteArrayList;
+import EDU.oswego.cs.dl.util.concurrent.Latch;
 
 public class HandWiredJencksTest extends TestCase {
 

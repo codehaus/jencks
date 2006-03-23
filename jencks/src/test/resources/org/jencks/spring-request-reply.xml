@@ -7,8 +7,8 @@
   <!--
   || ActiveMQ Broker
   -->
-  <bean id="broker" class="org.activemq.spring.BrokerFactoryBean" singleton="true">
-    <property name="config" value="classpath:org/jencks/broker.xml"/>
+  <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+    <property name="config" value="classpath:org/jencks/broker.xml" />
   </bean>
 
   <!--
@@ -26,7 +26,7 @@
 
     <!-- the JCA Resource Adapter -->
     <property name="resourceAdapter">
-      <bean id="activeMQResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
+      <bean id="activeMQResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
         <property name="serverUrl" value="tcp://localhost:51616"/>
       </bean>
     </property>
@@ -38,9 +38,9 @@
   -->
   <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
     <property name="connectionFactory">
-
-      <!-- use the same JMS Session to publish on -->
-      <bean class="org.activemq.ra.jms.ConnectionProxyFactory"/>
+	  <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+	    <property name="brokerURL" value="tcp://localhost:51616" />
+	  </bean>
     </property>
   </bean>
 
@@ -53,7 +53,7 @@
 
     <!-- subscription details -->
     <property name="activationSpec">
-      <bean class="org.activemq.ra.ActiveMQActivationSpec">
+      <bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
         <property name="destination" value="org.jencks.JCAContainerRequestReplyTest"/>
         <property name="destinationType" value="javax.jms.Queue"/>
       </bean>

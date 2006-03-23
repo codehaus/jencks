@@ -101,7 +101,7 @@ public class MultipleOutboundMessagingTest extends AbstractDependencyInjectionSp
 
 	private void checkIfMessageExist(String sentMessage) {
 		JmsTemplate template=new JmsTemplate(getConnectionFactory());
-		template.setReceiveTimeout(10);
+		template.setReceiveTimeout(1000);
 		String receivedMessage=(String)template.receiveAndConvert(queue);
 		assertEquals(sentMessage,receivedMessage);
 	}

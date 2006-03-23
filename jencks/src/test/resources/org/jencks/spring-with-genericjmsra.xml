@@ -15,8 +15,8 @@
   <!--
   || ActiveMQ Broker
   -->
-  <bean id="broker" class="org.activemq.spring.BrokerFactoryBean" singleton="true">
-    <property name="config" value="classpath:org/jencks/broker.xml"/>
+  <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean" singleton="true">
+    <property name="config" value="classpath:org/jencks/broker.xml" />
   </bean>
 
   <!--
@@ -24,11 +24,11 @@
   -->
   <bean id="jmsResourceAdapter" class="com.sun.genericra.GenericJMSRA">
   	<property name="providerIntegrationMode" value="bean"/>
-  	<property name="XAConnectionFactoryClassName" value="org.activemq.ActiveMQXAConnectionFactory" />
-  	<property name="XATopicConnectionFactoryClassName" value="org.activemq.ActiveMQXAConnectionFactory" />
-  	<property name="XAQueueConnectionFactoryClassName" value="org.activemq.ActiveMQXAConnectionFactory" />
-  	<property name="queueClassName" value="org.activemq.message.ActiveMQQueue" />
-  	<property name="topicClassName" value="org.activemq.message.ActiveMQTopic" />
+  	<property name="XAConnectionFactoryClassName" value="org.apache.activemq.ActiveMQXAConnectionFactory" />
+  	<property name="XATopicConnectionFactoryClassName" value="org.apache.activemq.ActiveMQXAConnectionFactory" />
+  	<property name="XAQueueConnectionFactoryClassName" value="org.apache.activemq.ActiveMQXAConnectionFactory" />
+  	<property name="queueClassName" value="org.apache.activemq.command.ActiveMQQueue" />
+  	<property name="topicClassName" value="org.apache.activemq.command.ActiveMQTopic" />
 	<property name="supportsXA" value="true" />
 	<property name="connectionFactoryProperties" value="BrokerURL=tcp://localhost:51616" />
   </bean>

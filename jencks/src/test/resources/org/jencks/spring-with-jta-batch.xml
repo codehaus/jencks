@@ -15,8 +15,8 @@
   <!--
   || ActiveMQ Broker
   -->
-  <bean id="broker" class="org.activemq.spring.BrokerFactoryBean" singleton="true">
-    <property name="config" value="classpath:org/jencks/broker.xml"/>
+  <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean" singleton="true">
+    <property name="config" value="classpath:org/jencks/broker.xml" />
   </bean>
 
   <!--
@@ -33,11 +33,8 @@
 
     <!-- the JCA Resource Adapter -->
     <property name="resourceAdapter">
-      <bean id="activeMQResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
+      <bean id="activeMQResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
         <property name="serverUrl" value="tcp://localhost:51616"/>
-
-        <!-- use polling or ASF -->
-        <property name="endpointWorkerType" value="asf"/>
       </bean>
     </property>
 
@@ -51,7 +48,7 @@
 
     <!-- subscription details -->
     <property name="activationSpec">
-      <bean class="org.activemq.ra.ActiveMQActivationSpec">
+      <bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
         <property name="destination" value="test.spring.inboundConnectorA"/>
         <property name="destinationType" value="javax.jms.Topic"/>
         <property name="enableBatch" value="true" />
@@ -75,7 +72,7 @@
 
     <!-- subscription details -->
     <property name="activationSpec">
-      <bean class="org.activemq.ra.ActiveMQActivationSpec">
+      <bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
         <property name="destination" value="test.spring.inboundConnectorB"/>
         <property name="destinationType" value="javax.jms.Queue"/>
         <property name="enableBatch" value="true" />

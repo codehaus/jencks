@@ -17,8 +17,6 @@
  **/
 package org.jencks;
 
-import org.activemq.spring.TestingConsumer;
-
 import javax.jms.Message;
 
 /**

@@ -176,15 +176,12 @@
 
    -->
 
-  <bean id="jmsResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
+  <bean id="jmsResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
     <property name="serverUrl">
       <value>tcp://localhost:51616</value>
     </property>
-    <property name="useEmbeddedBroker">
-      <value>true</value>
-    </property>
     <property name="brokerXmlConfig">
-      <value>org/jencks/broker.xml</value>
+      <value>xbean:org/jencks/broker.xml</value>
     </property>
   </bean>
 
