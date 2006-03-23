@@ -16,15 +16,12 @@
 
     <!-- the JCA Resource Adapter -->
     <property name="resourceAdapter">
-      <bean id="activeMQResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter" singleton="true">
+      <bean id="activeMQResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter" singleton="true">
         <property name="serverUrl">
           <value>tcp://localhost:51616</value>
         </property>
-        <property name="useEmbeddedBroker">
-          <value>true</value>
-        </property>
         <property name="brokerXmlConfig">
-          <value>org/jencks/broker.xml</value>
+          <value>xbean:org/jencks/broker.xml</value>
         </property>
       </bean>
     </property>
@@ -37,7 +34,7 @@
 
     <!-- subscription details -->
     <property name="activationSpec">
-      <bean class="org.activemq.ra.ActiveMQActivationSpec">
+      <bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
         <property name="destination" value="myTopic"/>
         <property name="destinationType" value="javax.jms.Topic"/>
       </bean>
@@ -49,9 +46,9 @@
 
   <bean id="consumerBean" class="org.jencks.TestBean" singleton="true"/>
 
-  <bean id="jmsFactory" class="org.activemq.pool.PooledConnectionFactory">
+  <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
     <property name="connectionFactory">
-      <bean class="org.activemq.ActiveMQConnectionFactory">
+      <bean class="org.apache.activemq.ActiveMQConnectionFactory">
         <property name="brokerURL">
           <value>tcp://localhost:51616</value>
         </property>

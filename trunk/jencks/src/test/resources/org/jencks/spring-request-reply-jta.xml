@@ -17,8 +17,8 @@
   <!--
   || ActiveMQ Broker
   -->
-  <bean id="broker" class="org.activemq.spring.BrokerFactoryBean" singleton="true">
-    <property name="config" value="classpath:org/jencks/broker.xml"/>
+  <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+    <property name="config" value="classpath:org/jencks/broker.xml" />
   </bean>
 
   <!--
@@ -35,7 +35,7 @@
     <property name="resourceAdapter" ref="jmsResourceAdapter" />
   </bean>
   
-  <bean id="jmsResourceAdapter" class="org.activemq.ra.ActiveMQResourceAdapter">
+  <bean id="jmsResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
     <property name="serverUrl" value="tcp://localhost:51616"/>
   </bean>
 
@@ -68,7 +68,7 @@
 
     <!-- subscription details -->
     <property name="activationSpec">
-      <bean class="org.activemq.ra.ActiveMQActivationSpec">
+      <bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
         <property name="destination" value="org.jencks.JCAContainerRequestReplyUsingJtaTest"/>
         <property name="destinationType" value="javax.jms.Queue"/>
       </bean>
@@ -113,7 +113,7 @@
   
   <!--  Pooled XA connection factory
    -->
-  <bean id="jmsManagedConnectionFactory" class="org.activemq.ra.ActiveMQManagedConnectionFactory">
+  <bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
     <property name="resourceAdapter" ref="jmsResourceAdapter"/>
   </bean>
 

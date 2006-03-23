@@ -23,7 +23,6 @@ import java.util.List;
 import javax.jms.Destination;
 import javax.jms.TextMessage;
 
-import org.activemq.spring.TestingConsumer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -39,6 +38,10 @@ public class JCAContainerUsingSpringJtaBatchTest extends JCAContainerTest {
     	int number = 100;
     	long start = System.currentTimeMillis();
         Destination destination = session.createTopic("test.spring.inboundConnectorA");
+        
+        // Wait to make sure the consumers have been established.
+        Thread.sleep(1000);
+        
         for (int i = 0; i < number; i++) {
             TextMessage message = session.createTextMessage("Hello! " + new Date());
         	producer.send(destination, message);

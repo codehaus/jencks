@@ -23,7 +23,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.XAConnection;
 import javax.transaction.TransactionManager;
 
-import org.activemq.pool.ConnectionKey;
+import org.apache.activemq.pool.ConnectionKey;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
