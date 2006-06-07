@@ -24,7 +24,7 @@
     <!-- the JCA Resource Adapter -->
     <property name="resourceAdapter">
       <bean id="activeMQResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
-        <property name="serverUrl" value="vm://localhost"/>
+        <property name="serverUrl" value="vm://localhost?broker.persistent=false"/>
       </bean>
     </property>
 

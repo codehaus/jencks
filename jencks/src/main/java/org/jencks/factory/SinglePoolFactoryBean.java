@@ -31,6 +31,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @see SinglePool
  * @see AbstractGeronimoPool
  * @see ConnectionManagerFactoryBean#setPoolingSupport(PoolingSupport)
+ * @org.apache.xbean.XBean
  */
 public class SinglePoolFactoryBean extends AbstractGeronimoPool implements FactoryBean, InitializingBean {
 

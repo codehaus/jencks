@@ -75,7 +75,7 @@ public class HandWiredJencksTest extends TestCase {
     public void testIt() throws Exception {
 
 
-        ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory("vm://localhost");
+        ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory("vm://localhost?broker.persistent=false");
         Connection connection = cf.createConnection();
         connection.start();
 

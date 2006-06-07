@@ -46,6 +46,7 @@ import org.springframework.context.ApplicationContextAware;
  * @see XATransactionFactoryBean
  * @see PartitionedPoolFactoryBean
  * @see SinglePoolFactoryBean
+ * @org.apache.xbean.XBean
  */
 public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
 

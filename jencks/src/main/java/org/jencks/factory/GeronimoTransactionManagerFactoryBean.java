@@ -35,6 +35,7 @@ import org.springframework.context.ApplicationContextAware;
  * @version $Revision$
  * @author <a href="mailto:gnt@codehaus.org">Guillaume Nodet</a>
  * @see org.apache.geronimo.transaction.context.GeronimoTransactionManager
+ * @org.apache.xbean.XBean
  */
 public class GeronimoTransactionManagerFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
 
