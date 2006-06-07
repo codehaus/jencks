@@ -29,6 +29,7 @@ import org.springframework.beans.factory.FactoryBean;
  *
  * @author Thierry Templier
  * @see ConnectionManagerFactoryBean#setTransactionSupport(TransactionSupport)
+ * @org.apache.xbean.XBean
  */
 public class LocalTransactionFactoryBean implements FactoryBean {
 

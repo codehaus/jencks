@@ -39,6 +39,7 @@ import org.springframework.context.ApplicationContextAware;
  * @author Thierry Templier
  * @see org.apache.geronimo.transaction.log.UnrecoverableLog
  * @see org.apache.geronimo.transaction.log.HOWLLog
+ * @org.apache.xbean.XBean
  */
 public class TransactionContextManagerFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
 

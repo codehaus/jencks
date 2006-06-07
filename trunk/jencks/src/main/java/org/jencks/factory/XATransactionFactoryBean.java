@@ -30,6 +30,7 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * @author Thierry Templier
  * @see ConnectionManagerFactoryBean#setTransactionSupport(TransactionSupport)
+ * @org.apache.xbean.XBean
  */
 public class XATransactionFactoryBean implements FactoryBean, InitializingBean {
 

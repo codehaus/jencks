@@ -36,6 +36,7 @@ import org.springframework.beans.factory.InitializingBean;
  * activation specification on a resource adapter
  * 
  * @version $Revision$
+ * @org.apache.xbean.XBean element="jcaConnector"
  */
 public class JCAConnector implements InitializingBean, DisposableBean, BeanFactoryAware, BeanNameAware {
     private static final transient Log log = LogFactory.getLog(JCAConnector.class);

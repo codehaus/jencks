@@ -39,6 +39,7 @@ import org.springframework.context.ApplicationContextAware;
  * with the {@link WorkManager} and {@link ExtendedTransactionManager}.
  *
  * @version $Revision$
+ * @org.apache.xbean.XBean
  */
 public class BootstrapContextFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
 

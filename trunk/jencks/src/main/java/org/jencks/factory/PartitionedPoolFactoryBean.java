@@ -36,6 +36,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @see PartitionedPool
  * @see AbstractGeronimoPool
  * @see ConnectionManagerFactoryBean#setPoolingSupport(PoolingSupport)
+ * @org.apache.xbean.XBean
  */
 public class PartitionedPoolFactoryBean extends AbstractGeronimoPool implements FactoryBean, InitializingBean {
 

@@ -31,6 +31,7 @@ import java.util.Collection;
  * @author Thierry Templier
  * @see UnrecoverableLog
  * @see org.apache.geronimo.transaction.log.HOWLLog
+ * @org.apache.xbean.XBean
  */
 public class TransactionManagerFactoryBean implements FactoryBean, InitializingBean {
 

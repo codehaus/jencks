@@ -38,6 +38,7 @@ import javax.resource.spi.ResourceAdapter;
  * the {@link BootstrapContext} instance, with the work manager and transaction manager.
  *
  * @version $Revision$
+ * @org.apache.xbean.XBean element="jcaContainer"
  */
 public class JCAContainer implements InitializingBean, DisposableBean, ApplicationContextAware {
     private static final transient Log log = LogFactory.getLog(JCAContainer.class);

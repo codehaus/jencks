@@ -26,7 +26,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class JCAContainerUsingVMTransportWithEmbeddedBrokerTest extends JCAContainerTest {
 
     protected String getBrokerURL() {
-        return "vm://localhost";
+        return "vm://localhost?broker.persistent=false";
     }
 
     protected ConfigurableApplicationContext createApplicationContext() {

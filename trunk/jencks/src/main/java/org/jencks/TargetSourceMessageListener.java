@@ -28,6 +28,7 @@ import javax.jms.MessageListener;
  * TargetSource for the underlying pool.
  *
  * @version $Revision$
+ * @org.apache.xbean.XBean
  */
 public class TargetSourceMessageListener implements MessageListener, InitializingBean {
     private TargetSource targetSource;
