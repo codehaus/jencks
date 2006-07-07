@@ -26,6 +26,12 @@
     </license>
   </licenses>
 
+  <scm>
+    <connection>scm:svn:https://svn.codehaus.org/jencks/trunk</connection>
+    <developerConnection>scm:svn:https://${maven.username}@svn.codehaus.org/jencks/trunk</developerConnection>
+    <url>https://svn.codehaus.org/jencks/trunk/jencks/</url>
+  </scm>
+  
   <build>
     <plugins>
       <plugin>
