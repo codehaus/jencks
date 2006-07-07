@@ -14,9 +14,9 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:https://svn.codehaus.org/jencks/tags/JENCKS_1_2</connection>
-    <developerConnection>scm:svn:https://${maven.username}@svn.codehaus.org/jencks/tags/JENCKS_1_2</developerConnection>
-    <url>https://svn.codehaus.org/jencks/tags/JENCKS_1_2/jencks</url>
+    <connection>scm:svn:https://svn.codehaus.org/jencks/trunk</connection>
+    <developerConnection>scm:svn:https://${maven.username}@svn.codehaus.org/jencks/trunk</developerConnection>
+    <url>https://svn.codehaus.org/jencks/trunk/jencks</url>
   </scm>
   <organization>
     <name>LogicBlaze, Inc.</name>
