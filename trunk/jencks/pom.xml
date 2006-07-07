@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
+<?xml version="1.0" encoding="UTF-8"?><project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jencks</groupId>
   <artifactId>jencks</artifactId>
   <name>Jencks</name>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.2</version>
   <description>Spring and POJO enhancements to the Geronimo JCA container to implement Message Driven POJOs.</description>
   <licenses>
     <license>
@@ -14,9 +13,9 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:https://svn.codehaus.org/jencks/trunk</connection>
-    <developerConnection>scm:svn:https://${maven.username}@svn.codehaus.org/jencks/trunk</developerConnection>
-    <url>https://svn.codehaus.org/jencks/trunk/jencks</url>
+    <connection>scm:svn:https://svn.codehaus.org/jencks/tags/jencks-1.2</connection>
+    <developerConnection>scm:svn:https://${maven.username}@svn.codehaus.org/jencks/tags/jencks-1.2</developerConnection>
+    <url>https://svn.codehaus.org/jencks/tags/jencks-1.2/jencks</url>
   </scm>
   <organization>
     <name>LogicBlaze, Inc.</name>
