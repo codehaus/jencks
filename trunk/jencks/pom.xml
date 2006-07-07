@@ -8,14 +8,16 @@
   <artifactId>jencks</artifactId>
   <version>1.2-SNAPSHOT</version>
   <name>Jencks</name>
-  <description>Spring and POJO enhancements to the Geronimo JCA container to implement Message Driven
-    POJOs.</description>
-  
+  <description>
+    Spring and POJO enhancements to the Geronimo JCA container to
+    implement Message Driven POJOs.
+  </description>
+
   <organization>
     <name>LogicBlaze, Inc.</name>
     <url>http://www.logicblaze.com/</url>
   </organization>
-  
+
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -43,26 +45,26 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-          <configuration>
-            <source>1.4</source>
-            <target>1.4</target>
-          </configuration>
+        <configuration>
+          <source>1.4</source>
+          <target>1.4</target>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <excludes>
-          </excludes>
+          <excludes></excludes>
         </configuration>
       </plugin>
     </plugins>
-    
+
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-webdav</artifactId>
-        <version>1.0-beta-1</version>
+        <!--     <version>1.0-beta-1</version> -->
+        <version>1.0-beta-1-SNAPSHOT</version>
       </extension>
     </extensions>
   </build>
@@ -76,14 +78,16 @@
     <snapshotRepository>
       <id>codehaus.org</id>
       <name>Jencks Central Development Repository</name>
-      <url>dav:https://dav.codehaus.org/snapshots.repository/jencks/</url>
+      <url>
+        dav:https://dav.codehaus.org/snapshots.repository/jencks/
+      </url>
     </snapshotRepository>
     <site>
       <id>codehaus.org</id>
       <url>dav:https://dav.codehaus.org/jencks/</url>
     </site>
   </distributionManagement>
-    
+
   <dependencies>
     <dependency>
       <groupId>commons-logging</groupId>
@@ -302,20 +306,20 @@
       <optional>true</optional>
       <exclusions>
         <exclusion>
-	      <groupId>geronimo-spec</groupId>
-	      <artifactId>geronimo-spec-jta</artifactId>
-	    </exclusion>
+          <groupId>geronimo-spec</groupId>
+          <artifactId>geronimo-spec-jta</artifactId>
+        </exclusion>
         <exclusion>
-	      <groupId>geronimo-spec</groupId>
-	      <artifactId>geronimo-spec-j2ee-connector</artifactId>
-	    </exclusion>
+          <groupId>geronimo-spec</groupId>
+          <artifactId>geronimo-spec-j2ee-connector</artifactId>
+        </exclusion>
         <exclusion>
-	      <groupId>commons-primitives</groupId>
-	      <artifactId>commons-primitives</artifactId>
-	    </exclusion>
+          <groupId>commons-primitives</groupId>
+          <artifactId>commons-primitives</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-    
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -335,5 +339,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
 </project>
