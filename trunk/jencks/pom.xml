@@ -3,7 +3,7 @@
   <groupId>org.jencks</groupId>
   <artifactId>jencks</artifactId>
   <name>Jencks</name>
-  <version>1.2</version>
+  <version>1.2-SNAPSHOT</version>
   <description>Spring and POJO enhancements to the Geronimo JCA container to
     implement Message Driven POJOs.</description>
   <licenses>
