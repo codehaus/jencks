@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jencks</groupId>
   <artifactId>jencks</artifactId>
   <name>Jencks</name>
-  <version>1.2</version>
-  <description>Spring and POJO enhancements to the Geronimo JCA container to
-    implement Message Driven POJOs.</description>
+  <version>1.2-SNAPSHOT</version>
+  <description>Spring and POJO enhancements to the Geronimo JCA container to implement Message Driven POJOs.</description>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -31,6 +31,12 @@
       </extension>
     </extensions>
     <plugins>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://svn.codehaus.org/jencks/tags/</tagBase>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.xbean</groupId>
         <artifactId>maven-xbean-plugin</artifactId>
