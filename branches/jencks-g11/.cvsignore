@@ -1,0 +1,10 @@
+target
+.project
+.classpath
+junit*.properties
+bin
+.settings
+ActiveMQ
+classes
+test-classes
+activemq-data
