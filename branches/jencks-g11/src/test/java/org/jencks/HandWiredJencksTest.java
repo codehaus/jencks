@@ -29,9 +29,12 @@ import org.apache.geronimo.transaction.log.UnrecoverableLog;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
 import org.apache.geronimo.transaction.manager.XidImporter;
+import org.apache.geronimo.transaction.manager.XidFactoryImpl;
+import org.jencks.factory.GeronimoExecutorWrapper;
 
 import EDU.oswego.cs.dl.util.concurrent.CopyOnWriteArrayList;
 import EDU.oswego.cs.dl.util.concurrent.Latch;
+import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 
 public class HandWiredJencksTest extends TestCase {
 
@@ -80,13 +83,14 @@ public class HandWiredJencksTest extends TestCase {
         connection.start();
 
         CopyOnWriteArrayList resourceAdapters = null; //new CopyOnWriteArrayList();
-        TransactionManagerImpl tm = new TransactionManagerImpl(600, new UnrecoverableLog(), resourceAdapters);
+        TransactionManagerImpl tm = new TransactionManagerImpl(600, new XidFactoryImpl(), new UnrecoverableLog(), resourceAdapters);
 
         final ExtendedTransactionManager etm = tm;
         XidImporter xidImporter = tm;
         TransactionContextManager manager = new TransactionContextManager(etm, xidImporter);
 
-        GeronimoWorkManager workManager = new GeronimoWorkManager(1000, manager);
+        GeronimoExecutorWrapper executor = new GeronimoExecutorWrapper(new PooledExecutor(1000));
+        GeronimoWorkManager workManager = new GeronimoWorkManager(executor, executor, executor, manager);
         workManager.doStart();
 
         ActiveMQResourceAdapter ra = new ActiveMQResourceAdapter();

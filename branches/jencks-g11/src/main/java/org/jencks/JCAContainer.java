@@ -41,7 +41,7 @@ import javax.resource.spi.ResourceAdapter;
  * @org.apache.xbean.XBean element="jcaContainer"
  */
 public class JCAContainer implements InitializingBean, DisposableBean, ApplicationContextAware {
-    private static final transient Log log = LogFactory.getLog(JCAContainer.class);
+    private static final Log log = LogFactory.getLog(JCAContainer.class);
     private BootstrapContext bootstrapContext;
     private ResourceAdapter resourceAdapter;
 	private ApplicationContext applicationContext;

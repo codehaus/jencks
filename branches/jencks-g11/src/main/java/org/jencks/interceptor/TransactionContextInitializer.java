@@ -45,7 +45,7 @@ public class TransactionContextInitializer implements InitializingBean, Disposab
     private TrackedConnectionAssociator associator;
     private InstanceContext oldContext;
 
-    protected transient Log logger = LogFactory.getLog(getClass());
+    protected Log logger = LogFactory.getLog(getClass());
 
     public void afterPropertiesSet() throws Exception {
         Set unshareableResources = new HashSet();
