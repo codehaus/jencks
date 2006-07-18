@@ -74,7 +74,7 @@ public class TransactionContexFilter implements Filter {
 
     private TrackedConnectionAssociator associator;
 
-    protected transient Log logger = LogFactory.getLog(getClass());
+    protected Log logger = LogFactory.getLog(getClass());
 
     public void init(FilterConfig config) throws ServletException {
     }

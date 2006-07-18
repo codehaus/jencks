@@ -44,9 +44,6 @@ public class TransactionContextInterceptor implements MethodInterceptor {
      * This is the central method of the filter which allows the
      * request to enter in a transactionnal context and exit when
      * the request is sent back to the client.
-     *
-     * @see #enterContext(Set, Set)
-     * @see #exitContext(InstanceContext)
      */
     public Object invoke(MethodInvocation invocation) throws Throwable {
         Set unshareableResources = new HashSet();

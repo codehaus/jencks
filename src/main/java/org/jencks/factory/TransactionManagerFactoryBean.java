@@ -19,6 +19,8 @@ package org.jencks.factory;
 import org.apache.geronimo.transaction.log.UnrecoverableLog;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
+import org.apache.geronimo.transaction.manager.XidFactory;
+import org.apache.geronimo.transaction.manager.XidFactoryImpl;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -40,12 +42,15 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
     private Collection resourceManagers;
 
     private TransactionManagerImpl transactionManagerImpl;
+    private XidFactory xidFactory;
 
     public Object getObject() throws Exception {
-    	if (transactionManagerImpl == null) {
+        if (transactionManagerImpl == null) {
             this.transactionManagerImpl = new TransactionManagerImpl(defaultTransactionTimeoutSeconds,
-                    transactionLog, resourceManagers);
-    	}
+                    xidFactory,
+                    transactionLog,
+                    resourceManagers);
+        }
         return transactionManagerImpl;
     }
 
@@ -75,6 +80,14 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
         return resourceManagers;
     }
 
+    public XidFactory getXidFactory() {
+        return xidFactory;
+    }
+
+    public void setXidFactory(XidFactory xidFactory) {
+        this.xidFactory = xidFactory;
+    }
+
     /**
      * Set the resource managers
      */
@@ -85,6 +98,9 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
     public void afterPropertiesSet() throws Exception {
         if (transactionLog == null) {
             transactionLog = new UnrecoverableLog();
+        }
+        if (xidFactory == null) {
+            xidFactory = new XidFactoryImpl();
         }
     }
 

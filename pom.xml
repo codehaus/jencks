@@ -5,6 +5,28 @@
   <name>Jencks</name>
   <version>1.3-SNAPSHOT</version>
   <description>Spring and POJO enhancements to the Geronimo JCA container to implement Message Driven POJOs.</description>
+
+  <mailingLists>
+    <mailingList>
+      <name>Jencks Developer List</name>
+      <subscribe>dev-subscribe@jencks.codehaus.org</subscribe>
+      <unsubscribe>dev-unsubscribe@jencks.codehaus.org</unsubscribe>
+      <archive>http://dir.gmane.org/gmane.comp.java.jencks.devel</archive>
+    </mailingList>
+    <mailingList>
+      <name>Jencks User List</name>
+      <subscribe>user-subscribe@jencks.codehaus.org</subscribe>
+      <unsubscribe>user-unsubscribe@jencks.codehaus.org</unsubscribe>
+      <archive>http://dir.gmane.org/gmane.comp.java.jencks.user</archive>
+    </mailingList>
+    <mailingList>
+      <name>Jencks SCM List</name>
+      <subscribe>scm-subscribe@jencks.codehaus.org</subscribe>
+      <unsubscribe>scm-unsubscribe@jencks.codehaus.org</unsubscribe>
+      <archive>http://archive.jencks.codehaus.org/scm/</archive>
+    </mailingList>
+  </mailingLists>
+
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -45,7 +67,7 @@
               <goal>mapping</goal>
             </goals>
             <configuration>
-              <namespace>http://jencks.org/1.2</namespace>
+              <namespace>http://jencks.org/1.3</namespace>
             </configuration>
           </execution>
         </executions>
@@ -63,21 +85,63 @@
           <excludes></excludes>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assemble/all.xml</descriptor>
+          </descriptors>
+          <finalName>jencks-all-${pom.version}</finalName>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+
+  <repositories>
+    <repository>
+      <id>codehaus</id>
+      <name>Codehaus Repository</name>
+      <url>http://dist.codehaus.org</url>
+      <layout>legacy</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>apache-snapshot</id>
+      <name>Apache Repository</name>
+      <url>http://people.apache.org/repository</url>
+      <layout>legacy</layout>
+    </repository>
+    <repository>
+      <id>DainDevRepo</id>
+      <name>Dain's Development Repository</name>
+      <url>http://people.apache.org/~dain/repository/m2-dev</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <groupId>axion</groupId>
+      <artifactId>axion</artifactId>
+      <version>1.0-M3-dev</version>
       <scope>test</scope>
     </dependency>
+
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-mock</artifactId>
-      <version>1.2.6</version>
-      <scope>test</scope>
+      <groupId>backport-util-concurrent</groupId>
+      <artifactId>backport-util-concurrent</artifactId>
+      <version>2.1</version>
     </dependency>
+
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
@@ -85,100 +149,42 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>geronimo</groupId>
-      <artifactId>geronimo-transaction</artifactId>
-      <version>1.0</version>
-      <scope>compile</scope>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>1.2</version>
       <exclusions>
         <exclusion>
-          <artifactId>mx4j</artifactId>
-          <groupId>mx4j</groupId>
+          <artifactId>xercesImpl</artifactId>
+          <groupId>xerces</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>commons-jelly-tags-velocity</artifactId>
-          <groupId>commons-jelly</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>velocity</artifactId>
-          <groupId>velocity</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>howl-logger</artifactId>
-          <groupId>howl</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>geronimo-core</artifactId>
-          <groupId>geronimo</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>geronimo-kernel</artifactId>
-          <groupId>geronimo</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>geronimo-system</artifactId>
-          <groupId>geronimo</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>geronimo-j2ee</artifactId>
-          <groupId>geronimo</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>geronimo-ejb_2.1_spec</artifactId>
-          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>incubator-activemq</groupId>
-      <artifactId>activemq-ra</artifactId>
-      <version>4.0</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>jmdns</artifactId>
-          <groupId>activemq</groupId>
-        </exclusion>
-      </exclusions>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-j2ee-management_1.0_spec</artifactId>
-      <version>1.0</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>jencks</groupId>
-      <artifactId>genericra</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
-      <version>1.2.6</version>
-    </dependency>
-    <dependency>
-      <groupId>jencks</groupId>
-      <artifactId>xapool-without-pool</artifactId>
-      <version>1.4</version>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <version>1.2</version>
       <scope>compile</scope>
     </dependency>
+
     <dependency>
-      <groupId>org.apache.xbean</groupId>
-      <artifactId>xbean-spring</artifactId>
-      <version>2.3</version>
-      <scope>runtime</scope>
-      <optional>true</optional>
+      <groupId>concurrent</groupId>
+      <artifactId>concurrent</artifactId>
+      <version>1.3.4</version>
     </dependency>
+
     <dependency>
       <groupId>geronimo</groupId>
       <artifactId>geronimo-connector</artifactId>
-      <version>1.0</version>
+      <version>1.1</version>
       <exclusions>
         <exclusion>
           <artifactId>geronimo-j2ee-jacc_1.0_spec</artifactId>
@@ -219,102 +225,106 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-      <version>1.2</version>
-      <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>xercesImpl</artifactId>
-          <groupId>xerces</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>xml-apis</artifactId>
-          <groupId>xml-apis</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>axion</groupId>
-      <artifactId>axion</artifactId>
-      <version>1.0-M3-dev</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>javacc</artifactId>
-          <groupId>net.java.dev.javacc</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>commons-codec</artifactId>
-          <groupId>commons-codec</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>commons-pool</groupId>
-      <artifactId>commons-pool</artifactId>
-      <version>1.2</version>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>xercesImpl</artifactId>
-          <groupId>xerces</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>xml-apis</artifactId>
-          <groupId>xml-apis</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>incubator-activemq</groupId>
-      <artifactId>activemq-core</artifactId>
-      <version>4.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>tranql</groupId>
-      <artifactId>tranql-connector</artifactId>
+      <groupId>geronimo</groupId>
+      <artifactId>geronimo-core</artifactId>
       <version>1.1</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>geronimo-spec-jta</artifactId>
-          <groupId>geronimo-spec</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>geronimo-spec-j2ee-connector</artifactId>
-          <groupId>geronimo-spec</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>commons-primitives</artifactId>
-          <groupId>commons-primitives</groupId>
-        </exclusion>
-      </exclusions>
-      <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-jms_1.1_spec</artifactId>
-      <version>1.0</version>
+      <groupId>geronimo</groupId>
+      <artifactId>geronimo-system</artifactId>
+      <version>1.1</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-servlet_2.4_spec</artifactId>
-      <version>1.0</version>
-      <optional>true</optional>
+      <groupId>geronimo</groupId>
+      <artifactId>geronimo-transaction</artifactId>
+      <version>1.1</version>
+      <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <version>1.7.3.3</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>incubator-activemq</groupId>
+      <artifactId>incubator-activemq</artifactId>
+      <version>4.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>incubator-activemq</groupId>
+      <artifactId>activemq-ra</artifactId>
+      <version>4.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>jencks</groupId>
+      <artifactId>genericra</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jencks</groupId>
+      <artifactId>xapool-without-pool</artifactId>
+      <version>1.4</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-j2ee-management_1.0_spec</artifactId>
+      <version>1.0.1</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jms_1.1_spec</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-servlet_2.4_spec</artifactId>
+      <version>1.0.1</version>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.xbean</groupId>
+      <artifactId>xbean-spring</artifactId>
+      <version>COL-SNAPSHOT</version>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+      <version>1.2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-mock</artifactId>
+      <version>1.2.6</version>
+      <scope>test</scope>
+   </dependency>
+
+    <dependency>
+      <groupId>tranql</groupId>
+      <artifactId>tranql-connector</artifactId>
+      <version>1.1</version>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
+
+
   <distributionManagement>
     <repository>
       <id>codehaus.org</id>

@@ -39,7 +39,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @org.apache.xbean.XBean element="jcaConnector"
  */
 public class JCAConnector implements InitializingBean, DisposableBean, BeanFactoryAware, BeanNameAware {
-    private static final transient Log log = LogFactory.getLog(JCAConnector.class);
+    private static final Log log = LogFactory.getLog(JCAConnector.class);
 
     private ActivationSpec activationSpec;
     private BootstrapContext bootstrapContext;

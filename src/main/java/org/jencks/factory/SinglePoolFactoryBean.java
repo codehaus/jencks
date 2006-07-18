@@ -17,6 +17,7 @@
 package org.jencks.factory;
 
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.SinglePool;
+import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PoolingSupport;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 

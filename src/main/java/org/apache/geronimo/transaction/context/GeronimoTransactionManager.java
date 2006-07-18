@@ -50,7 +50,7 @@ public class GeronimoTransactionManager implements UserTransaction, TransactionM
 			transactionContextManager.newUnspecifiedTransactionContext();
 		}
         TransactionContext ctx = transactionContextManager.getContext();
-        if (ctx instanceof UnspecifiedTransactionContext == false) {
+        if (!(ctx instanceof UnspecifiedTransactionContext)) {
             throw new NotSupportedException("Previous Transaction has not been committed");
         }
         UnspecifiedTransactionContext oldContext = (UnspecifiedTransactionContext) ctx;
@@ -73,7 +73,7 @@ public class GeronimoTransactionManager implements UserTransaction, TransactionM
 	
 	public void commit() throws HeuristicMixedException, HeuristicRollbackException, IllegalStateException, RollbackException, SecurityException, SystemException {
         TransactionContext ctx = transactionContextManager.getContext();
-        if (ctx instanceof GeronimoTransactionContext == false) {
+        if (!(ctx instanceof GeronimoTransactionContext)) {
             throw new IllegalStateException("Transaction has not been started");
         }
         GeronimoTransactionContext beanContext = (GeronimoTransactionContext) ctx;
@@ -100,7 +100,7 @@ public class GeronimoTransactionManager implements UserTransaction, TransactionM
 	
 	public void rollback() throws IllegalStateException, SecurityException, SystemException {
         TransactionContext ctx = transactionContextManager.getContext();
-        if (ctx instanceof GeronimoTransactionContext == false) {
+        if (!(ctx instanceof GeronimoTransactionContext)) {
             throw new IllegalStateException("Transaction has not been started");
         }
         GeronimoTransactionContext beanContext = (GeronimoTransactionContext) ctx;
@@ -138,7 +138,7 @@ public class GeronimoTransactionManager implements UserTransaction, TransactionM
 		if (transactionContextManager.getContext() == null) {
 			transactionContextManager.newUnspecifiedTransactionContext();
 		}
-		if (tx instanceof GeronimoTransactionDelegate == false) {
+		if (!(tx instanceof GeronimoTransactionDelegate)) {
 			throw new InvalidTransactionException("invalid transaction specified");
 		}
 		TransactionContext ctx = ((GeronimoTransactionDelegate) tx).getContext(); 
