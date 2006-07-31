@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://activemq.org/config/1.0">
+<beans>
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
 
-  <broker useJmx="false" persistent="false">
+  <broker useJmx="false" persistent="false" xmlns="http://activemq.org/config/1.0">
 
 <!--  
     <persistenceAdapter>
@@ -11,7 +11,7 @@
 --> 
  
     <transportConnectors>
-      <transportConnector uri="tcp://localhost:51616"/>
+      <transportConnector uri="tcp://localhost:51626"/>
     </transportConnectors>
         
   </broker>
