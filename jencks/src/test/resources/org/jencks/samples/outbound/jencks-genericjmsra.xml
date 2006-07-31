@@ -85,7 +85,7 @@
 
   <bean id="jmsManagedConnectionFactory" class="com.sun.genericra.outbound.ManagedJMSConnectionFactory">
 	<property name="resourceAdapter"><ref local="jmsResourceAdapter"/></property>
-	<property name="connectionFactoryProperties" value="BrokerURL=tcp://localhost:51616" />
+	<property name="connectionFactoryProperties" value="BrokerURL=tcp://localhost:51626" />
   </bean>
 
   <bean id="jmsConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">

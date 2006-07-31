@@ -48,7 +48,7 @@
   </bean>
 
   <bean id="jmsResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
-    <property name="serverUrl" value="vm://localhost" />
+    <property name="serverUrl" value="tcp://localhost:51626" />
   </bean>
 
   <bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
@@ -65,7 +65,7 @@
     <property name="jndiEnvironment">
       <props>
         <prop key="java.naming.factory.initial">org.apache.activemq.jndi.ActiveMQInitialContextFactory</prop>
-        <prop key="java.naming.provider.url">tcp://localhost:51616</prop>
+        <prop key="java.naming.provider.url">tcp://localhost:51626</prop>
         <prop key="queue.queue">example.MyQueue</prop>
       </props>
     </property>
