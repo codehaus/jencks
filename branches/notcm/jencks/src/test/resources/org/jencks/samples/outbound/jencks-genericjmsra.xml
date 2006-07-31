@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!--
+
+         ###### Transaction manager ######
+
+   -->
+
+  <bean id="transactionContextManager" class="org.jencks.factory.TransactionContextManagerFactoryBean"/>
+  <bean id="userTransaction" class="org.jencks.factory.GeronimoTransactionManagerFactoryBean"/>
+  <bean id="jtaTransactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+  	<property name="userTransaction" ref="userTransaction" />
+  </bean>
+
+  <!--
+
+         ###### JCA ######
+
+   -->
+
+  <bean id="transactionSupport"
+        class="org.jencks.factory.XATransactionFactoryBean">
+    <property name="useTransactionCaching">
+      <value>true</value>
+    </property>
+    <property name="useThreadCaching">
+      <value>false</value>
+    </property>
+  </bean>
+
+  <bean id="poolingSupport" class="org.jencks.factory.SinglePoolFactoryBean">
+    <property name="maxSize">
+      <value>2</value>
+    </property>
+    <property name="minSize">
+      <value>1</value>
+    </property>
+    <property name="blockingTimeoutMilliseconds">
+      <value>60</value>
+    </property>
+    <property name="idleTimeoutMinutes">
+      <value>60</value>
+    </property>
+    <property name="matchOne">
+      <value>true</value>
+    </property>
+    <property name="matchAll">
+      <value>true</value>
+    </property>
+    <property name="selectOneAssumeMatch">
+      <value>true</value>
+    </property>
+  </bean>
+
+  <bean id="connectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+    <property name="transactionSupport">
+      <ref local="transactionSupport"/>
+    </property>
+    <property name="poolingSupport">
+      <ref local="poolingSupport"/>
+    </property>
+  </bean>
+
+  <!--
+
+         ###### JMS ######
+
+   -->
+
+<!-- 
+  <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean" singleton="true">
+    <property name="config" value="classpath:org/jencks/samples/outbound/broker.xml" />
+  </bean>
+ -->
+ 
+  <bean id="jmsResourceAdapter" class="com.sun.genericra.GenericJMSRA">
+  	<property name="providerIntegrationMode" value="bean"/>
+  	<property name="XAConnectionFactoryClassName" value="org.apache.activemq.ActiveMQXAConnectionFactory" />
+  	<property name="queueClassName" value="org.apache.activemq.command.ActiveMQQueue" />
+  	<property name="topicClassName" value="org.apache.activemq.command.ActiveMQTopic" />
+	<property name="supportsXA" value="true" />
+  </bean>
+
+  <bean id="jmsManagedConnectionFactory" class="com.sun.genericra.outbound.ManagedJMSConnectionFactory">
+	<property name="resourceAdapter"><ref local="jmsResourceAdapter"/></property>
+  <!-- 
+	<property name="connectionFactoryProperties" value="BrokerURL=tcp://localhost:51626" />
+   -->
+	<property name="connectionFactoryProperties" value="BrokerURL=vm://localhost" />
+  </bean>
+
+  <bean id="jmsConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">
+    <property name="managedConnectionFactory"><ref local="jmsManagedConnectionFactory"/></property>
+    <property name="connectionManager"><ref local="connectionManager"/></property>
+  </bean>
+
+  <bean id="jmsQueue" class="com.sun.genericra.outbound.QueueProxy" depends-on="jmsResourceAdapter">
+  	<property name="providerIntegrationMode" value="bean"/>
+  	<property name="queueClassName" value="org.apache.activemq.command.ActiveMQQueue" />
+  	<property name="destinationProperties" value="PhysicalName=example.MyQueue" />
+  </bean>
+
+</beans>
