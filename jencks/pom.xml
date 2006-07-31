@@ -12,15 +12,36 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  <scm>
-    <connection>scm:svn:https://svn.codehaus.org/jencks/trunk</connection>
-    <developerConnection>scm:svn:https://${maven.username}@svn.codehaus.org/jencks/trunk</developerConnection>
-    <url>https://svn.codehaus.org/jencks/trunk/jencks</url>
-  </scm>
   <organization>
     <name>LogicBlaze, Inc.</name>
     <url>http://www.logicblaze.com/</url>
   </organization>
+  <scm>
+    <connection>scm:svn:http://svn.codehaus.org/jencks/trunk</connection>
+    <developerConnection>scm:svn:https://${maven.username}@svn.codehaus.org/jencks/trunk</developerConnection>
+    <url>http://svn.codehaus.org/jencks/trunk/jencks</url>
+  </scm>
+  
+    <ciManagement>
+        <system>continuum</system>
+        <url>http://goopen.org:8080/continuum</url>
+        <notifiers>
+            <notifier>
+                <configuration>
+                    <address>activemq-commits@geronimo.apache.org</address>
+                </configuration>
+            </notifier>
+            <notifier>
+                  <type>irc</type>
+                  <configuration>
+                  <host>irc.codehaus.org</host>
+                  <port>6667</port>
+                  <channel>#activemq</channel>
+                </configuration>
+            </notifier>               
+        </notifiers>
+    </ciManagement>
+  
   <build>
     <extensions>
       <extension>
