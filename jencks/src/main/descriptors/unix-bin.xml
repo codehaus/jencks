@@ -22,6 +22,14 @@
     <format>tar.bz2</format>
   </formats>
   <fileSets>
+    <fileSet>
+      <directory>.</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>*.txt</include>
+      </includes>
+      <lineEnding>unix</lineEnding>
+    </fileSet>
     <!-- I don't think the STATUS file is required.
       <fileSet>
       <directory>..</directory>
@@ -53,7 +61,7 @@
       <directory>target</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>${pom.artifactId}-${pom.version}.jar</include>
+        <include>*.jar</include>
       </includes>
     </fileSet>
     <fileSet>
@@ -70,16 +78,18 @@
       <unpack>false</unpack>
       <scope>runtime</scope>
       <includes>
-        <include>jencks</include>
-        <include>backport-util-concurrent:backport-util-concurrent</include>
-        <include>commons-logging:commons-logging</include>
-        <include>geronimo-jms_1.1_spec:geronimo-jms_1.1_spec</include>
-        <include>${pom.groupId}:activemq-core</include>
-        <include>${pom.groupId}:activeio-core</include>
-        <include>${pom.groupId}:activemq-console</include>
-        <include>mx4j:mx4j</include>
+        <include>geronimo:geronimo-connector</include>
+        <include>geronimo:geronimo-transaction</include>
+
+        <!-- remove these when geronimo drops the GeronimoExecutor interface -->
+        <include>geronimo:geronimo-core</include>
+        <include>geronimo:geronimo-system</include>
+
+        <include>org.apache.geronimo.specs:geronimo-j2ee-connector_1.5_spec</include>
         <include>org.apache.geronimo.specs:geronimo-j2ee-management_1.0_spec</include>
         <include>org.apache.geronimo.specs:geronimo-jms_1.1_spec</include>
+        <include>org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec</include>
+
       </includes>
     </dependencySet>
     <dependencySet>
@@ -87,28 +97,20 @@
       <unpack>false</unpack>
       <scope>runtime</scope>
       <includes>
-        <include>${pom.groupId}:activemq-rar</include>
-        <include>${pom.groupId}:activemq-optional</include>
-        <include>${pom.groupId}:activecluster</include>
-        <include>${pom.groupId}:activemq-web</include>
-        <include>commons-beanutils:commons-beanutils</include>
-        <include>commons-collections:commons-collections</include>
-        <include>commons-httpclient:commons-httpclient</include>
-        <include>commons-dbcp:commons-dbcp</include>
-        <include>commons-pool:commons-pool</include>
-        <include>org.mortbay.jetty:jetty</include>
-        <include>org.mortbay.jetty:jetty-util</include>
-        <include>org.mortbay.jetty:servlet-api-2.5</include>
-        <include>log4j:log4j</include>
-        <include>mx4j:mx4j-remote</include>
-        <include>mx4j:mx4j-tools</include>
-        <include>org.apache.derby:derby</include>
-        <include>org.apache.geronimo.specs:geronimo-j2ee-jacc_1.0_spec</include>
-        <include>org.apache.geronimo.specs:geronimo-j2ee-connector_1.5_spec</include>
+        <include>incubator-activemq:activemq</include>
+        <include>incubator-activemq:activemq-rar</include>
+        <include>incubator-activemq:activemq-optional</include>
+        <include>incubator-activemq:activemq-web</include>
+
         <include>org.apache.xbean:xbean-spring</include>
         <include>org.springframework:spring</include>
-        <include>xstream:xstream</include>
-        <include>xmlpull:xmlpull</include>
+        <include>log4j:log4j</include>
+        <include>org.apache.geronimo.specs:geronimo-j2ee-jacc_1.0_spec</include>
+
+        <include>jencks:xapool-without-pool</include>
+
+        <include>tranql:tranql-connector</include>
+        <include>mx4j:mx4j</include>
       </includes>
     </dependencySet>
   </dependencySets>
