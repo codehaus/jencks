@@ -20,7 +20,7 @@
     <name>LogicBlaze, Inc.</name>
     <url>http://www.logicblaze.com/</url>
   </organization>
-  
+
   <scm>
     <connection>scm:svn:http://svn.codehaus.org/jencks/trunk/jencks</connection>
     <developerConnection>scm:svn:https://${maven.username}@svn.codehaus.org/jencks/trunk/jencks</developerConnection>
@@ -46,6 +46,38 @@
       </notifier>
     </notifiers>
   </ciManagement>
+
+  <repositories>
+    <!-- keep the central repo so that it is first tried -->
+    <repository>
+      <id>central</id>
+      <url>http://ibiblio.org/maven2/</url>
+    </repository>
+
+    <!--  temporary for ActiveMQ 4.1-SNAPSHOT -->
+    <repository>
+      <id>apache-snapshots</id>
+      <name>Snapshot repository</name>
+      <url>http://people.apache.org/maven-snapshot-repository</url>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>codehaus.org</id>
+      <name>Jencks Central Repository</name>
+      <url>dav:https://dav.codehaus.org/repository/jencks/</url>
+    </repository>
+    <snapshotRepository>
+      <id>codehaus.org</id>
+      <name>Jencks Central Development Repository</name>
+      <url>dav:https://dav.codehaus.org/snapshots.repository/jencks/</url>
+    </snapshotRepository>
+    <site>
+      <id>codehaus.org</id>
+      <url>dav:https://dav.codehaus.org/jencks</url>
+    </site>
+  </distributionManagement>
 
   <build>
     <extensions>
@@ -164,6 +196,7 @@
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -420,20 +453,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <distributionManagement>
-    <repository>
-      <id>codehaus.org</id>
-      <name>Jencks Central Repository</name>
-      <url>dav:https://dav.codehaus.org/repository/jencks/</url>
-    </repository>
-    <snapshotRepository>
-      <id>codehaus.org</id>
-      <name>Jencks Central Development Repository</name>
-      <url>dav:https://dav.codehaus.org/snapshots.repository/jencks/</url>
-    </snapshotRepository>
-    <site>
-      <id>codehaus.org</id>
-      <url>dav:https://dav.codehaus.org/jencks</url>
-    </site>
-  </distributionManagement>
+
 </project>
