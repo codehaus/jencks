@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<assembly>
+  <id>all</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <includes>
+        <include>README*</include>
+        <include>LICENSE*</include>
+        <include>NOTICE*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/classes</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory></outputDirectory>
+      <unpack>true</unpack>
+      <scope>runtime</scope>
+      <includes>
+        <include>jencks:xapool-without-pool</include>
+
+        <include>geronimo:geronimo-connector</include>
+        <include>geronimo:geronimo-transaction</include>
+
+        <!-- remove these when geronimo drops the GeronimoExecutor interface -->
+        <include>geronimo:geronimo-core</include>
+        <include>geronimo:geronimo-system</include>
+
+        <include>org.apache.geronimo.specs:geronimo-j2ee-connector_1.5_spec</include>
+        <include>org.apache.geronimo.specs:geronimo-j2ee-management_1.0_spec</include>
+        <include>org.apache.geronimo.specs:geronimo-jms_1.1_spec</include>
+        <include>org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec</include>
+
+        <include>tranql:tranql-connector</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+</assembly>
