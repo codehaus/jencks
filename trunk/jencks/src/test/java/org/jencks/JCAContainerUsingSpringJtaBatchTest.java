@@ -47,7 +47,7 @@ public class JCAContainerUsingSpringJtaBatchTest extends JCAContainerTest {
         	producer.send(destination, message);
         }
 
-        System.out.println("message sent on: " + destination + " of type: " + destination.getClass());
+        log.info("message sent on: " + destination + " of type: " + destination.getClass());
 
 
         TestingConsumer consumer = (TestingConsumer) applicationContext.getBean("echoBean");

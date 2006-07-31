@@ -47,7 +47,7 @@ public class JCAContainerTest extends JCAContainerTestSupport {
         
         Thread.sleep(1000);
         producer.send(destination, message);
-        System.out.println("message sent on: " + destination + " of type: " + destination.getClass());
+        log.info("message sent on: " + destination + " of type: " + destination.getClass());
 
 
         TestingConsumer consumer = (TestingConsumer) applicationContext.getBean("echoBean");
@@ -65,7 +65,7 @@ public class JCAContainerTest extends JCAContainerTestSupport {
         Destination destination = session.createQueue("test.spring.inboundConnectorB");
         producer.send(destination, message);
 
-        System.out.println("message sent on: " + destination);
+        log.info("message sent on: " + destination);
 
         Thread.sleep(2000);
     }

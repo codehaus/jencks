@@ -35,7 +35,7 @@ import org.springframework.jms.core.JmsTemplate;
  * @version $Id$
  */
 public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
-    private static Log logger = LogFactory.getLog(SpringTemplateAndJCAWithEmbeddedBrokerTest.class);
+    private static Log log = LogFactory.getLog(SpringTemplateAndJCAWithEmbeddedBrokerTest.class);
 
     private ConfigurableApplicationContext applicationContext;
     private ConnectionFactory connectionFactory;
@@ -44,7 +44,7 @@ public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
     public void testRun() {
         for (int i = 0; i < messageCount; i++) {
             String text = "Message " + i;
-            logger.info("Sending " + text);
+            log.info("Sending " + text);
             sendMessage(text);
         }
 
@@ -54,14 +54,18 @@ public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
         List list = consumer.flushMessages();
         assertEquals("Message count: " + list, messageCount, list.size());
 
-        System.out.println("Received all: " + list.size() + " messages");
+        log.info("Received all: " + list.size() + " messages");
     }
 
 
     public void sendMessage(String text) throws JmsException {
         JmsTemplate template = new JmsTemplate(connectionFactory);
         template.setPubSubDomain(true);
-        template.convertAndSend("myTopic", text);
+        template.convertAndSend(getDestinationName(), text);
+    }
+
+    protected String getDestinationName() {
+        return getClass().getName();
     }
 
     protected void setUp() throws Exception {
@@ -77,7 +81,7 @@ public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
 
     protected void tearDown() throws Exception {
         if (applicationContext != null) {
-            System.out.println("Closing the application context");
+            log.info("Closing the application context");
             applicationContext.close();
         }
     }

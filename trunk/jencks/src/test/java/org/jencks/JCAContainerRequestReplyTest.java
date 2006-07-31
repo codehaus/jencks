@@ -61,14 +61,14 @@ public class JCAContainerRequestReplyTest extends JCAContainerTestSupport implem
 
         TextMessage message = session.createTextMessage("Hello! " + new Date());
 
-        System.out.println("About to send: " + message);
+        log.info("About to send: " + message);
 
 
         Message answer = requestor.request(message);
 
         assertTrue("Should have received an answer", answer != null);
 
-        System.out.println("Received: " + answer);
+        log.info("Received: " + answer);
     }
 
 
