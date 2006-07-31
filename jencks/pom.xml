@@ -28,7 +28,7 @@
         <notifiers>
             <notifier>
                 <configuration>
-                    <address>activemq-commits@geronimo.apache.org</address>
+                    <address>scm@jencks.codehaus.org</address>
                 </configuration>
             </notifier>
             <notifier>
