@@ -11,11 +11,7 @@
 
    -->
 
-  <bean id="transactionContextManager" class="org.jencks.factory.TransactionContextManagerFactoryBean"/>
-  <bean id="userTransaction" class="org.jencks.factory.GeronimoTransactionManagerFactoryBean"/>
-  <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
-    <property name="userTransaction" ref="userTransaction"/>
-  </bean>
+  <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
 
   <!--
 
@@ -23,47 +19,15 @@
 
    -->
 
-  <bean id="transactionSupport"
-        class="org.jencks.factory.XATransactionFactoryBean">
-    <property name="useTransactionCaching">
-      <value>true</value>
-    </property>
-    <property name="useThreadCaching">
-      <value>false</value>
-    </property>
-  </bean>
-
-  <bean id="poolingSupport" class="org.jencks.factory.SinglePoolFactoryBean">
-    <property name="maxSize">
-      <value>2</value>
-    </property>
-    <property name="minSize">
-      <value>1</value>
-    </property>
-    <property name="blockingTimeoutMilliseconds">
-      <value>60</value>
-    </property>
-    <property name="idleTimeoutMinutes">
-      <value>60</value>
-    </property>
-    <property name="matchOne">
-      <value>true</value>
-    </property>
-    <property name="matchAll">
-      <value>true</value>
-    </property>
-    <property name="selectOneAssumeMatch">
-      <value>true</value>
-    </property>
-  </bean>
-
   <bean id="connectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
-    <property name="transactionSupport">
-      <ref local="transactionSupport"/>
-    </property>
-    <property name="poolingSupport">
-      <ref local="poolingSupport"/>
-    </property>
+    <property name="transactionManager" ref="transactionManager"/>
+    <property name="transaction" value="xa"/>
+    <property name="pooling" value="true"/>
+    <property name="allConnectionsEqual" value="true"/>
+    <property name="poolMaxSize" value="2"/>
+    <property name="poolMinSize" value="1"/>
+    <property name="connectionMaxWaitMilliseconds" value="60"/>
+    <property name="connectionMaxIdleMinutes" value="60"/>
   </bean>
 
   <!--
@@ -73,32 +37,24 @@
    -->
 
   <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
-    <property name="config" value="classpath:org/jencks/samples/outbound/broker.xml" />
+    <property name="config" value="classpath:org/jencks/samples/outbound/broker.xml"/>
   </bean>
 
   <bean id="jmsResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
-    <property name="serverUrl">
-      <value>vm://localhost</value>
-    </property>
-    <!--property name="useEmbeddedBroker">
-      <value>true</value>
-    </property>
-    <property name="brokerXmlConfig">
-      <value>xbean:org/jencks/broker.xml</value>
-    </property-->
+    <property name="serverUrl" value="vm://localhost"/>
   </bean>
 
   <bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
-    <property name="resourceAdapter"><ref local="jmsResourceAdapter"/></property>
+    <property name="resourceAdapter" ref="jmsResourceAdapter"/>
   </bean>
 
   <bean id="jmsConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">
-    <property name="managedConnectionFactory"><ref local="jmsManagedConnectionFactory"/></property>
-    <property name="connectionManager"><ref local="connectionManager"/></property>
+    <property name="managedConnectionFactory" ref="jmsManagedConnectionFactory"/>
+    <property name="connectionManager" ref="connectionManager"/>
   </bean>
 
   <bean id="jmsQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName"><value>queue</value></property> 
+    <property name="jndiName" value="queue"/>
     <property name="jndiEnvironment">
       <props>
         <prop key="java.naming.factory.initial">org.apache.activemq.jndi.ActiveMQInitialContextFactory</prop>
@@ -106,7 +62,7 @@
         <prop key="queue.queue">example.MyQueue</prop>
       </props>
     </property>
-  </bean> 
+  </bean>
 
 </beans>
-<!-- END SNIPPET: jca -->
+    <!-- END SNIPPET: jca -->

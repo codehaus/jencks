@@ -9,7 +9,6 @@ import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.resource.ResourceException;
-import javax.resource.spi.UnavailableException;
 import javax.resource.spi.endpoint.MessageEndpoint;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.xa.XAResource;
@@ -22,17 +21,11 @@ import org.apache.activemq.ra.ActiveMQActivationSpec;
 import org.apache.activemq.ra.ActiveMQResourceAdapter;
 import org.apache.geronimo.connector.ActivationSpecWrapper;
 import org.apache.geronimo.connector.ResourceAdapterWrapper;
+import org.apache.geronimo.connector.GeronimoBootstrapContext;
 import org.apache.geronimo.connector.work.GeronimoWorkManager;
-import org.apache.geronimo.transaction.ExtendedTransactionManager;
-import org.apache.geronimo.transaction.context.TransactionContextManager;
-import org.apache.geronimo.transaction.log.UnrecoverableLog;
-import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
-import org.apache.geronimo.transaction.manager.XidImporter;
-import org.apache.geronimo.transaction.manager.XidFactoryImpl;
-import org.jencks.factory.GeronimoExecutorWrapper;
+import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 
-import EDU.oswego.cs.dl.util.concurrent.CopyOnWriteArrayList;
 import EDU.oswego.cs.dl.util.concurrent.Latch;
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 
@@ -40,18 +33,18 @@ public class HandWiredJencksTest extends TestCase {
 
     public class StubMessageEndpoint implements MessageEndpoint, MessageListener {
         public int messageCount;
-        private final ExtendedTransactionManager etm;
+        private final GeronimoTransactionManager tm;
         private final XAResource resource;
 
-        public StubMessageEndpoint(ExtendedTransactionManager etm, XAResource resource) {
-            this.etm = etm;
+        public StubMessageEndpoint(GeronimoTransactionManager tm, XAResource resource) {
+            this.tm = tm;
             this.resource = new WrapperNamedXAResource(resource, "test");
         }
 
         public void beforeDelivery(Method method) throws NoSuchMethodException, ResourceException {
             try {
-                etm.begin();
-                etm.getTransaction().enlistResource(resource);
+                tm.begin();
+                tm.getTransaction().enlistResource(resource);
             }
             catch (Throwable e) {
                 throw new ResourceException(e);
@@ -60,7 +53,7 @@ public class HandWiredJencksTest extends TestCase {
 
         public void afterDelivery() throws ResourceException {
             try {
-                etm.commit();
+                tm.commit();
             }
             catch (Throwable e) {
                 throw new ResourceException(e);
@@ -77,58 +70,64 @@ public class HandWiredJencksTest extends TestCase {
 
     public void testIt() throws Exception {
 
-
+        // ConnectionFactory
         ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory("vm://localhost?broker.persistent=false");
         Connection connection = cf.createConnection();
         connection.start();
 
-        CopyOnWriteArrayList resourceAdapters = null; //new CopyOnWriteArrayList();
-        TransactionManagerImpl tm = new TransactionManagerImpl(600, new XidFactoryImpl(), new UnrecoverableLog(), resourceAdapters);
+        // TransactionManager
+        final GeronimoTransactionManager tm = new GeronimoTransactionManager();
 
-        final ExtendedTransactionManager etm = tm;
-        XidImporter xidImporter = tm;
-        TransactionContextManager manager = new TransactionContextManager(etm, xidImporter);
-
-        GeronimoExecutorWrapper executor = new GeronimoExecutorWrapper(new PooledExecutor(1000));
-        GeronimoWorkManager workManager = new GeronimoWorkManager(executor, executor, executor, manager);
+        // Work Manager (transaction manager)
+        PooledExecutor executor = new PooledExecutor(1000);
+        GeronimoWorkManager workManager = new GeronimoWorkManager(executor, executor, executor, tm);
         workManager.doStart();
 
-        ActiveMQResourceAdapter ra = new ActiveMQResourceAdapter();
-        ra.setServerUrl("vm://localhost");
+        try {
+            // RA
+            ActiveMQResourceAdapter ra = new ActiveMQResourceAdapter();
+            ra.setServerUrl("vm://localhost");
 
-        ResourceAdapterWrapper raWrapper = new ResourceAdapterWrapper(ra, workManager);
-        raWrapper.doStart();
+            // ResourceAdapter (RA, work manager, transaction manager)
+            GeronimoBootstrapContext bootstrapContext = new GeronimoBootstrapContext(workManager, tm);
 
-        ActiveMQActivationSpec as = new ActiveMQActivationSpec();
-        as.setDestination("TEST");
-        as.setDestinationType(Queue.class.getName());
+            // activation spec
+            ActiveMQActivationSpec as = new ActiveMQActivationSpec();
+            as.setDestination("TEST");
+            as.setDestinationType(Queue.class.getName());
+
+            // endpoint factory
+            final Latch messageDelivered = new Latch();
+            MessageEndpointFactory messageEndpointFactory = new MessageEndpointFactory() {
+                public MessageEndpoint createEndpoint(XAResource resource) {
+                    return new StubMessageEndpoint(tm, resource) {
+                        public void onMessage(Message message) {
+                            super.onMessage(message);
+                            messageDelivered.release();
+                        }
+                    };
+                }
+
+                public boolean isDeliveryTransacted(Method method) {
+                    return true;
+                }
+            };
+
+            // Geronimo wrapper
+            ResourceAdapterWrapper raWrapper = new ResourceAdapterWrapper(ra, bootstrapContext);
+            raWrapper.doStart();
             ActivationSpecWrapper asWrapper = new ActivationSpecWrapper(as, raWrapper);
+            asWrapper.activate(messageEndpointFactory);
 
-        final Latch messageDelivered = new Latch();
-        MessageEndpointFactory messageEndpointFactory = new MessageEndpointFactory() {
-            public MessageEndpoint createEndpoint(XAResource resource) throws UnavailableException {
-                return new StubMessageEndpoint(etm, resource) {
-                    public void onMessage(Message message) {
-                        super.onMessage(message);
-                        messageDelivered.release();
-                    }
+            // test it
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            MessageProducer producer = session.createProducer(new ActiveMQQueue("TEST"));
+            producer.send(session.createTextMessage("Hello"));
 
-                    ;
-                };
-            }
-
-            public boolean isDeliveryTransacted(Method method) throws NoSuchMethodException {
-                return true;
-            }
-        };
-
-        asWrapper.activate(messageEndpointFactory);
-
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        MessageProducer producer = session.createProducer(new ActiveMQQueue("TEST"));
-        producer.send(session.createTextMessage("Hello"));
-
-        assertTrue(messageDelivered.attempt(1000 * 5));
+            assertTrue(messageDelivered.attempt(1000 * 5));
+        } finally {
+            workManager.doStop();
+        }
     }
 
 }

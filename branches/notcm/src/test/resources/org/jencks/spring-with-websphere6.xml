@@ -2,294 +2,246 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-<!-- 
+  <!--
 
-GENERAL COMMENTS:
+  GENERAL COMMENTS:
 
-VERSIONS
+  VERSIONS
 
-For purposes of my test case, I used
-WebSphere 6.0.2 App Server (base) edition
-(should also work with Express edition
-might work with Network Deployment)
-Jencks 1.1.1
-Spring 1.2.6
+  For purposes of my test case, I used
+  WebSphere 6.0.2 App Server (base) edition
+  (should also work with Express edition
+  might work with Network Deployment)
+  Jencks 1.1.1
+  Spring 1.2.6
 
-ADMINISTRATIVE DETAILS
+  ADMINISTRATIVE DETAILS
 
-I have performed the following WebSphere administrative actions prior to running my program
+  I have performed the following WebSphere administrative actions prior to running my program
 
-a) created a bus
-	QueryResponderBus
-b) associated app server with bus
-	server1
-c) created two bus destinations
-	QueryResponderRequestQueue
-	QueryResponderReplyQueue
-d) created a JMS Connection Factory
-	QueryResponderJMSCF
-e) created two JMS Queues 
-	QueryResponderRequestJMSQueue (tied to the bus destination QueryResponderRequestQueue)
-	QueryResponderReplyJMSQueue (tied to the bus destination QueryResponderReplyQueue)
+  a) created a bus
+    QueryResponderBus
+  b) associated app server with bus
+    server1
+  c) created two bus destinations
+    QueryResponderRequestQueue
+    QueryResponderReplyQueue
+  d) created a JMS Connection Factory
+    QueryResponderJMSCF
+  e) created two JMS Queues
+    QueryResponderRequestJMSQueue (tied to the bus destination QueryResponderRequestQueue)
+    QueryResponderReplyJMSQueue (tied to the bus destination QueryResponderReplyQueue)
 
-My app context file assumes this setup.
+  My app context file assumes this setup.
 
-Note there is no need to create an administratively managed ActivationSpec as Jencks takes care
-of working with the Activation spec
+  Note there is no need to create an administratively managed ActivationSpec as Jencks takes care
+  of working with the Activation spec
 
-After saving changes, had to stop/start the server to fire up the messaging engines on the bus
+  After saving changes, had to stop/start the server to fire up the messaging engines on the bus
 
-I found the Redbook "WebSphere Application Server V5: System Management and Configuration Handbook"
-available at http://www.redbooks.ibm.com, to be a good source of information on the available
-properties that can be set on each of the WAS specific classes. 
+  I found the Redbook "WebSphere Application Server V5: System Management and Configuration Handbook"
+  available at http://www.redbooks.ibm.com, to be a good source of information on the available
+  properties that can be set on each of the WAS specific classes.
 
-To make your life easier, you can alter the sas.client.props file for the app server to
-include settings for
+  To make your life easier, you can alter the sas.client.props file for the app server to
+  include settings for
 
-com.ibm.CORBA.loginSource=properties
-com.ibm.CORBA.loginUserid=yourusername
-com.ibm.CORBA.loginPassword=yourpassword
+  com.ibm.CORBA.loginSource=properties
+  com.ibm.CORBA.loginUserid=yourusername
+  com.ibm.CORBA.loginPassword=yourpassword
 
-For security, after putting the password in cleartext in sas.client.props, run the IBM utility
-PropFilePasswordEncoder to put it in some semblance of encoding...
+  For security, after putting the password in cleartext in sas.client.props, run the IBM utility
+  PropFilePasswordEncoder to put it in some semblance of encoding...
 
-LIMITATIONS:
+  LIMITATIONS:
 
-Tested witin a WAS J2EE app client. Didn't try to make it work with a pure Java client since ultimately, I will be running code like this inside a Web Service, a service which will contain both the message producers and message consumers
+  Tested witin a WAS J2EE app client. Didn't try to make it work with a pure Java client since ultimately, I will be running code like this inside a Web Service, a service which will contain both the message producers and message consumers
 
-For the activation spec to fire, the only way to get things to work is if 
-a) the JCA Connector instance is in a J2EE container running on the same box as the App Server containing
-the Message Queue with the Message Driven POJO (maybe this is standard for Activation specs?)
-b) said App Server box goes by alias of "localhost" (pretty standard)
-c) the AppServer's bootstrap port, the SIB_ENDPOINT_ADDRESS in the serverindex.xml WAS 
-configuration file, is the default port of 7276
+  For the activation spec to fire, the only way to get things to work is if
+  a) the JCA Connector instance is in a J2EE container running on the same box as the App Server containing
+  the Message Queue with the Message Driven POJO (maybe this is standard for Activation specs?)
+  b) said App Server box goes by alias of "localhost" (pretty standard)
+  c) the AppServer's bootstrap port, the SIB_ENDPOINT_ADDRESS in the serverindex.xml WAS
+  configuration file, is the default port of 7276
 
-Did not try to make it work with the WAS Work Manager - using Geronimo Work Manager for JCA Connector and Inbound messaging
+  Did not try to make it work with the WAS Work Manager - using Geronimo Work Manager for JCA Connector and Inbound messaging
 
-Outbound messaging setup does not work with any of the Jencks connection manager support - default to using the WAS supplied connection manager which seems to pool requests. Use of the Jencks Connection managera la http://jencks.org/Outbound+JMS results in a JCA runtime error 
-		javax.jms.JMSException: CWSIA0005E: The JCA runtime failed to allocate a connection.
-when trying to obtain a second connection. It may be possible to make it work, but I just gave up.
+  Outbound messaging setup does not work with any of the Jencks connection manager support - default to using the WAS supplied connection manager which seems to pool requests. Use of the Jencks Connection managera la http://jencks.org/Outbound+JMS results in a JCA runtime error
+      javax.jms.JMSException: CWSIA0005E: The JCA runtime failed to allocate a connection.
+  when trying to obtain a second connection. It may be possible to make it work, but I just gave up.
 
-How the JmsJcaConnectionFactory locates the JMS Connection Factory is a mystery to me. I only have
-1 connection factory defined on the SIB, so there's only one to find, but if you had two CFS, I don't
-know how you'd specify one over the other. Some mysteries I just don't care to solve, since I
-don't have to. 
+  How the JmsJcaConnectionFactory locates the JMS Connection Factory is a mystery to me. I only have
+  1 connection factory defined on the SIB, so there's only one to find, but if you had two CFS, I don't
+  know how you'd specify one over the other. Some mysteries I just don't care to solve, since I
+  don't have to.
 
-RUNNING AGAINST AN APP SERVER WITH GLOBAL SECURITY ENABLED
+  RUNNING AGAINST AN APP SERVER WITH GLOBAL SECURITY ENABLED
 
-I made this setup work on a Solaris box with LocalOS registry. No guarantees what you will need to do 
-for LDAP or some other auth method.
+  I made this setup work on a Solaris box with LocalOS registry. No guarantees what you will need to do
+  for LDAP or some other auth method.
 
-If the app server has global security turned on, then you will need to supply usernames and passwords as referenced in 
-the appropriate sections below.
+  If the app server has global security turned on, then you will need to supply usernames and passwords as referenced in
+  the appropriate sections below.
 
-This connection factory does not work with global security enabled. I didn't investigate further, and it might be made to work.
+  This connection factory does not work with global security enabled. I didn't investigate further, and it might be made to work.
 
-	<bean id="ConnectionFactory"
-		class="org.springframework.jndi.JndiObjectFactoryBean">
-		<property name="jndiName" value="jms/QueryResponderJMSCF" />
-		<property name="jndiTemplate">
-			<ref local="JndiTemplate" />
-		</property>
-	</bean>
+    <bean id="ConnectionFactory"
+      class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="jms/QueryResponderJMSCF" />
+      <property name="jndiTemplate" ref="JndiTemplate"/>
+    </bean>
 
 
 
 
--->
- 
- 
-<!-- INBOUND SUPPORT -->
+  -->
 
 
-	<!-- the JCA 1.5 compliant SIB JMS Resource Adapter that ships with Websphere 6.0 -->
-	<!-- No properties available on this resource adapter -->
-	<bean id="SIBJMSResourceAdapter"
-		class="com.ibm.ws.sib.api.jmsra.impl.JmsJcaResourceAdapterImpl">
-	</bean>
+  <!-- INBOUND SUPPORT -->
 
 
-    <!--  Using the Geronimo Work Manager. Might be able to make it work with
-    	the WebSphere workmanager but I didn't bother trying -->
-    	 
- 	<bean id="BootstrapContext"
-		class="org.jencks.factory.BootstrapContextFactoryBean">
-		<property name="threadPoolSize" value="25" />
-	</bean>
-
-	<!-- The JCA Container that will activate message driven pojos in conjunction with
-	the WebSphere 6.0 SIB Resource Adapter -->
-	
-	<bean id="JencksJcaContainer" class="org.jencks.JCAContainer" >
-		<!-- use the default configuration of work manager and transaction manager-->
-		<property name="bootstrapContext">
-			<ref local="BootstrapContext" />
-		</property>
-		<property name="resourceAdapter">
-			<ref local="SIBJMSResourceAdapter" />
-		</property>
-	</bean>
+  <!-- the JCA 1.5 compliant SIB JMS Resource Adapter that ships with Websphere 6.0 -->
+  <!-- No properties available on this resource adapter -->
+  <bean id="SIBJMSResourceAdapter" class="com.ibm.ws.sib.api.jmsra.impl.JmsJcaResourceAdapterImpl">
+  </bean>
 
 
-    <!-- SIB queue is tied to a JMS Queue through the JMS Providers/Default Messaging 
-    forms in the admin console -->
-    
-    <!-- Properties
-    	queueName - use the name of the queue on the SIB, not the JMS queue name 
-    -->
-    
-	<bean id="RequestQueue"
-		class="com.ibm.ws.sib.api.jms.impl.JmsQueueImpl">
-		<property name="queueName" value="QueryResponderRequestQueue" />
-	</bean>
-   
-       
-    <!-- ActivationSpec used by Jencks to activate message listener class -->
-    <!-- Properties of interest - see SysMgmt and Config handbook for details on others  
-    
-    	
-    	maxConcurrency - controls how many Listeners are made active, which is not the
-    	same as the size of the threadpool   
+  <!--  Using the Geronimo Work Manager. Might be able to make it work with
+      the WebSphere workmanager but I didn't bother trying -->
 
-	username, password must be supplied if you are using an app server with
-	global security enabled
-    -->
-      
-	<bean id="RequestQueueActivationSpec"
-		class="com.ibm.ws.sib.api.jmsra.impl.JmsJcaActivationSpecImpl">
-		<property name="destinationType" value="javax.jms.Queue" />
-		<property name="busName" value="QueryResponderBus" />
-		<property name="destination">
-		   <ref local="RequestQueue"/>
-		</property>
-		<property name="maxConcurrency" value="20" />
-		<!--
-		<property name="userName" value="yourwasaccount" />
-		<property name="password" value="yourwaspassword" />
-		-->
-	</bean>
+  <bean id="BootstrapContext" class="org.jencks.factory.BootstrapContextFactoryBean">
+    <property name="transactionManager" ref="transactionManager"/>
+    <property name="threadPoolSize" value="25"/>
+  </bean>
 
-   
-	<!--  The JCA connector which ties all the above together. 
-	      MsgConsumer is my POJO which implements the javax.jms.MessageListener interface -->
-	
-	<bean id="RequestQueueInboundConnector" class="org.jencks.JCAConnector">
-		<property name="jcaContainer">
-			<ref local="JencksJcaContainer" />
-		</property>
+  <!-- The JCA Container that will activate message driven pojos in conjunction with
+  the WebSphere 6.0 SIB Resource Adapter -->
 
-		<property name="activationSpec">
-			<ref local="RequestQueueActivationSpec" />
-		</property>
-		
-		<property name="ref" value="MsgConsumer" />
-	</bean>
+  <bean id="JencksJcaContainer" class="org.jencks.JCAContainer">
+    <!-- use the default configuration of work manager and transaction manager-->
+    <property name="bootstrapContext" ref="BootstrapContext"/>
+    <property name="resourceAdapter" ref="SIBJMSResourceAdapter"/>
+  </bean>
 
 
-<!--  OUTBOUND MESSAGING USING JENCKS AND SIB JMS RESOURCE ADAPTER -->
+  <!-- SIB queue is tied to a JMS Queue through the JMS Providers/Default Messaging
+forms in the admin console -->
+
+  <!-- Properties
+    queueName - use the name of the queue on the SIB, not the JMS queue name
+  -->
+
+  <bean id="RequestQueue" class="com.ibm.ws.sib.api.jms.impl.JmsQueueImpl">
+    <property name="queueName" value="QueryResponderRequestQueue"/>
+  </bean>
 
 
- 	<!-- ManagedConnectionFactory supplied in the SIB JMS ResourceAdapter -->
-	<!-- username, password must be supplied if you are using an app server with
-	global security enabled -->
+  <!-- ActivationSpec used by Jencks to activate message listener class -->
+  <!-- Properties of interest - see SysMgmt and Config handbook for details on others
 
-	<bean id="JmsJcaManagedConnectionFactory"
-		class="com.ibm.ws.sib.api.jmsra.impl.JmsJcaManagedConnectionFactoryImpl">
-		<property name="busName" value="QueryResponderBus" />
-		<!--
-		<property name="userName" value="yourwasaccount" />
-		<property name="password" value="yourwaspassword" />
-		-->		
-	</bean>
 
-	<!-- used by JmsTemplate -->
-	<!-- Connection factory, referencing the RA's managed connection factory,
-	that can be used by the JMS template instead of	ConnectionFactory, if desired.  
-    	-->
-    	<bean id="JmsJcaConnectionFactory" 		class="org.springframework.jca.support.LocalConnectionFactoryBean">
-       		<property name="managedConnectionFactory">
-       			<ref local="JmsJcaManagedConnectionFactory"/>
-       		</property>
-     	</bean>
-  
-  
-<!-- OUTBOUND MESSAGING USING JMS TEMPLATES -->
+    maxConcurrency - controls how many Listeners are made active, which is not the
+    same as the size of the threadpool
 
-		
-	<bean id="JndiTemplate"
-		class="org.springframework.jndi.JndiTemplate">
-		<property name="environment">
-			<props>
-				<prop key="java.naming.factory.initial">
-					com.ibm.websphere.naming.WsnInitialContextFactory
-				</prop>
-			</props>
-		</property>
-	</bean>
+    username, password must be supplied if you are using an app server with
+    global security enabled
+  -->
 
-	<bean id="RequestJmsQueue"
-		class="org.springframework.jndi.JndiObjectFactoryBean">
-		<property name="jndiName" value="jms/QueryResponderRequestJMSQueue" />
-		<property name="jndiTemplate">
-			<ref local="JndiTemplate" />
-		</property>
+  <bean id="RequestQueueActivationSpec" class="com.ibm.ws.sib.api.jmsra.impl.JmsJcaActivationSpecImpl">
+    <property name="destinationType" value="javax.jms.Queue"/>
+    <property name="busName" value="QueryResponderBus"/>
+    <property name="destination" ref="RequestQueue"/>
+    <property name="maxConcurrency" value="20"/>
+    <!--
+     <property name="userName" value="yourwasaccount" />
+     <property name="password" value="yourwaspassword" />
+     -->
+  </bean>
 
-	</bean>	
-	
-	<bean id="ReplyJmsQueue"
-		class="org.springframework.jndi.JndiObjectFactoryBean">
-		<property name="jndiName" value="jms/QueryResponderReplyJMSQueue" />
-		<property name="jndiTemplate">
-			<ref local="JndiTemplate" />
-		</property>
 
-	</bean>
+  <!--  The JCA connector which ties all the above together.
+        MsgConsumer is my POJO which implements the javax.jms.MessageListener interface -->
 
-	<bean id="RequestJmsTemplate"
-		class="org.springframework.jms.core.JmsTemplate">
+  <bean id="RequestQueueInboundConnector" class="org.jencks.JCAConnector">
+    <property name="jcaContainer" ref="JencksJcaContainer"/>
 
-		
-		<property name="connectionFactory">
-			<ref local="JmsJcaConnectionFactory" />
-		</property>
-		<property name="defaultDestination">
-			<ref local="RequestJmsQueue" />
-		</property>
-	</bean>
+    <property name="activationSpec" ref="RequestQueueActivationSpec"/>
 
-	<bean id="ReplyJmsTemplate"
-		class="org.springframework.jms.core.JmsTemplate">
-		<property name="connectionFactory">
-			<ref local="JmsJcaConnectionFactory" />
-		</property>
-		<property name="defaultDestination">
-			<ref local="ReplyJmsQueue" />
-		</property>
-	</bean>
-	
-	
-<!--  MY TEST PRODUCER AND CONSUMER -->
-	<!-- the message producer that puts the message on the request queue for the message driven 
-	POJO and waits for a response on the reply queue -->
-	<bean id="MsgProducer"
-		class="net.cisanet.iem.test.TestProducerBean">
-		<property name="requestJmsTemplate">
-			<ref local="RequestJmsTemplate" />
-		</property>
-		<property name="replyJmsTemplate">
-			<ref local="ReplyJmsTemplate" />
-		</property>
-	</bean>
+    <property name="ref" value="MsgConsumer"/>
+  </bean>
 
-	<!--  the Message-Driven pojo to read the message from the request queue and send a message 
-	back on the reply queue -->
-	<bean id="MsgConsumer"
-		class="net.cisanet.iem.test.TestConsumerBean">
-		<property name="replyJmsTemplate">
-			<ref local="ReplyJmsTemplate" />
-		</property>		
-		
-	</bean>
+
+  <!--  OUTBOUND MESSAGING USING JENCKS AND SIB JMS RESOURCE ADAPTER -->
+
+
+  <!-- ManagedConnectionFactory supplied in the SIB JMS ResourceAdapter -->
+  <!-- username, password must be supplied if you are using an app server with
+  global security enabled -->
+
+  <bean id="JmsJcaManagedConnectionFactory" class="com.ibm.ws.sib.api.jmsra.impl.JmsJcaManagedConnectionFactoryImpl">
+    <property name="busName" value="QueryResponderBus"/>
+    <!--
+     <property name="userName" value="yourwasaccount" />
+     <property name="password" value="yourwaspassword" />
+     -->
+  </bean>
+
+  <!-- used by JmsTemplate -->
+  <!-- Connection factory, referencing the RA's managed connection factory,
+  that can be used by the JMS template instead of	ConnectionFactory, if desired.
+      -->
+  <bean id="JmsJcaConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">
+    <property name="managedConnectionFactory" ref="JmsJcaManagedConnectionFactory"/>
+  </bean>
+
+
+  <!-- OUTBOUND MESSAGING USING JMS TEMPLATES -->
+
+
+  <bean id="JndiTemplate" class="org.springframework.jndi.JndiTemplate">
+    <property name="environment">
+      <props>
+        <prop key="java.naming.factory.initial">
+          com.ibm.websphere.naming.WsnInitialContextFactory
+        </prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="RequestJmsQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="jms/QueryResponderRequestJMSQueue"/>
+    <property name="jndiTemplate" ref="JndiTemplate"/>
+  </bean>
+
+  <bean id="ReplyJmsQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="jms/QueryResponderReplyJMSQueue"/>
+    <property name="jndiTemplate" ref="JndiTemplate"/>
+  </bean>
+
+  <bean id="RequestJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory" ref="JmsJcaConnectionFactory"/>
+    <property name="defaultDestination" ref="RequestJmsQueue"/>
+  </bean>
+
+  <bean id="ReplyJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory" ref="JmsJcaConnectionFactory"/>
+    <property name="defaultDestination" ref="ReplyJmsQueue"/>
+  </bean>
+
+
+  <!--  MY TEST PRODUCER AND CONSUMER -->
+  <!-- the message producer that puts the message on the request queue for the message driven
+  POJO and waits for a response on the reply queue -->
+  <bean id="MsgProducer" class="net.cisanet.iem.test.TestProducerBean">
+    <property name="requestJmsTemplate" ref="RequestJmsTemplate"/>
+    <property name="replyJmsTemplate" ref="ReplyJmsTemplate"/>
+  </bean>
+
+  <!--  the Message-Driven pojo to read the message from the request queue and send a message
+  back on the reply queue -->
+  <bean id="MsgConsumer" class="net.cisanet.iem.test.TestConsumerBean">
+    <property name="replyJmsTemplate" ref="ReplyJmsTemplate"/>
+  </bean>
 
 </beans>
 

@@ -16,12 +16,8 @@
 
 package org.jencks.interceptor;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.geronimo.transaction.DefaultInstanceContext;
-import org.apache.geronimo.transaction.InstanceContext;
-import org.apache.geronimo.transaction.TrackedConnectionAssociator;
-
+import java.io.IOException;
+import java.util.Set;
 import javax.resource.ResourceException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -29,9 +25,10 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+
+import org.apache.geronimo.connector.outbound.connectiontracking.ConnectorInstanceContext;
+import org.apache.geronimo.connector.outbound.connectiontracking.ConnectorInstanceContextImpl;
+import org.apache.geronimo.connector.outbound.connectiontracking.TrackedConnectionAssociator;
 
 /**
  * This servlet filter is used to enter in a transactional context
@@ -65,82 +62,50 @@ import java.util.Set;
  * </web-app>
  *
  * @author Thierry Templier
- * @see TrackedConnectionAssociator#enter(InstanceContext)
- * @see TrackedConnectionAssociator#exit(InstanceContext)
- * @see InstanceContext
- * @see DefaultInstanceContext
+ * @see TrackedConnectionAssociator#enter(ConnectorInstanceContext)
+ * @see TrackedConnectionAssociator#exit(ConnectorInstanceContext)
+ * @see ConnectorInstanceContext
+ * @see ConnectorInstanceContextImpl
  */
 public class TransactionContexFilter implements Filter {
-
     private TrackedConnectionAssociator associator;
-
-    protected Log logger = LogFactory.getLog(getClass());
+    private Set unshareableResources;
+    private Set applicationManagedSecurityResources;
+    private ConnectorInstanceContext myContext;
 
     public void init(FilterConfig config) throws ServletException {
+        myContext = new ConnectorInstanceContextImpl(unshareableResources, applicationManagedSecurityResources);
     }
 
     /**
      * This is the central method of the filter which allows the
      * request to enter in a transactionnal context and exit when
      * the request is sent back to the client.
-     *
-     * @see #enterContext(Set, Set)
-     * @see #exitContext(InstanceContext)
      */
-    public void doFilter(ServletRequest request, ServletResponse response,
-                         FilterChain chain) throws IOException, ServletException {
-        // Enter in the transactionnal context
-        Set unshareableResources = new HashSet();
-        Set applicationManagedSecurityResources = new HashSet();
-        InstanceContext oldContext =
-                enterContext(unshareableResources, applicationManagedSecurityResources);
+    public void doFilter(ServletRequest request,
+            ServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
 
-        // Proceed with chain
-        chain.doFilter(request, response);
-
-        // Exit the transactionnal context
-        exitContext(oldContext);
-    }
-
-    /**
-     * This method enters in a new context and returns it
-     * in order to exit of it when the request is sent back to
-     * the client.
-     */
-    private InstanceContext enterContext(Set unshareableResources,
-                                         Set applicationManagedSecurityResources) {
         try {
-            InstanceContext oldContext =
-                    associator.enter(new DefaultInstanceContext(
-                            unshareableResources, applicationManagedSecurityResources));
-            if (logger.isDebugEnabled()) {
-                logger.info("Geronimo transaction context set.");
+            // Enter in the transactionnal context
+            ConnectorInstanceContext oldContext = associator.enter(myContext);
+            try {
+                // Proceed with chain
+                chain.doFilter(request, response);
+            } finally {
+                // Exit the transactionnal context
+                associator.exit(oldContext);
             }
-            return oldContext;
-        }
-        catch (ResourceException ex) {
-        }
-        return null;
-    }
-
-    /**
-     * This method exits of the specified context. This context is
-     * created when entering a new one.
-     *
-     * @see #enterContext(Set, Set)
-     */
-    private void exitContext(InstanceContext oldContext) {
-        try {
-            associator.exit(oldContext);
-            if (logger.isDebugEnabled()) {
-                logger.info("Geronimo transaction context unset.");
-            }
-        }
-        catch (ResourceException ex) {
+        } catch (ResourceException e) {
+            throw new ServletException("Error while notifying connection tracker", e);
         }
     }
 
     public void destroy() {
+    }
+
+    public TrackedConnectionAssociator getAssociator() {
+        return associator;
     }
 
     /**
@@ -151,4 +116,19 @@ public class TransactionContexFilter implements Filter {
         this.associator = associator;
 	}
 
+    public Set getUnshareableResources() {
+        return unshareableResources;
+    }
+
+    public void setUnshareableResources(Set unshareableResources) {
+        this.unshareableResources = unshareableResources;
+    }
+
+    public Set getApplicationManagedSecurityResources() {
+        return applicationManagedSecurityResources;
+    }
+
+    public void setApplicationManagedSecurityResources(Set applicationManagedSecurityResources) {
+        this.applicationManagedSecurityResources = applicationManagedSecurityResources;
+    }
 }

@@ -16,15 +16,15 @@
 
 package org.jencks.factory;
 
+import java.util.Collection;
+
 import org.apache.geronimo.transaction.log.UnrecoverableLog;
 import org.apache.geronimo.transaction.manager.TransactionLog;
-import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.geronimo.transaction.manager.XidFactory;
 import org.apache.geronimo.transaction.manager.XidFactoryImpl;
+import org.jencks.GeronimoPlatformTransactionManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-
-import java.util.Collection;
 
 /**
  * This FactoryBean creates and configures the Geronimo implementation
@@ -33,29 +33,29 @@ import java.util.Collection;
  * @author Thierry Templier
  * @see UnrecoverableLog
  * @see org.apache.geronimo.transaction.log.HOWLLog
- * @org.apache.xbean.XBean
+ * @org.apache.xbean.XBean element="transactionManager"
  */
 public class TransactionManagerFactoryBean implements FactoryBean, InitializingBean {
+    private GeronimoPlatformTransactionManager transactionManager;
 
     private int defaultTransactionTimeoutSeconds = 600;
+    private XidFactory xidFactory;
     private TransactionLog transactionLog;
     private Collection resourceManagers;
 
-    private TransactionManagerImpl transactionManagerImpl;
-    private XidFactory xidFactory;
 
     public Object getObject() throws Exception {
-        if (transactionManagerImpl == null) {
-            this.transactionManagerImpl = new TransactionManagerImpl(defaultTransactionTimeoutSeconds,
+        if (transactionManager == null) {
+            this.transactionManager = new GeronimoPlatformTransactionManager(defaultTransactionTimeoutSeconds,
                     xidFactory,
                     transactionLog,
                     resourceManagers);
         }
-        return transactionManagerImpl;
+        return transactionManager;
     }
 
     public Class getObjectType() {
-        return TransactionManagerImpl.class;
+        return GeronimoPlatformTransactionManager.class;
     }
 
     public boolean isSingleton() {

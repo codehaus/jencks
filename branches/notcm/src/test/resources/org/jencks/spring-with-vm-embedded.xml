@@ -14,12 +14,8 @@
   || Jencks JCA Container
   -->
   <bean id="jencks" class="org.jencks.JCAContainer">
-
-    <property name="bootstrapContext">
-      <bean class="org.jencks.factory.BootstrapContextFactoryBean">
-        <property name="threadPoolSize" value="25"/>
-      </bean>
-    </property>
+    <property name="transactionManager" ref="transactionManager"/>
+    <property name="threadPoolSize" value="25"/>
 
     <!-- the JCA Resource Adapter -->
     <property name="resourceAdapter">
@@ -35,7 +31,7 @@
     -->
   <bean id="inboundConnectorA" class="org.jencks.JCAConnector">
 
-	<property name="jcaContainer" ref="jencks" />
+    <property name="jcaContainer" ref="jencks"/>
 
     <!-- subscription details -->
     <property name="activationSpec">
@@ -57,7 +53,7 @@
     -->
   <bean id="inboundConnectorB" class="org.jencks.JCAConnector">
 
-	<property name="jcaContainer" ref="jencks" />
+    <property name="jcaContainer" ref="jencks"/>
 
     <!-- subscription details -->
     <property name="activationSpec">
@@ -68,9 +64,7 @@
     </property>
 
     <!-- use XA transactions -->
-    <property name="transactionManager">
-      <ref bean="transactionManager"/>
-    </property>
+    <property name="transactionManager" ref="transactionManager"/>
 
     <!-- This example uses a pooled bean -->
     <property name="ref" value="pooledEchoBean"/>
@@ -81,25 +75,19 @@
     -->
 
   <!-- a thread safe non-pooled MessageListener -->
-  <bean id="echoBean" class="org.jencks.TestBean" singleton="true">
-  </bean>
+  <bean id="echoBean" class="org.jencks.TestBean" singleton="true"/>
 
   <!-- a pooled, non-thread safe MessageListener using ProxyFactoryBean -->
   <bean id="pooledEchoBean" class="org.jencks.TargetSourceMessageListener">
     <property name="targetSource">
       <bean id="pooledEchoBeanTargetSource" class="org.springframework.aop.target.CommonsPoolTargetSource">
-        <property name="targetBeanName">
-          <value>pooledEchoBeanTarget</value>
-        </property>
-        <property name="maxSize">
-          <value>25</value>
-        </property>
+        <property name="targetBeanName" value="pooledEchoBeanTarget"/>
+        <property name="maxSize" value="25"/>
       </bean>
     </property>
   </bean>
-  <bean id="pooledEchoBeanTarget" class="org.jencks.TestBean" singleton="false">
-  </bean>
+  <bean id="pooledEchoBeanTarget" class="org.jencks.TestBean" singleton="false"/>
 
 </beans>
 
-        <!-- END SNIPPET: spring -->
+    <!-- END SNIPPET: spring -->

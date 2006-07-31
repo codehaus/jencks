@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
+
+<!-- START SNIPPET: jca -->
+<beans xmlns:j="http://jencks.org/1.3">
+
+  <!--
+
+         ###### Transaction manager ######
+
+   -->
+
+  <j:transactionManager id="transactionManager"/>
+
+  <!--
+
+         ###### JCA ######
+
+   -->
+
+  <j:connectionManager id="connectionManager"
+    transactionManager="#transactionManager"
+    transaction="xa"/>
+
+  <!--
+
+         ###### Tranql ######
+
+   -->
+
+  <j:dataSourceMCF id="tranqlManagedConnectionFactory"
+    driverName="org.hsqldb.jdbcDriver"
+    url="jdbc:hsqldb:."
+    user="sa"
+    password=""/>
+
+  <bean id="dataSource" class="org.springframework.jca.support.LocalConnectionFactoryBean">
+    <property name="managedConnectionFactory" ref="tranqlManagedConnectionFactory"/>
+    <property name="connectionManager" ref="connectionManager"/>
+  </bean>
+
+</beans>
+<!-- END SNIPPET: jca -->

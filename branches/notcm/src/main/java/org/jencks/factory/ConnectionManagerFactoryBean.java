@@ -16,21 +16,21 @@
 
 package org.jencks.factory;
 
-import java.util.Map;
-
 import javax.resource.spi.ConnectionManager;
+import javax.transaction.TransactionManager;
 
 import org.apache.geronimo.connector.outbound.GenericConnectionManager;
-import org.apache.geronimo.connector.outbound.connectionmanagerconfig.NoPool;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.NoTransactions;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PoolingSupport;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.TransactionSupport;
+import org.apache.geronimo.connector.outbound.connectionmanagerconfig.NoPool;
+import org.apache.geronimo.connector.outbound.connectionmanagerconfig.SinglePool;
+import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PartitionedPool;
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTracker;
-import org.apache.geronimo.transaction.context.TransactionContextManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.FatalBeanException;
 
 /**
  * This FactoryBean creates a local JCA connection factory outside
@@ -41,36 +41,54 @@ import org.springframework.context.ApplicationContextAware;
  *
  * @author Thierry Templier
  * @see org.springframework.jca.support.LocalConnectionFactoryBean#setConnectionManager(ConnectionManager)
- * @see NoTransactionFactoryBean
- * @see LocalTransactionFactoryBean
- * @see XATransactionFactoryBean
- * @see PartitionedPoolFactoryBean
- * @see SinglePoolFactoryBean
- * @org.apache.xbean.XBean
+ * @org.apache.xbean.XBean element="connectionManager"
  */
-public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
+public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBean, DisposableBean {
+    private GenericConnectionManager connectionManager;
 
-	private ApplicationContext applicationContext;
+    private TransactionManager transactionManager;
+
     private TransactionSupport transactionSupport;
-    private PoolingSupport poolingSupport;
+    private String transaction;
+
     private boolean containerManagedSecurity;
-    private TransactionContextManager transactionContextManager;
     private ConnectionTracker connectionTracker;
-    private ConnectionManager connectionManager;
+
+    private PoolingSupport poolingSupport;
+    private boolean pooling = true;
+    private String partitionStrategy; //: none, by-subject, by-connector-properties
+    private int poolMaxSize = 10;
+    private int poolMinSize = 0;
+    private boolean allConnectionsEqual = true;
+    private int connectionMaxWaitMilliseconds = 5000;
+    private int connectionMaxIdleMinutes = 15;
 
     public Object getObject() throws Exception {
-    	if (connectionManager == null) {
-	        // Instanciate the Geronimo Connection Manager
-	        this.connectionManager = new GenericConnectionManager(
-	        		this.transactionSupport, 
-	        		this.poolingSupport,
-	                this.containerManagedSecurity, 
-	                getConnectionTracker(), 
-	                getTransactionContextManager(),
-	                getClass().getName(), 
-	                getClass().getClassLoader());
-    	}
+        if (connectionManager == null) {
+            if (transactionManager == null) {
+                throw new NullPointerException("transactionManager is null");
+            }
+
+            // Instanciate the Geronimo Connection Manager
+            this.connectionManager = new GenericConnectionManager(
+                    transactionSupport,
+                    poolingSupport,
+                    containerManagedSecurity,
+                    connectionTracker,
+                    transactionManager,
+                    getClass().getName(),
+                    getClass().getClassLoader());
+
+            connectionManager.doStart();
+        }
         return connectionManager;
+    }
+
+    public void destroy() throws Exception {
+        if (connectionManager != null) {
+            connectionManager.doStop();
+            connectionManager = null;
+        }
     }
 
     public Class getObjectType() {
@@ -81,9 +99,9 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
         return true;
     }
 
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
-	}
+    public PoolingSupport getPoolingSupport() {
+        return poolingSupport;
+    }
 
     /**
      * Set the pooling support for the Geronimo Connection Manager.
@@ -96,11 +114,27 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
         poolingSupport = support;
     }
 
+    public TransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
     /**
-     * Set the transaction context manager for the Geronimo Connection Manager.
+     * Set the transaction manager for the Geronimo Connection Manager.
      */
-    public void setTransactionContextManager(TransactionContextManager manager) {
-        transactionContextManager = manager;
+    public void setTransactionManager(TransactionManager manager) {
+        transactionManager = manager;
+    }
+
+    public String getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(String transaction) {
+        this.transaction = transaction;
+    }
+
+    public TransactionSupport getTransactionSupport() {
+        return transactionSupport;
     }
 
     /**
@@ -116,6 +150,10 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
         transactionSupport = support;
     }
 
+    public ConnectionTracker getConnectionTracker() {
+        return connectionTracker;
+    }
+
     /**
      * Set the connection tracker for the Geronimo Connection Manager.
      */
@@ -123,11 +161,71 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
         connectionTracker = tracker;
     }
 
+    public boolean isContainerManagedSecurity() {
+        return containerManagedSecurity;
+    }
+
     /**
      * Enables/disables container managed security
      */
     public void setContainerManagedSecurity(boolean containerManagedSecurity) {
         this.containerManagedSecurity = containerManagedSecurity;
+    }
+
+    public boolean isPooling() {
+        return pooling;
+    }
+
+    public void setPooling(boolean pooling) {
+        this.pooling = pooling;
+    }
+
+    public String getPartitionStrategy() {
+        return partitionStrategy;
+    }
+
+    public void setPartitionStrategy(String partitionStrategy) {
+        this.partitionStrategy = partitionStrategy;
+    }
+
+    public int getPoolMaxSize() {
+        return poolMaxSize;
+    }
+
+    public void setPoolMaxSize(int poolMaxSize) {
+        this.poolMaxSize = poolMaxSize;
+    }
+
+    public int getPoolMinSize() {
+        return poolMinSize;
+    }
+
+    public void setPoolMinSize(int poolMinSize) {
+        this.poolMinSize = poolMinSize;
+    }
+
+    public boolean isAllConnectionsEqual() {
+        return allConnectionsEqual;
+    }
+
+    public void setAllConnectionsEqual(boolean allConnectionsEqual) {
+        this.allConnectionsEqual = allConnectionsEqual;
+    }
+
+    public int getConnectionMaxWaitMilliseconds() {
+        return connectionMaxWaitMilliseconds;
+    }
+
+    public void setConnectionMaxWaitMilliseconds(int connectionMaxWaitMilliseconds) {
+        this.connectionMaxWaitMilliseconds = connectionMaxWaitMilliseconds;
+    }
+
+    public int getConnectionMaxIdleMinutes() {
+        return connectionMaxIdleMinutes;
+    }
+
+    public void setConnectionMaxIdleMinutes(int connectionMaxIdleMinutes) {
+        this.connectionMaxIdleMinutes = connectionMaxIdleMinutes;
     }
 
     /**
@@ -147,38 +245,52 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
         // Apply the default value for property if necessary
         if (this.transactionSupport == null) {
             // No transaction
-            this.transactionSupport = NoTransactions.INSTANCE;
+            this.transactionSupport = GeronimoDefaults.createTransactionSupport(transaction);
         }
         if (this.poolingSupport == null) {
             // No pool
-            this.poolingSupport = new NoPool();
+            if (!pooling) {
+                poolingSupport = new NoPool();
+            } else {
+                if (partitionStrategy == null || "none".equalsIgnoreCase(partitionStrategy)) {
+
+                    // unpartitioned pool
+                    poolingSupport = new SinglePool(poolMaxSize,
+                            poolMinSize,
+                            connectionMaxWaitMilliseconds,
+                            connectionMaxIdleMinutes,
+                            allConnectionsEqual,
+                            !allConnectionsEqual,
+                            false);
+
+                } else if ("by-connector-properties".equalsIgnoreCase(partitionStrategy)) {
+
+                    // partition by contector properties such as username and password on a jdbc connection
+                    poolingSupport = new PartitionedPool(poolMaxSize,
+                            poolMinSize,
+                            connectionMaxWaitMilliseconds,
+                            connectionMaxIdleMinutes,
+                            allConnectionsEqual,
+                            !allConnectionsEqual,
+                            false,
+                            true,
+                            false);
+                } else if ("by-subject".equalsIgnoreCase(partitionStrategy)) {
+
+                    // partition by caller subject
+                    poolingSupport = new PartitionedPool(poolMaxSize,
+                            poolMinSize,
+                            connectionMaxWaitMilliseconds,
+                            connectionMaxIdleMinutes,
+                            allConnectionsEqual,
+                            !allConnectionsEqual,
+                            false,
+                            false,
+                            true);
+                } else {
+                    throw new FatalBeanException("Unknown partition strategy " + partitionStrategy);
+                }
+            }
         }
     }
-
-	public ConnectionTracker getConnectionTracker() {
-		if (connectionTracker == null && applicationContext != null) {
-			Map map = applicationContext.getBeansOfType(ConnectionTracker.class);
-			if (map.size() == 1) {
-				connectionTracker = (ConnectionTracker) map.values().iterator().next();
-			}
-		}
-		return connectionTracker;
-	}
-
-	public TransactionContextManager getTransactionContextManager() {
-		if (transactionContextManager == null) {
-			if (applicationContext != null) {
-				Map map = applicationContext.getBeansOfType(TransactionContextManager.class);
-				if (map.size() == 1) {
-					transactionContextManager = (TransactionContextManager) map.values().iterator().next();
-				} else {
-					throw new IllegalStateException("no TransactionContextManager is registered");
-				}
-			} else {
-				throw new IllegalStateException("no TransactionContextManager is set");
-			}
-		}
-		return transactionContextManager;
-	}
-
 }

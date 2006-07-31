@@ -19,7 +19,10 @@ package org.jencks;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
+import org.apache.geronimo.connector.work.GeronimoWorkManager;
 import org.jencks.factory.BootstrapContextFactoryBean;
+import org.jencks.factory.GeronimoDefaults;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -28,6 +31,7 @@ import org.springframework.context.ApplicationContextAware;
 
 import javax.resource.spi.BootstrapContext;
 import javax.resource.spi.ResourceAdapter;
+import javax.resource.spi.work.WorkManager;
 
 /**
  * Represents a base JCA container which has no dependency on Geronimo
@@ -44,9 +48,17 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
     private static final Log log = LogFactory.getLog(JCAContainer.class);
     private BootstrapContext bootstrapContext;
     private ResourceAdapter resourceAdapter;
-	private ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
     private boolean lazyLoad = false;
-    
+
+    // optional - used to create bootstrap context when not specified
+    private GeronimoTransactionManager transactionManager;
+    private WorkManager workManager;
+    private boolean createdWorkManager;
+
+    // optional - used to create work manager when bootstrap context and work manager are not specified
+    private int threadPoolSize;
+
     public JCAContainer() {
     }
 
@@ -59,18 +71,25 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
             throw new IllegalArgumentException("resourceAdapter must be set");
         }
         if (bootstrapContext == null) {
-            if (bootstrapContext == null) {
-                throw new IllegalArgumentException("bootstrapContext must be set");
+            if (transactionManager == null) {
+                throw new IllegalArgumentException("bootstrapContext or transactionManager must be set");
             }
+
+            if (workManager == null) {
+                workManager = GeronimoDefaults.createWorkManager(transactionManager, threadPoolSize);
+                createdWorkManager = true;
+            }
+            bootstrapContext = GeronimoDefaults.createBootstrapContext(transactionManager, workManager);
         }
+
         resourceAdapter.start(bootstrapContext);
 
         // now lets start all of the JCAConnector instances
         if (!lazyLoad) {
-	        if (applicationContext == null) {
-	            throw new IllegalArgumentException("applicationContext should have been set by Spring");
-	        }
-        	applicationContext.getBeansOfType(JCAConnector.class);
+            if (applicationContext == null) {
+                throw new IllegalArgumentException("applicationContext should have been set by Spring");
+            }
+            applicationContext.getBeansOfType(JCAConnector.class);
         }
 
         String version = null;
@@ -85,6 +104,11 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
     public void destroy() throws Exception {
         if (resourceAdapter != null) {
             resourceAdapter.stop();
+        }
+        if (createdWorkManager && workManager instanceof GeronimoWorkManager) {
+            GeronimoWorkManager geronimoWorkManager = (GeronimoWorkManager) workManager;
+            geronimoWorkManager.doStop();
+            geronimoWorkManager = null;
         }
     }
 
@@ -122,4 +146,27 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
         this.lazyLoad = lazyLoad;
     }
 
+    public GeronimoTransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
+    public void setTransactionManager(GeronimoTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+
+    public WorkManager getWorkManager() {
+        return workManager;
+    }
+
+    public void setWorkManager(WorkManager workManager) {
+        this.workManager = workManager;
+    }
+
+    public int getThreadPoolSize() {
+        return threadPoolSize;
+    }
+
+    public void setThreadPoolSize(int threadPoolSize) {
+        this.threadPoolSize = threadPoolSize;
+    }
 }

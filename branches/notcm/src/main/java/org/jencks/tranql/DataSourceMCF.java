@@ -24,10 +24,11 @@ import org.tranql.connector.jdbc.AbstractXADataSourceMCF;
 
 /**
  * @author Thierry Templier
+ * @org.apache.xbean.XBean element="dataSourceMCF"
  */
-public class XAPoolDataSourceMCF extends AbstractXADataSourceMCF {
+public class DataSourceMCF extends AbstractXADataSourceMCF {
 
-	public XAPoolDataSourceMCF() {
+	public DataSourceMCF() {
 		super(new StandardXADataSource(),new AllExceptionsAreFatalSorter());
 	}
 

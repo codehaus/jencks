@@ -31,29 +31,7 @@
         </bean>
       </constructor-arg>
   </bean-->
-  <bean id="transactionContextManager" class="org.jencks.factory.TransactionContextManagerFactoryBean">
-    <!--property name="transactionLog">
-       <ref local="howlTransactionLog"/>
-     </property-->
-    <!--property name="resourceManagers">
-        <bean class="org.gbean.geronimo.CollectionReference">
-            <property name="name"><value>ResourceManagers</value></property>
-            <property name="patterns">
-                <set>
-                    <value type="javax.management.ObjectName">*:j2eeType=JCAManagedConnectionFactory,*</value>
-                    <value type="javax.management.ObjectName">*:j2eeType=ActivationSpec,*</value>
-                    <value>*:j2eeType=JCAManagedConnectionFactory,*</value>
-                    <value>*:j2eeType=ActivationSpec,*</value>
-                </set>
-            </property>
-            <property name="type"><value>org.apache.geronimo.transaction.manager.ResourceManager</value></property>
-        </bean>
-    </property-->
-  </bean>
-  <bean id="userTransaction" class="org.jencks.factory.GeronimoTransactionManagerFactoryBean"/>
-  <bean id="jtaTransactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
-  	<property name="userTransaction" ref="userTransaction" />
-  </bean>
+  <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
 
   <!--
 
@@ -61,67 +39,21 @@
 
    -->
 
-  <bean id="transactionSupport"
-        class="org.jencks.factory.XATransactionFactoryBean">
-    <property name="useTransactionCaching">
-      <value>true</value>
-    </property>
-    <property name="useThreadCaching">
-      <value>false</value>
-    </property>
-  </bean>
-
-  <bean id="poolingSupport" class="org.jencks.factory.SinglePoolFactoryBean">
-    <property name="maxSize">
-      <value>2</value>
-    </property>
-    <property name="minSize">
-      <value>1</value>
-    </property>
-    <property name="blockingTimeoutMilliseconds">
-      <value>60</value>
-    </property>
-    <property name="idleTimeoutMinutes">
-      <value>60</value>
-    </property>
-    <property name="matchOne">
-      <value>true</value>
-    </property>
-    <property name="matchAll">
-      <value>true</value>
-    </property>
-    <property name="selectOneAssumeMatch">
-      <value>true</value>
-    </property>
-  </bean>
-
   <!--bean id="poolingSupport" class="org.apache.geronimo.connector.outbound.connectionmanagerconfig.NoPool"/-->
 
   <bean id="jcaConnectionPoolManager1" class="org.jencks.factory.ConnectionManagerFactoryBean">
-    <property name="transactionSupport">
-      <ref local="transactionSupport"/>
-    </property>
-    <property name="poolingSupport">
-      <ref local="poolingSupport"/>
-    </property>
+    <property name="transactionManager" ref="transactionManager"/>
+    <property name="transaction" value="xa"/>
   </bean>
 
   <bean id="jcaConnectionPoolManager2" class="org.jencks.factory.ConnectionManagerFactoryBean">
-    <property name="transactionSupport">
-      <ref local="transactionSupport"/>
-    </property>
-    <property name="poolingSupport">
-      <ref local="poolingSupport"/>
-    </property>
+    <property name="transactionManager" ref="transactionManager"/>
+    <property name="transaction" value="xa"/>
   </bean>
 
   <bean id="jcaConnectionPoolManager3" class="org.jencks.factory.ConnectionManagerFactoryBean">
-    <property name="transactionSupport">
-      <ref local="transactionSupport"/>
-    </property>
-    <property name="poolingSupport">
-      <ref local="poolingSupport"/>
-    </property>
+    <property name="transactionManager" ref="transactionManager"/>
+    <property name="transaction" value="xa"/>
   </bean>
 
   <!--
@@ -177,12 +109,8 @@
    -->
 
   <bean id="jmsResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
-    <property name="serverUrl">
-      <value>tcp://localhost:51616</value>
-    </property>
-    <property name="brokerXmlConfig">
-      <value>xbean:org/jencks/broker.xml</value>
-    </property>
+    <property name="serverUrl" value="tcp://localhost:51616"/>
+    <property name="brokerXmlConfig" value="xbean:org/jencks/broker.xml"/>
   </bean>
 
 
