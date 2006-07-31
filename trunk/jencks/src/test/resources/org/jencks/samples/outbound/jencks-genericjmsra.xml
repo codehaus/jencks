@@ -71,10 +71,12 @@
 
    -->
 
+<!-- 
   <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean" singleton="true">
     <property name="config" value="classpath:org/jencks/samples/outbound/broker.xml" />
   </bean>
-
+ -->
+ 
   <bean id="jmsResourceAdapter" class="com.sun.genericra.GenericJMSRA">
   	<property name="providerIntegrationMode" value="bean"/>
   	<property name="XAConnectionFactoryClassName" value="org.apache.activemq.ActiveMQXAConnectionFactory" />
@@ -85,7 +87,10 @@
 
   <bean id="jmsManagedConnectionFactory" class="com.sun.genericra.outbound.ManagedJMSConnectionFactory">
 	<property name="resourceAdapter"><ref local="jmsResourceAdapter"/></property>
+  <!-- 
 	<property name="connectionFactoryProperties" value="BrokerURL=tcp://localhost:51626" />
+   -->
+	<property name="connectionFactoryProperties" value="BrokerURL=vm://localhost" />
   </bean>
 
   <bean id="jmsConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">

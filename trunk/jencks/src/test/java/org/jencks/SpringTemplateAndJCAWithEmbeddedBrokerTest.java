@@ -52,7 +52,7 @@ public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
         consumer.waitForMessagesToArrive(messageCount);
 
         List list = consumer.flushMessages();
-        assertEquals("Message count: " + list, messageCount, list.size());
+        assertEquals("Message count", messageCount, list.size());
 
         log.info("Received all: " + list.size() + " messages");
     }
