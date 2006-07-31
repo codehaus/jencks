@@ -17,12 +17,6 @@
  **/
 package org.jencks;
 
-import javax.resource.spi.ActivationSpec;
-import javax.resource.spi.BootstrapContext;
-import javax.resource.spi.ResourceAdapter;
-import javax.resource.spi.endpoint.MessageEndpointFactory;
-import javax.transaction.TransactionManager;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -31,12 +25,18 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.resource.spi.ActivationSpec;
+import javax.resource.spi.BootstrapContext;
+import javax.resource.spi.ResourceAdapter;
+import javax.resource.spi.endpoint.MessageEndpointFactory;
+import javax.transaction.TransactionManager;
+
 /**
  * Represents a connector in the JCA container - which represents a single
  * activation specification on a resource adapter
  * 
  * @version $Revision$
- * @org.apache.xbean.XBean element="jcaConnector"
+ * @org.apache.xbean.XBean element="connector"
  */
 public class JCAConnector implements InitializingBean, DisposableBean, BeanFactoryAware, BeanNameAware {
     private static final transient Log log = LogFactory.getLog(JCAConnector.class);
@@ -69,6 +69,20 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
         if (resourceAdapter == null) {
             resourceAdapter = activationSpec.getResourceAdapter();
         }
+        if (jcaContainer != null) {
+            start();
+        }
+    }
+    
+
+    public void destroy() throws Exception {
+        if (resourceAdapter != null && activationSpec != null) {
+            resourceAdapter.endpointDeactivation(endpointFactory, activationSpec);
+        }
+    }
+    
+
+    public void start() throws Exception {
         if (resourceAdapter == null && jcaContainer != null) {
             resourceAdapter = jcaContainer.getResourceAdapter();
         }
@@ -90,7 +104,7 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
                 throw new IllegalArgumentException("either the endpointFactory or ref properties must be set");
             }
             
-        	DefaultEndpointFactory defaultEF = new DefaultEndpointFactory(beanFactory, ref);
+            DefaultEndpointFactory defaultEF = new DefaultEndpointFactory(beanFactory, ref);
             defaultEF.setAcknowledgeType(acknowledgeType);
             defaultEF.setTransactionManager(transactionManager);
             defaultEF.setName(name);
@@ -100,11 +114,6 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
         resourceAdapter.endpointActivation(endpointFactory, activationSpec);
     }
 
-    public void destroy() throws Exception {
-        if (resourceAdapter != null && activationSpec != null) {
-            resourceAdapter.endpointDeactivation(endpointFactory, activationSpec);
-        }
-    }
 
     // Properties
     // -------------------------------------------------------------------------
@@ -193,5 +202,5 @@ public class JCAConnector implements InitializingBean, DisposableBean, BeanFacto
 
 	public void setAcknowledgeType(String acknowledgeTpe) {
 		this.acknowledgeType = acknowledgeTpe;
-	}
+    }
 }

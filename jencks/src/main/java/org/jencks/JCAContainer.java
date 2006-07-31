@@ -30,13 +30,12 @@ import javax.resource.spi.BootstrapContext;
 import javax.resource.spi.ResourceAdapter;
 
 /**
- * Represents a base JCA container which has no dependency on Geronimo
- * and requires a mandatory {@link BootstrapContext} and {@link ResourceAdapter}
- * properties to be configured.
- * <p/>
- * Typically Spring users will use the {@link BootstrapContextFactoryBean} to create
- * the {@link BootstrapContext} instance, with the work manager and transaction manager.
- *
+ * Represents a base JCA container which has no dependency on Geronimo and
+ * requires a mandatory {@link BootstrapContext} and {@link ResourceAdapter}
+ * properties to be configured. <p/> Typically Spring users will use the
+ * {@link BootstrapContextFactoryBean} to create the {@link BootstrapContext}
+ * instance, with the work manager and transaction manager.
+ * 
  * @version $Revision$
  * @org.apache.xbean.XBean element="jcaContainer"
  */
@@ -44,9 +43,10 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
     private static final transient Log log = LogFactory.getLog(JCAContainer.class);
     private BootstrapContext bootstrapContext;
     private ResourceAdapter resourceAdapter;
-	private ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
     private boolean lazyLoad = false;
-    
+    private JCAConnector[] connectors;
+
     public JCAContainer() {
     }
 
@@ -67,10 +67,10 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
 
         // now lets start all of the JCAConnector instances
         if (!lazyLoad) {
-	        if (applicationContext == null) {
-	            throw new IllegalArgumentException("applicationContext should have been set by Spring");
-	        }
-        	applicationContext.getBeansOfType(JCAConnector.class);
+            if (applicationContext == null) {
+                throw new IllegalArgumentException("applicationContext should have been set by Spring");
+            }
+            applicationContext.getBeansOfType(JCAConnector.class);
         }
 
         String version = null;
@@ -78,6 +78,8 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
         if (aPackage != null) {
             version = aPackage.getImplementationVersion();
         }
+
+        startConnectors();
 
         log.info("Jencks JCA Container (http://jencks.org/) has started running version: " + version);
     }
@@ -89,7 +91,7 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
     }
 
     // Properties
-    //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     public ApplicationContext getApplicationContext() {
         return applicationContext;
     }
@@ -122,4 +124,25 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
         this.lazyLoad = lazyLoad;
     }
 
+    public JCAConnector[] getConnectors() {
+        return connectors;
+    }
+
+    public void setConnectors(JCAConnector[] connectors) {
+        this.connectors = connectors;
+    }
+
+
+    // Implementation methods
+    // -------------------------------------------------------------------------
+    protected void startConnectors() throws Exception {
+        if (connectors != null) {
+            for (int i = 0; i < connectors.length; i++) {
+                JCAConnector connector = connectors[i];
+                connector.setJcaContainer(this);
+                
+                connector.start();
+            }
+        }
+    }
 }
