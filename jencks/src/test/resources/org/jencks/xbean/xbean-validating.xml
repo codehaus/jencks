@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- START SNIPPET: spring -->
-<beans xmlns:amqra="http://activemq.org/ra/1.0">
-
+<s:beans xmlns:s="http://www.springframework.org/schema/beans" xmlns="http://jencks.org/1.2" xmlns:amqra="http://activemq.org/ra/1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+  http://activemq.org/ra/1.0 http://people.apache.org/repository/org.apache.activemq/xsds/activemq-ra-4.1-incubator-SNAPSHOT.xsd
+  http://jencks.org/1.2 http://snapshots.repository.codehaus.org/org/jencks/jencks/1.3-SNAPSHOT/jencks-1.3-20060801.110529-4.xsd">
+  
   <!-- JCA Container -->
-  <jcaContainer xmlns="http://jencks.org/1.2">
+  <jcaContainer>
 
     <bootstrapContext>
       <bootstrapContextFactory threadPoolSize="25" />
     </bootstrapContext>
-    
-    <resourceAdapter>
-      <amqra:resourceAdapter serverUrl="tcp://localhost:51616" />
-    </resourceAdapter>
-
 
     <connectors>
       <connector ref="echoBean">
@@ -29,16 +28,20 @@
       </connector>
 
     </connectors>
+    
+    <resourceAdapter>
+      <amqra:resourceAdapter serverUrl="tcp://localhost:51616" />
+    </resourceAdapter>
   </jcaContainer>
 
   <!-- Message Driven POJO -->
-  <bean id="echoBean" class="org.jencks.TestBean" singleton="true" />
+  <s:bean id="echoBean" class="org.jencks.TestBean" singleton="true" />
 
   <!-- ActiveMQ Broker -->
-  <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
-    <property name="config" value="classpath:org/jencks/broker.xml" />
-  </bean>
+  <s:bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+    <s:property name="config" value="classpath:org/jencks/broker.xml" />
+  </s:bean>
 
-</beans>
+</s:beans>
 <!-- END SNIPPET: spring -->
 
