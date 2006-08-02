@@ -5,35 +5,24 @@
 <!-- START SNIPPET: jca -->
 <beans xmlns:j="http://jencks.org/1.3">
 
-  <!--
-
-         ###### Transaction manager ######
-
-   -->
+  <!-- ###### Transaction manager ###### -->
 
   <j:transactionManager id="transactionManager"/>
 
-  <!--
-
-         ###### JCA ######
-
-   -->
+  <!-- ###### Connection Manager ###### -->
 
   <j:connectionManager id="connectionManager"
-    transactionManager="#transactionManager"
-    transaction="xa"/>
+    transactionManager="#transactionManager"/>
 
-  <!--
-
-         ###### Tranql ######
-
-   -->
+  <!-- ###### JDBC Connection Factory ###### -->
 
   <j:dataSourceMCF id="tranqlManagedConnectionFactory"
     driverName="org.hsqldb.jdbcDriver"
     url="jdbc:hsqldb:."
     user="sa"
     password=""/>
+
+  <!-- ###### JDBC Data Source ###### -->
 
   <bean id="dataSource" class="org.springframework.jca.support.LocalConnectionFactoryBean">
     <property name="managedConnectionFactory" ref="tranqlManagedConnectionFactory"/>

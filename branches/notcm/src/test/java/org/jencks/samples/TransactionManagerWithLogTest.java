@@ -15,8 +15,8 @@
  */
 package org.jencks.samples;
 
-public class TransactionManagerWithTimeoutTest extends AbstractTransactionManagerTest {
+public class TransactionManagerWithLogTest extends AbstractTransactionManagerTest {
     protected String[] getConfigLocations() {
-        return new String[]{"org/jencks/samples/transaction-manager-with-timeout.xml"};
+        return new String[]{"org/jencks/samples/transaction-manager-with-log.xml"};
     }
 }

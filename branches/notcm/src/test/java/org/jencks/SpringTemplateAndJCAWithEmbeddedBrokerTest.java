@@ -65,6 +65,7 @@ public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
     }
 
     protected void setUp() throws Exception {
+        super.setUp();
         applicationContext = new ClassPathXmlApplicationContext(getSpringConfig());
         connectionFactory = (ConnectionFactory) applicationContext.getBean("jmsFactory");
 
@@ -80,5 +81,6 @@ public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
             System.out.println("Closing the application context");
             applicationContext.close();
         }
+        super.tearDown();
     }
 }

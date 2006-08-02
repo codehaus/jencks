@@ -31,8 +31,8 @@ import javax.jms.MessageListener;
 * @version $Revision$
 */
 public class TestingConsumer implements MessageListener {
-   private List messages = new ArrayList();
-   private Object semaphore;
+   private final List messages = new ArrayList();
+   private final Object semaphore;
 
    public TestingConsumer() {
        this(new Object());
@@ -45,15 +45,17 @@ public class TestingConsumer implements MessageListener {
    /**
     * @return all the messages on the list so far, clearing the buffer
     */
-   public synchronized List flushMessages() {
-       List answer = new ArrayList(messages);
-       messages.clear();
-       return answer;
+   public List flushMessages() {
+       synchronized (semaphore) {
+           List answer = new ArrayList(messages);
+           messages.clear();
+           return answer;
+       }
    }
 
-   public synchronized void onMessage(Message message) {
-       messages.add(message);
+   public void onMessage(Message message) {
        synchronized (semaphore) {
+           messages.add(message);
            semaphore.notifyAll();
        }
    }
@@ -86,12 +88,14 @@ public class TestingConsumer implements MessageListener {
    }
 
    protected boolean hasReceivedMessage() {
-       return messages.isEmpty();
+       synchronized (semaphore) {
+           return messages.isEmpty();
+       }
    }
 
-   protected synchronized boolean hasReceivedMessages(int messageCount) {
-       return messages.size() >= messageCount;
+   protected boolean hasReceivedMessages(int messageCount) {
+       synchronized (semaphore) {
+           return messages.size() >= messageCount;
+       }
    }
-
-
 }

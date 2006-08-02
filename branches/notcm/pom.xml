@@ -224,21 +224,19 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!--dependency>
-      <groupId>geronimo</groupId>
-      <artifactId>geronimo-core</artifactId>
-      <version>1.2-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>geronimo</groupId>
-      <artifactId>geronimo-system</artifactId>
-      <version>1.2-SNAPSHOT</version>
-    </dependency-->
+
     <dependency>
       <groupId>geronimo</groupId>
       <artifactId>geronimo-transaction</artifactId>
       <version>1.2-SNAPSHOT</version>
       <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.objectweb.howl</groupId>
+      <artifactId>howl</artifactId>
+      <version>1.0.1-1</version>
+      <optional>true</optional>
     </dependency>
 
     <dependency>

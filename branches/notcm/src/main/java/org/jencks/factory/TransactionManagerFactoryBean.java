@@ -19,12 +19,14 @@ package org.jencks.factory;
 import java.util.Collection;
 
 import org.apache.geronimo.transaction.log.UnrecoverableLog;
+import org.apache.geronimo.transaction.log.HOWLLog;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.XidFactory;
 import org.apache.geronimo.transaction.manager.XidFactoryImpl;
 import org.jencks.GeronimoPlatformTransactionManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
  * This FactoryBean creates and configures the Geronimo implementation
@@ -35,13 +37,17 @@ import org.springframework.beans.factory.InitializingBean;
  * @see org.apache.geronimo.transaction.log.HOWLLog
  * @org.apache.xbean.XBean element="transactionManager"
  */
-public class TransactionManagerFactoryBean implements FactoryBean, InitializingBean {
+public class TransactionManagerFactoryBean implements FactoryBean, InitializingBean, DisposableBean {
     private GeronimoPlatformTransactionManager transactionManager;
 
     private int defaultTransactionTimeoutSeconds = 600;
     private XidFactory xidFactory;
+
     private TransactionLog transactionLog;
+    private String transactionLogDir;
+
     private Collection resourceManagers;
+    private boolean createdTransactionLog;
 
 
     public Object getObject() throws Exception {
@@ -52,6 +58,12 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
                     resourceManagers);
         }
         return transactionManager;
+    }
+
+    public void destroy() throws Exception {
+        if (createdTransactionLog && transactionLog instanceof HOWLLog) {
+            ((HOWLLog)transactionLog).doStop();
+        }
     }
 
     public Class getObjectType() {
@@ -76,6 +88,14 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
         transactionLog = log;
     }
 
+    public String getTransactionLogDir() {
+        return transactionLogDir;
+    }
+
+    public void setTransactionLogDir(String transactionLogDir) {
+        this.transactionLogDir = transactionLogDir;
+    }
+
     public Collection getResourceManagers() {
         return resourceManagers;
     }
@@ -97,7 +117,8 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
 
     public void afterPropertiesSet() throws Exception {
         if (transactionLog == null) {
-            transactionLog = new UnrecoverableLog();
+            transactionLog = GeronimoDefaults.createTransactionLog(xidFactory, transactionLogDir);
+            createdTransactionLog = true;
         }
         if (xidFactory == null) {
             xidFactory = new XidFactoryImpl();
