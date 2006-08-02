@@ -14,9 +14,9 @@
   <j:connectionManager id="connectionManager"
     transactionManager="#transactionManager"/>
 
-  <!-- ###### JDBC Connection Factory ###### -->
+  <!-- ###### JDBC Managed Connection Factory ###### -->
 
-  <j:dataSourceMCF id="tranqlManagedConnectionFactory"
+  <j:dataSourceMCF id="jdbcManagedConnectionFactory"
     driverName="org.hsqldb.jdbcDriver"
     url="jdbc:hsqldb:."
     user="sa"
@@ -25,7 +25,7 @@
   <!-- ###### JDBC Data Source ###### -->
 
   <bean id="dataSource" class="org.springframework.jca.support.LocalConnectionFactoryBean">
-    <property name="managedConnectionFactory" ref="tranqlManagedConnectionFactory"/>
+    <property name="managedConnectionFactory" ref="jdbcManagedConnectionFactory"/>
     <property name="connectionManager" ref="connectionManager"/>
   </bean>
 

@@ -4,43 +4,15 @@
 
 <!-- START SNIPPET: jca -->
 <beans>
-
-  <!-- ###### Transaction manager ###### -->
-
-  <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
-
-  <!-- ###### Connection Manager ###### -->
-
-  <bean id="connectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
-    <property name="transactionManager" ref="transactionManager"/>
-  </bean>
-
-  <!-- ###### ActiveMQ Message Broker ###### -->
+  <!-- ###### ActiveMQ Configuration ###### -->
 
   <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
     <property name="config" value="classpath:org/jencks/samples/outbound/broker.xml"/>
   </bean>
 
-  <!-- ###### JMS Resource Adapter ###### -->
-
   <bean id="jmsResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
     <property name="serverUrl" value="vm://localhost"/>
   </bean>
-
-  <!-- ###### JMS Managed Connection Factory ###### -->
-
-  <bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
-    <property name="resourceAdapter" ref="jmsResourceAdapter"/>
-  </bean>
-
-  <!-- ###### JMS Managed Connection Factory ###### -->
-
-  <bean id="jmsConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">
-    <property name="managedConnectionFactory" ref="jmsManagedConnectionFactory"/>
-    <property name="connectionManager" ref="connectionManager"/>
-  </bean>
-
-  <!-- ###### JMS Queue ###### -->
 
   <bean id="jmsQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="queue"/>
@@ -53,5 +25,28 @@
     </property>
   </bean>
 
+  <!-- ###### Transaction manager ###### -->
+
+  <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
+
+  <!-- ###### Connection Manager ###### -->
+
+  <bean id="connectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+    <property name="transactionManager" ref="transactionManager"/>
+  </bean>
+
+  <!-- ###### JMS Managed Connection Factory ###### -->
+
+  <bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
+    <property name="resourceAdapter" ref="jmsResourceAdapter"/>
+  </bean>
+
+  <!-- ###### JMS Connection Factory ###### -->
+
+  <bean id="jmsConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">
+    <property name="managedConnectionFactory" ref="jmsManagedConnectionFactory"/>
+    <property name="connectionManager" ref="connectionManager"/>
+  </bean>
+
 </beans>
-    <!-- END SNIPPET: jca -->
+<!-- END SNIPPET: jca -->
