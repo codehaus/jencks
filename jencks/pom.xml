@@ -195,6 +195,20 @@
               <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>
+          <execution>
+            <id>src</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>src/main/descriptors/src.xml</descriptor>
+              </descriptors>
+              <finalName>${pom.artifactId}-${pom.version}-src</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
 
         </executions>
       </plugin>
@@ -289,18 +303,6 @@
         <exclusion>
           <artifactId>geronimo-ejb_2.1_spec</artifactId>
           <groupId>org.apache.geronimo.specs</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>incubator-activemq</groupId>
-      <artifactId>activemq-ra</artifactId>
-      <version>4.1-SNAPSHOT</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>jmdns</artifactId>
-          <groupId>activemq</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -426,9 +428,21 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>incubator-activemq</groupId>
-      <artifactId>activemq-core</artifactId>
-      <version>4.1-SNAPSHOT</version>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-ra</artifactId>
+      <version>4.1-incubator-SNAPSHOT</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>jmdns</artifactId>
+          <groupId>activemq</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>apache-activemq</artifactId>
+      <version>4.1-incubator-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
