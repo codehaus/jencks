@@ -2,6 +2,6 @@
 
 <!-- START SNIPPET: tm -->
 <beans xmlns:j="http://jencks.org/1.3">
-  <j:transactionManager id="transactionManager" defaultTransactionTimeoutSeconds="60"/>
+  <j:transactionManager id="transactionManager" transactionLogDir="target/txlog"/>
 </beans>
 <!-- END SNIPPET: tm -->
