@@ -19,12 +19,14 @@
 
   <!-- ###### JDBC Managed Connection Factory ###### -->
 
+  <!-- START SNIPPET: mcf -->
   <bean id="jdbcManagedConnectionFactory" class="org.jencks.tranql.DataSourceMCF">
     <property name="driverName" value="org.hsqldb.jdbcDriver"/>
     <property name="url" value="jdbc:hsqldb:."/>
     <property name="user" value="sa"/>
     <property name="password" value=""/>
   </bean>
+  <!-- START SNIPPET: mcf -->
 
   <!-- ###### JDBC Data Source ###### -->
 
