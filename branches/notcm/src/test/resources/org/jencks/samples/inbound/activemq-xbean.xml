@@ -3,12 +3,17 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <!-- START SNIPPET: jms -->
-<beans>
+<beans xmlns:j="http://jencks.org/1.3"
+    xmlns:amq="http://activemq.org/config/1.0"
+    xmlns:amqra="http://activemq.org/ra/1.0">
+
   <!-- ###### ActiveMQ Configuration ###### -->
 
-  <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
-    <property name="config" value="classpath:org/jencks/broker.xml"/>
-  </bean>
+  <amq:broker useJmx="false" persistent="false">
+    <amq:transportConnectors>
+      <amq:transportConnector uri="tcp://localhost:51616"/>
+    </amq:transportConnectors>
+  </amq:broker>
 
   <bean id="activeMQResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
     <property name="serverUrl" value="tcp://localhost:51616"/>
@@ -16,42 +21,36 @@
 
   <!-- ###### Transaction manager ###### -->
 
-  <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
+  <j:transactionManager id="transactionManager"/>
 
   <!-- ###### JCA Container ###### -->
 
   <!-- START SNIPPET: jcaContainer -->
-  <bean id="jcaContainer" class="org.jencks.JCAContainer">
-    <property name="transactionManager" ref="transactionManager"/>
-
-    <property name="threadPoolSize" value="25"/>
-
-    <property name="resourceAdapter" ref="activeMQResourceAdapter"/>
-  </bean>
+  <j:jcaContainer id="jcaContainer"
+      transactionManager="#transactionManager"
+      resourceAdapter="#activeMQResourceAdapter"
+      threadPoolSize="25"/>
   <!-- END SNIPPET: jcaContainer -->
 
   <!-- ###### JCA Connector ###### -->
 
   <!-- START SNIPPET: jcaConnector -->
-  <bean id="jcaConnector" class="org.jencks.JCAConnector">
-
-    <property name="jcaContainer" ref="jcaContainer"/>
+  <j:jcaConnector id="jcaConnector"
+    jcaContainer="#jcaContainer"
+    ref="echoBean">
 
     <!-- subscription details -->
-    <property name="activationSpec">
+    <j:activationSpec>
       <bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
         <property name="destination" value="TestTopic"/>
         <property name="destinationType" value="javax.jms.Topic"/>
       </bean>
-    </property>
-
-    <!-- POJO to recieve requests -->
-    <property name="ref" value="echoBean"/>
-  </bean>
+    </j:activationSpec>
+  </j:jcaConnector>
   <!-- END SNIPPET: jcaConnector -->
 
   <!-- ###### Message Driven POJO ###### -->
 
   <bean id="echoBean" class="org.jencks.TestBean" singleton="true"/>
 </beans>
-<!-- END SNIPPET: spring -->
+<!-- END SNIPPET: jms -->
