@@ -190,7 +190,7 @@ forms in the admin console -->
   <!-- Connection factory, referencing the RA's managed connection factory,
   that can be used by the JMS template instead of	ConnectionFactory, if desired.
       -->
-  <bean id="JmsJcaConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">
+  <bean id="JmsJcaConnectionFactory" class="org.jencks.factory.ConnectionFactoryFactoryBean">
     <property name="managedConnectionFactory" ref="JmsJcaManagedConnectionFactory"/>
   </bean>
 

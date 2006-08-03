@@ -40,7 +40,7 @@ import org.springframework.beans.FatalBeanException;
  * LocalConnectionFactoryBean, class of the JCA support of Spring.
  *
  * @author Thierry Templier
- * @see org.springframework.jca.support.LocalConnectionFactoryBean#setConnectionManager(ConnectionManager)
+ * @see org.jencks.factory.ConnectionFactoryFactoryBean#setConnectionManager(ConnectionManager)
  * @org.apache.xbean.XBean element="connectionManager"
  */
 public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBean, DisposableBean {

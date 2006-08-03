@@ -43,7 +43,7 @@
 
   <!-- ###### JMS Connection Factory ###### -->
 
-  <bean id="jmsConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">
+  <bean id="jmsConnectionFactory" class="org.jencks.factory.ConnectionFactoryFactoryBean">
     <property name="managedConnectionFactory" ref="jmsManagedConnectionFactory"/>
     <property name="connectionManager" ref="connectionManager"/>
   </bean>

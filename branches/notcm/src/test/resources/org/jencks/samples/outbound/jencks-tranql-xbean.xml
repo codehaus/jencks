@@ -28,10 +28,11 @@
 
   <!-- ###### JDBC Data Source ###### -->
 
-  <bean id="dataSource" class="org.springframework.jca.support.LocalConnectionFactoryBean">
-    <property name="managedConnectionFactory" ref="jdbcManagedConnectionFactory"/>
-    <property name="connectionManager" ref="connectionManager"/>
-  </bean>
+  <!-- START SNIPPET: ds -->
+  <j:connectionFactory id="dataSource"
+      managedConnectionFactory="#jdbcManagedConnectionFactory"
+      connectionManager="#connectionManager"/>
+  <!-- END SNIPPET: ds -->
 
 </beans>
 <!-- END SNIPPET: jca -->

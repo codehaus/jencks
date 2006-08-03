@@ -72,7 +72,7 @@
       <property name="password"><value></value></property>
     </bean>
 
-     <bean id="dataSource1" class="org.springframework.jca.support.LocalConnectionFactoryBean">
+     <bean id="dataSource1" class="org.jencks.factory.ConnectionFactoryFactoryBean">
       <property name="managedConnectionFactory"><ref local="tranqlManagedConnectionFactory1"/></property>
       <property name="connectionManager"><ref local="jcaConnectionPoolManager1"/></property>
      </bean>
@@ -88,7 +88,7 @@
       <property name="password"><value></value></property>
     </bean>
 
-     <bean id="dataSource2" class="org.springframework.jca.support.LocalConnectionFactoryBean">
+     <bean id="dataSource2" class="org.jencks.factory.ConnectionFactoryFactoryBean">
       <property name="managedConnectionFactory"><ref local="tranqlManagedConnectionFactory2"/></property>
       <property name="connectionManager"><ref local="jcaConnectionPoolManager2"/></property>
      </bean>
@@ -122,7 +122,7 @@
       <property name="password"><value>root</value></property>
     </bean>
 
-    <bean id="jmsConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">
+    <bean id="jmsConnectionFactory" class="org.jencks.factory.ConnectionFactoryFactoryBean">
       <property name="managedConnectionFactory"><ref local="jmsManagedConnectionFactory"/></property>
       <property name="connectionManager"><ref local="jcaConnectionPoolManager3"/></property>
       <property name="resourceAdapter"><ref local="jmsResourceAdapter"/></property>
