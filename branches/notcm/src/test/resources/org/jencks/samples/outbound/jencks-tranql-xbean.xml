@@ -11,8 +11,10 @@
 
   <!-- ###### Connection Manager ###### -->
 
+  <!-- START SNIPPET: connectionManager -->
   <j:connectionManager id="connectionManager"
     transactionManager="#transactionManager"/>
+  <!-- END SNIPPET: connectionManager -->
 
   <!-- ###### JDBC Managed Connection Factory ###### -->
 

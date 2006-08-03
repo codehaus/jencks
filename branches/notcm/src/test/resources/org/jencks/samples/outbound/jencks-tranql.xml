@@ -11,9 +11,11 @@
 
   <!-- ###### Connection Manager ###### -->
 
+  <!-- START SNIPPET: connectionManager -->
   <bean id="connectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
     <property name="transactionManager" ref="transactionManager"/>
   </bean>
+  <!-- END SNIPPET: connectionManager -->
 
   <!-- ###### JDBC Managed Connection Factory ###### -->
 
