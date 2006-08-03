@@ -23,9 +23,7 @@
   <!-- START SNIPPET: jcaContainer -->
   <bean id="jcaContainer" class="org.jencks.JCAContainer">
     <property name="transactionManager" ref="transactionManager"/>
-
     <property name="threadPoolSize" value="25"/>
-
     <property name="resourceAdapter" ref="activeMQResourceAdapter"/>
   </bean>
   <!-- END SNIPPET: jcaContainer -->
@@ -34,7 +32,6 @@
 
   <!-- START SNIPPET: jcaConnector -->
   <bean id="jcaConnector" class="org.jencks.JCAConnector">
-
     <property name="jcaContainer" ref="jcaContainer"/>
 
     <!-- subscription details -->
