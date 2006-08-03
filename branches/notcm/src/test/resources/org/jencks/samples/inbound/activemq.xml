@@ -37,7 +37,7 @@
     <!-- subscription details -->
     <property name="activationSpec">
       <bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
-        <property name="destination" value="test.spring.inboundConnectorA"/>
+        <property name="destination" value="TestTopic"/>
         <property name="destinationType" value="javax.jms.Topic"/>
       </bean>
     </property>

@@ -62,7 +62,7 @@ public abstract class AbstractActiveMQTest extends AbstractDependencyInjectionSp
     public void testMessageDeliveryUsingSharedMessageListener() throws Exception {
 
         TextMessage message = session.createTextMessage("Hello! " + new Date());
-        Destination destination = session.createTopic("test.spring.inboundConnectorA");
+        Destination destination = session.createTopic("TestTopic");
 
         Thread.sleep(1000);
         producer.send(destination, message);
