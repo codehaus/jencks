@@ -18,11 +18,13 @@
 
   <!-- ###### JDBC Managed Connection Factory ###### -->
 
+  <!-- START SNIPPET: mcf -->
   <j:dataSourceMCF id="jdbcManagedConnectionFactory"
     driverName="org.hsqldb.jdbcDriver"
     url="jdbc:hsqldb:."
     user="sa"
     password=""/>
+  <!-- END SNIPPET: mcf -->
 
   <!-- ###### JDBC Data Source ###### -->
 
