@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-
 <!-- START SNIPPET: tm -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
-  <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean">
-    <property name="transactionLogDir" value="target/txlog"/>
-  </bean>
+<beans xmlns:j="http://jencks.org/1.3">
+  <j:transactionManager id="transactionManager" defaultTransactionTimeoutSeconds="60"/>
 </beans>
 <!-- END SNIPPET: tm -->
