@@ -19,35 +19,26 @@ package org.jencks;
 
 import java.util.Date;
 import java.util.List;
-
 import javax.jms.Destination;
 import javax.jms.TextMessage;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @version $Revision$
  */
 public class JCAContainerTest extends JCAContainerTestSupport {
-
-    public static void main(String[] args) {
-
-        // example from Davor Cengija
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("org/activemq/jca/spring.xml");
-
-        System.err.println("Done.");
-
-    }
+    private static final Log log = LogFactory.getLog(JCAContainerTest.class);
 
     public void testMessageDeliveryUsingSharedMessageListener() throws Exception {
-        
+
         TextMessage message = session.createTextMessage("Hello! " + new Date());
         Destination destination = session.createTopic("test.spring.inboundConnectorA");
-        
+
         Thread.sleep(1000);
         producer.send(destination, message);
-        System.out.println("message sent on: " + destination + " of type: " + destination.getClass());
+        log.debug("message sent on: " + destination + " of type: " + destination.getClass());
 
 
         TestingConsumer consumer = (TestingConsumer) applicationContext.getBean("echoBean");
@@ -65,7 +56,7 @@ public class JCAContainerTest extends JCAContainerTestSupport {
         Destination destination = session.createQueue("test.spring.inboundConnectorB");
         producer.send(destination, message);
 
-        System.out.println("message sent on: " + destination);
+        log.debug("message sent on: " + destination);
 
         Thread.sleep(2000);
     }

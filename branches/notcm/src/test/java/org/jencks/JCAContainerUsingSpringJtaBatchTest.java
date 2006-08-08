@@ -25,29 +25,33 @@ import javax.jms.TextMessage;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @version $Revision$
  */
 public class JCAContainerUsingSpringJtaBatchTest extends JCAContainerTest {
+    private static final Log log = LogFactory.getLog(JCAContainerUsingSpringJtaBatchTest.class);
+    
     protected ConfigurableApplicationContext createApplicationContext() {
         return new ClassPathXmlApplicationContext("org/jencks/spring-with-jta-batch.xml");
     }
 
     public void testMessageDeliveryUsingSharedMessageListener() throws Exception {
-    	int number = 100;
-    	long start = System.currentTimeMillis();
+        int number = 100;
+        long start = System.currentTimeMillis();
         Destination destination = session.createTopic("test.spring.inboundConnectorA");
-        
+
         // Wait to make sure the consumers have been established.
         Thread.sleep(1000);
-        
+
         for (int i = 0; i < number; i++) {
             TextMessage message = session.createTextMessage("Hello! " + new Date());
-        	producer.send(destination, message);
+            producer.send(destination, message);
         }
 
-        System.out.println("message sent on: " + destination + " of type: " + destination.getClass());
+        log.debug("message sent on: " + destination + " of type: " + destination.getClass());
 
 
         TestingConsumer consumer = (TestingConsumer) applicationContext.getBean("echoBean");
@@ -56,6 +60,6 @@ public class JCAContainerUsingSpringJtaBatchTest extends JCAContainerTest {
         System.err.println("Time to send/receive " + number + " messages: " + (stop - start) + " ms");
         List list = consumer.flushMessages();
         assertEquals("Message count: " + list, number, list.size());
-        
+
     }
 }

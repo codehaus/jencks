@@ -28,12 +28,15 @@ import javax.jms.Destination;
 
 import org.apache.geronimo.transaction.manager.XAWork;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jencks.samples.outbound.AbstractDependencyInjectionSpringContextTests;
 import org.jencks.TestingConsumer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.context.ConfigurableApplicationContext;
 
 public abstract class AbstractActiveMQTest extends AbstractDependencyInjectionSpringContextTests {
+    private static final Log log = LogFactory.getLog(AbstractActiveMQTest.class);
     private PlatformTransactionManager transactionManager;
 
     // to send some messages
@@ -66,7 +69,7 @@ public abstract class AbstractActiveMQTest extends AbstractDependencyInjectionSp
 
         Thread.sleep(1000);
         producer.send(destination, message);
-        System.out.println("message sent on: " + destination + " of type: " + destination.getClass());
+        log.debug("message sent on: " + destination + " of type: " + destination.getClass());
 
         consumer.waitForMessageToArrive();
 

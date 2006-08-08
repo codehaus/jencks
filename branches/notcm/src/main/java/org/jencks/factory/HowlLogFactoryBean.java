@@ -35,7 +35,7 @@ public class HowlLogFactoryBean implements FactoryBean, DisposableBean {
     private String bufferClassName = "org.objectweb.howl.log.BlockLogBuffer";
     private int bufferSizeKBytes = 32;
     private boolean checksumEnabled = true;
-    private int flushSleepTimeMilliseconds = -1;
+    private int flushSleepTimeMilliseconds = 50;
     private String logFileExt = "log";
     private String logFileName = "transaction";
     private int maxBlocksPerFile = -1;

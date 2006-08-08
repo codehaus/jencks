@@ -17,17 +17,27 @@
  **/
 package org.jencks;
 
+import java.util.Date;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
+import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import javax.jms.*;
-import java.util.Date;
 
 /**
  * @version $Revision$
  */
 public class JCAContainerRequestReplyTest extends JCAContainerTestSupport implements MessageListener {
-
+    private static final Log log = LogFactory.getLog(JCAContainerRequestReplyTest.class);
     protected Session serverSession;
     protected MessageProducer serverProducer;
     protected MessageConsumer serverConsumer;
@@ -57,18 +67,18 @@ public class JCAContainerRequestReplyTest extends JCAContainerTestSupport implem
     public void testRequestReply() throws Exception {
 
 
-        Requestor requestor = new Requestor((QueueSession) session, queue);
+        Requestor requestor = new Requestor(session, queue);
 
         TextMessage message = session.createTextMessage("Hello! " + new Date());
 
-        System.out.println("About to send: " + message);
+        log.debug("About to send: " + message);
 
 
         Message answer = requestor.request(message);
 
         assertTrue("Should have received an answer", answer != null);
 
-        System.out.println("Received: " + answer);
+        log.debug("Received: " + answer);
     }
 
 

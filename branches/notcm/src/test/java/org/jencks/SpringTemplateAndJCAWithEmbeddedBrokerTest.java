@@ -35,6 +35,7 @@ import org.springframework.jms.core.JmsTemplate;
  * @version $Id$
  */
 public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
+    private static final Log log = LogFactory.getLog(SpringTemplateAndJCAWithEmbeddedBrokerTest.class);
     private static Log logger = LogFactory.getLog(SpringTemplateAndJCAWithEmbeddedBrokerTest.class);
 
     private ConfigurableApplicationContext applicationContext;
@@ -54,7 +55,7 @@ public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
         List list = consumer.flushMessages();
         assertEquals("Message count: " + list, messageCount, list.size());
 
-        System.out.println("Received all: " + list.size() + " messages");
+        log.debug("Received all: " + list.size() + " messages");
     }
 
 
@@ -78,7 +79,7 @@ public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
 
     protected void tearDown() throws Exception {
         if (applicationContext != null) {
-            System.out.println("Closing the application context");
+            log.debug("Closing the application context");
             applicationContext.close();
         }
         super.tearDown();

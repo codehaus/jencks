@@ -19,18 +19,22 @@ package org.jencks;
 
 import javax.jms.Message;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @version $Revision$
  */
 public class TestBean extends TestingConsumer {
+    private static final Log log = LogFactory.getLog(TestBean.class);
     private static int globalCounter = 0;
 
     public TestBean() {
-        System.out.println("Created instance of consumer bean: " + this);
+        log.debug("Created instance of consumer bean: " + this);
     }
 
     public void onMessage(Message message) {
-        System.out.println("TestBean: " + getNextValue() + " received message: " + message);
+        log.debug("TestBean: " + getNextValue() + " received message: " + message);
         super.onMessage(message);
     }
 

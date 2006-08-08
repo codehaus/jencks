@@ -82,7 +82,12 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <excludes></excludes>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/ActiveMQInboundXBeanTest.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
       <plugin>
