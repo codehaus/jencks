@@ -3,7 +3,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <!-- START SNIPPET: jms -->
-<beans xmlns:j="http://jencks.org/1.3"
+<beans xmlns:j="http://jencks.org/2.0"
     xmlns:amq="http://activemq.org/config/1.0"
     xmlns:amqra="http://activemq.org/ra/1.0">
 
