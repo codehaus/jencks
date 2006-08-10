@@ -97,6 +97,8 @@ public abstract class AbstractActiveMQTest extends AbstractDependencyInjectionSp
     }
 
     protected void onSetUp() throws Exception {
+        super.onSetUp();
+
         // now lets create the JMS connection
         connection = createConnection();
 
@@ -112,5 +114,6 @@ public abstract class AbstractActiveMQTest extends AbstractDependencyInjectionSp
             connection.close();
             connection = null;
         }
+        super.onTearDown();
     }
 }

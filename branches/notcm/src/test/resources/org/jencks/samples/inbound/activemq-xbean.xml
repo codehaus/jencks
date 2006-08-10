@@ -9,11 +9,9 @@
 
   <!-- ###### ActiveMQ Configuration ###### -->
 
-  <amq:broker useJmx="false" persistent="false">
-    <amq:transportConnectors>
-      <amq:transportConnector uri="tcp://localhost:51616"/>
-    </amq:transportConnectors>
-  </amq:broker>
+  <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+    <property name="config" value="classpath:org/jencks/broker.xml"/>
+  </bean>
 
   <bean id="activeMQResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
     <property name="serverUrl" value="tcp://localhost:51616"/>
