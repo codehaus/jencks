@@ -31,10 +31,14 @@ import org.apache.geronimo.transaction.log.UnrecoverableLog;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.geronimo.transaction.manager.XidImporter;
+import org.apache.geronimo.transaction.manager.XidFactoryImpl;
+import org.apache.geronimo.pool.GeronimoExecutor;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import EDU.oswego.cs.dl.util.concurrent.Executor;
+import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 
 /**
  * A Spring {@link FactoryBean} for creating a {@link BootstrapContext} for the JCA container
@@ -45,7 +49,7 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class WorkManagerFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
 
-	private ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
     private GeronimoWorkManager workManager;
     private TransactionContextManager transactionContextManager;
     private int threadPoolSize = 30;
@@ -54,6 +58,7 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean, Ap
     private int defaultTransactionTimeoutSeconds = 600;
     private TransactionLog transactionLog;
     private Collection resourceManagers;
+    private Executor threadPool;
 
     public Object getObject() throws Exception {
         return getWorkManager();
@@ -66,9 +71,9 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean, Ap
     public boolean isSingleton() {
         return true;
     }
-    
+
     public void setApplicationContext(ApplicationContext applicationContext) {
-    	this.applicationContext = applicationContext;
+        this.applicationContext = applicationContext;
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -83,17 +88,17 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean, Ap
     }
 
     public TransactionContextManager getTransactionContextManager() throws XAException {
-		if (transactionContextManager == null && applicationContext != null) {
-			Map map = applicationContext.getBeansOfType(TransactionContextManager.class);
-			if (map.size() > 1) {
-				throw new IllegalStateException("only one TransactionContextManager can be registered");
-			} else if (map.size() == 1) {
-				transactionContextManager = (TransactionContextManager) map.values().iterator().next();
-			}
-		}
-		if (transactionContextManager == null) {
+        if (transactionContextManager == null && applicationContext != null) {
+            Map map = applicationContext.getBeansOfType(TransactionContextManager.class);
+            if (map.size() > 1) {
+                throw new IllegalStateException("only one TransactionContextManager can be registered");
+            } else if (map.size() == 1) {
+                transactionContextManager = (TransactionContextManager) map.values().iterator().next();
+            }
+        }
+        if (transactionContextManager == null) {
             transactionContextManager = createTransactionContextManager();
-		}
+        }
         return transactionContextManager;
     }
 
@@ -109,18 +114,32 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean, Ap
         this.threadPoolSize = threadPoolSize;
     }
 
+    public Executor getThreadPool() {
+        if (threadPool == null) {
+            threadPool = new PooledExecutor(getThreadPoolSize());
+        }
+        return threadPool;
+    }
+
+    public void setThreadPool(Executor threadPool) {
+        this.threadPool = threadPool;
+    }
+
     public ExtendedTransactionManager getTransactionManager() throws XAException {
-		if (transactionManager == null && applicationContext != null) {
-			Map map = applicationContext.getBeansOfType(ExtendedTransactionManager.class);
-			if (map.size() > 1) {
-				throw new IllegalStateException("only one ExtendedTransactionManager can be registered");
-			} else if (map.size() == 1) {
-				transactionManager = (ExtendedTransactionManager) map.values().iterator().next();
-			}
-		}
-		if (transactionManager == null) {
-            transactionManager = new TransactionManagerImpl(getDefaultTransactionTimeoutSeconds(), getTransactionLog(), getResourceManagers());
-		}
+        if (transactionManager == null && applicationContext != null) {
+            Map map = applicationContext.getBeansOfType(ExtendedTransactionManager.class);
+            if (map.size() > 1) {
+                throw new IllegalStateException("only one ExtendedTransactionManager can be registered");
+            } else if (map.size() == 1) {
+                transactionManager = (ExtendedTransactionManager) map.values().iterator().next();
+            }
+        }
+        if (transactionManager == null) {
+            transactionManager = new TransactionManagerImpl(getDefaultTransactionTimeoutSeconds(),
+                    new XidFactoryImpl(),
+                    getTransactionLog(),
+                    getResourceManagers());
+        }
         return transactionManager;
     }
 
@@ -173,6 +192,11 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean, Ap
     }
 
     protected GeronimoWorkManager createWorkManager() throws XAException {
-        return new GeronimoWorkManager(getThreadPoolSize(), getTransactionContextManager());
+        GeronimoExecutor geronimoExecutor = getGeronimoExecutor();
+        return new GeronimoWorkManager(geronimoExecutor, geronimoExecutor, geronimoExecutor, getTransactionContextManager());
+    }
+
+    protected GeronimoExecutor getGeronimoExecutor() {
+        return new GeronimoExecutorWrapper(getThreadPool());
     }
 }

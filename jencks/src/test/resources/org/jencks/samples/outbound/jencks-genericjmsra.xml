@@ -90,7 +90,7 @@
   <!-- 
 	<property name="connectionFactoryProperties" value="BrokerURL=tcp://localhost:51626" />
    -->
-	<property name="connectionFactoryProperties" value="BrokerURL=vm://localhost" />
+	<property name="connectionFactoryProperties" value="BrokerURL=vm://localhost?broker.persistent=false" />
   </bean>
 
   <bean id="jmsConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">
