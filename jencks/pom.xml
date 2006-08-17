@@ -194,7 +194,9 @@
         <configuration>
           <excludes>
             <!-- only work for AMQ 4.1 -->
-            <exclude>**xbean/*</exclude>
+            <exclude>**/xbean/*</exclude>
+            
+            <exclude>**/*$*</exclude>
           </excludes>
           <useFile>true</useFile>
           <!-- 
