@@ -27,6 +27,8 @@ import org.apache.geronimo.transaction.log.UnrecoverableLog;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.geronimo.transaction.manager.XidImporter;
+import org.apache.geronimo.transaction.manager.XidFactory;
+import org.apache.geronimo.transaction.manager.XidFactoryImpl;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -48,6 +50,7 @@ public class TransactionContextManagerFactoryBean implements FactoryBean, Initia
 	private ApplicationContext applicationContext;
     private TransactionContextManager transactionContextManager;
     private int defaultTransactionTimeoutSeconds = 600;
+    private XidFactory xidFactory;
     private TransactionLog transactionLog;
     private Collection resourceManagers;
 
@@ -85,7 +88,10 @@ public class TransactionContextManagerFactoryBean implements FactoryBean, Initia
 			} else if (map.size() == 1) {
 				transactionManager = (ExtendedTransactionManager) map.values().iterator().next();
 			} else {
-	            transactionManager = new TransactionManagerImpl(getDefaultTransactionTimeoutSeconds(), getTransactionLog(), getResourceManagers());
+	            transactionManager = new TransactionManagerImpl(getDefaultTransactionTimeoutSeconds(),
+                        getXidFactory(),
+                        getTransactionLog(),
+                        getResourceManagers());
 			}
 		}
         return transactionManager;
@@ -123,6 +129,17 @@ public class TransactionContextManagerFactoryBean implements FactoryBean, Initia
 
     public void setDefaultTransactionTimeoutSeconds(int defaultTransactionTimeoutSeconds) {
         this.defaultTransactionTimeoutSeconds = defaultTransactionTimeoutSeconds;
+    }
+
+    public XidFactory getXidFactory() {
+        if (xidFactory == null) {
+            xidFactory = new XidFactoryImpl();
+        }
+        return xidFactory;
+    }
+
+    public void setXidFactory(XidFactory xidFactory) {
+        this.xidFactory = xidFactory;
     }
 
     public TransactionLog getTransactionLog() {
