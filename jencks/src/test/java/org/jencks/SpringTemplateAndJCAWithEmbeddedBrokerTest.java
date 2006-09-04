@@ -73,6 +73,10 @@ public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
         connectionFactory = (ConnectionFactory) applicationContext.getBean("jmsFactory");
 
         assertTrue("Should have found a non-null connection factory", connectionFactory != null);
+        
+        // The jca connector is started in the background, so wait a bit
+        // to ensure it is correctly started
+        Thread.currentThread().sleep(100);
     }
 
     protected String getSpringConfig() {
