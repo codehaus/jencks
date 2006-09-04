@@ -178,7 +178,7 @@
                 <descriptor>src/main/descriptors/src.xml</descriptor>
               </descriptors>
               <finalName>${pom.artifactId}-${pom.version}-src</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
+              <appendAssemblyId>true</appendAssemblyId>
             </configuration>
           </execution>
 
