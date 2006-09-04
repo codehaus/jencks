@@ -8,6 +8,6 @@ public abstract class AbstractDependencyInjectionSpringContextTests extends org.
     protected Log log = LogFactory.getLog(getClass());
     
 	protected void onTearDown() throws Exception {
-		applicationContext.close();
+		setDirty();
 	}
 }
