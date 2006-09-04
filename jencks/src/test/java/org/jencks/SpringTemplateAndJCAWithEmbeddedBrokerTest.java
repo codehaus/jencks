@@ -76,7 +76,7 @@ public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
         
         // The jca connector is started in the background, so wait a bit
         // to ensure it is correctly started
-        Thread.currentThread().sleep(100);
+        Thread.sleep(100);
     }
 
     protected String getSpringConfig() {
