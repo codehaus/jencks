@@ -106,14 +106,14 @@
       <plugin>
         <groupId>org.apache.xbean</groupId>
         <artifactId>maven-xbean-plugin</artifactId>
-        <version>2.6-SNAPSHOT</version>
+        <version>2.6</version>
         <executions>
           <execution>
             <goals>
               <goal>mapping</goal>
             </goals>
             <configuration>
-              <namespace>http://jencks.org/1.2</namespace>
+              <namespace>http://jencks.org/1.3</namespace>
             </configuration>
           </execution>
         </executions>
@@ -291,7 +291,7 @@
     <dependency>
       <groupId>org.apache.xbean</groupId>
       <artifactId>xbean-spring</artifactId>
-      <version>2.6-SNAPSHOT</version>
+      <version>2.6</version>
       <scope>runtime</scope>
       <optional>true</optional>
     </dependency>
