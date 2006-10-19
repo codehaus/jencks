@@ -3,7 +3,11 @@
 <!-- START SNIPPET: spring -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-
+  <!--
+  || The TransactionManager
+  -->
+  <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
+  
   <!--
   || ActiveMQ Broker
   -->
@@ -13,14 +17,8 @@
 
   <!-- START SNIPPET: jca -->
   <bean id="jencks" class="org.jencks.JCAContainer">
-
-    <!-- lets use the default configuration of work manager and transaction manager-->
-    <property name="bootstrapContext">
-      <bean class="org.jencks.factory.BootstrapContextFactoryBean">
-        <property name="threadPoolSize" value="25"/>
-      </bean>
-    </property>
-
+    <property name="transactionManager" ref="transactionManager"/>
+    <property name="threadPoolSize" value="25"/>
 
     <!-- the JCA Resource Adapter -->
     <property name="resourceAdapter">

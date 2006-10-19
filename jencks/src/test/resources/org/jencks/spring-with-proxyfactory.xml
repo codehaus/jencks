@@ -3,25 +3,24 @@
 <!-- START SNIPPET: spring -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
+  <!--
+  || Transaction Manager
+  -->
+  <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
 
   <!--
   || ActiveMQ Broker
   -->
   <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean" singleton="true">
-    <property name="config" value="classpath:org/jencks/broker.xml" />
+    <property name="config" value="classpath:org/jencks/broker.xml"/>
   </bean>
 
   <!--
   || Jencks JCA Container
   -->
   <bean id="jencks" class="org.jencks.JCAContainer">
-
-    <!-- lets use the default configuration of work manager and transaction manager-->
-    <property name="bootstrapContext">
-      <bean class="org.jencks.factory.BootstrapContextFactoryBean">
-        <property name="threadPoolSize" value="25"/>
-      </bean>
-    </property>
+    <property name="transactionManager" ref="transactionManager"/>
+    <property name="threadPoolSize" value="25"/>
 
     <!-- the JCA Resource Adapter -->
     <property name="resourceAdapter">
@@ -36,7 +35,7 @@
     -->
   <bean id="inboundConnectorA" class="org.jencks.JCAConnector">
 
-	<property name="jcaContainer" ref="jencks" />
+    <property name="jcaContainer" ref="jencks"/>
 
     <!-- subscription details -->
     <property name="activationSpec">
@@ -55,7 +54,7 @@
     -->
   <bean id="inboundConnectorB" class="org.jencks.JCAConnector">
 
-	<property name="jcaContainer" ref="jencks" />
+    <property name="jcaContainer" ref="jencks"/>
 
     <!-- subscription details -->
     <property name="activationSpec">
@@ -74,29 +73,19 @@
     -->
 
   <!-- a thread safe non-pooled MessageListener -->
-  <bean id="echoBean" class="org.jencks.TestBean">
-  </bean>
+  <bean id="echoBean" class="org.jencks.TestBean"></bean>
 
   <!-- a pooled, non-thread safe MessageListener using ProxyFactoryBean -->
   <bean id="pooledEchoBean" class="org.springframework.aop.framework.ProxyFactoryBean">
-    <property name="proxyInterfaces">
-      <value>javax.jms.MessageListener</value>
-    </property>
-    <property name="targetSource">
-      <ref local="pooledEchoBeanTargetSource"/>
-    </property>
+    <property name="proxyInterfaces" value="javax.jms.MessageListener"/>
+    <property name="targetSource" ref="pooledEchoBeanTargetSource"/>
   </bean>
   <bean id="pooledEchoBeanTargetSource" class="org.springframework.aop.target.CommonsPoolTargetSource">
-    <property name="targetBeanName">
-      <value>pooledEchoBeanTarget</value>
-    </property>
-    <property name="maxSize">
-      <value>25</value>
-    </property>
+    <property name="targetBeanName" value="pooledEchoBeanTarget"/>
+    <property name="maxSize" value="25"/>
   </bean>
-  <bean id="pooledEchoBeanTarget" class="org.jencks.TestBean" singleton="false">
-  </bean>
+  <bean id="pooledEchoBeanTarget" class="org.jencks.TestBean" singleton="false"/>
 
 </beans>
 
-        <!-- END SNIPPET: spring -->
+    <!-- END SNIPPET: spring -->

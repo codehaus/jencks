@@ -16,16 +16,15 @@
 
 package org.jencks.interceptor;
 
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.geronimo.transaction.DefaultInstanceContext;
-import org.apache.geronimo.transaction.InstanceContext;
-import org.apache.geronimo.transaction.TrackedConnectionAssociator;
+import org.apache.geronimo.connector.outbound.connectiontracking.ConnectorInstanceContext;
+import org.apache.geronimo.connector.outbound.connectiontracking.ConnectorInstanceContextImpl;
+import org.apache.geronimo.connector.outbound.connectiontracking.TrackedConnectionAssociator;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This bean is used to configure a transactional context for
@@ -35,29 +34,30 @@ import java.util.Set;
  * context and, at the end, exit of it.
  *
  * @author Thierry Templier
- * @see TrackedConnectionAssociator#enter(InstanceContext)
- * @see TrackedConnectionAssociator#exit(InstanceContext)
- * @see InstanceContext
- * @see DefaultInstanceContext
+ * @see TrackedConnectionAssociator#enter(ConnectorInstanceContext)
+ * @see TrackedConnectionAssociator#exit(ConnectorInstanceContext)
+ * @see ConnectorInstanceContext
+ * @see ConnectorInstanceContextImpl
  */
 public class TransactionContextInitializer implements InitializingBean, DisposableBean {
-
     private TrackedConnectionAssociator associator;
-    private InstanceContext oldContext;
+    private ConnectorInstanceContext oldContext;
 
-    protected transient Log logger = LogFactory.getLog(getClass());
+    protected Log logger = LogFactory.getLog(getClass());
+    private Set unshareableResources;
+    private Set applicationManagedSecurityResources;
 
     public void afterPropertiesSet() throws Exception {
-        Set unshareableResources = new HashSet();
-        Set applicationManagedSecurityResources = new HashSet();
-        this.oldContext = associator.enter(
-                new DefaultInstanceContext(unshareableResources, applicationManagedSecurityResources));
-        logger.info("Geronimo transaction context set.");
+        ConnectorInstanceContextImpl myContext = new ConnectorInstanceContextImpl(unshareableResources, applicationManagedSecurityResources);
+        this.oldContext = associator.enter(myContext);
     }
 
     public void destroy() throws Exception {
         associator.exit(oldContext);
-        logger.info("Geronimo transaction context unset.");
+    }
+
+    public TrackedConnectionAssociator getAssociator() {
+        return associator;
     }
 
     /**
@@ -68,4 +68,19 @@ public class TransactionContextInitializer implements InitializingBean, Disposab
         this.associator = associator;
     }
 
+    public Set getUnshareableResources() {
+        return unshareableResources;
+    }
+
+    public void setUnshareableResources(Set unshareableResources) {
+        this.unshareableResources = unshareableResources;
+    }
+
+    public Set getApplicationManagedSecurityResources() {
+        return applicationManagedSecurityResources;
+    }
+
+    public void setApplicationManagedSecurityResources(Set applicationManagedSecurityResources) {
+        this.applicationManagedSecurityResources = applicationManagedSecurityResources;
+    }
 }

@@ -4,71 +4,48 @@
 
 <!-- START SNIPPET: jca -->
 <beans>
-
-  <!--
-    ###### Transaction manager ######
-  -->
-
-  <bean id="transactionContextManager" class="org.jencks.factory.TransactionContextManagerFactoryBean" />
-  <bean id="userTransaction" class="org.jencks.factory.GeronimoTransactionManagerFactoryBean" />
-  <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
-    <property name="userTransaction" ref="userTransaction" />
-  </bean>
-
-  <!--
-    ###### JCA ######
-  -->
-
-  <bean id="transactionSupport" class="org.jencks.factory.XATransactionFactoryBean">
-    <property name="useTransactionCaching" value="true" />
-    <property name="useThreadCaching" value="true" />
-  </bean>
-
-  <bean id="poolingSupport" class="org.jencks.factory.SinglePoolFactoryBean">
-    <property name="maxSize" value="2" />
-    <property name="minSize" value="1" />
-    <property name="blockingTimeoutMilliseconds" value="60" />
-    <property name="idleTimeoutMinutes" value="60" />
-    <property name="matchOne" value="true" />
-    <property name="matchAll" value="true" />
-    <property name="selectOneAssumeMatch" value="true" />
-  </bean>
-
-  <bean id="connectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
-    <property name="transactionSupport" ref="transactionSupport" />
-    <property name="poolingSupport" ref="poolingSupport" />
-  </bean>
-
-  <!--
-    ###### JMS ######
-  -->
+  <!-- ###### ActiveMQ Configuration ###### -->
 
   <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
-    <property name="config" value="classpath:org/jencks/samples/outbound/broker.xml" />
+    <property name="config" value="classpath:org/jencks/samples/outbound/broker.xml"/>
   </bean>
 
   <bean id="jmsResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
-    <property name="serverUrl" value="tcp://localhost:51626" />
-  </bean>
-
-  <bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
-    <property name="resourceAdapter" ref="jmsResourceAdapter" />
-  </bean>
-
-  <bean id="jmsConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">
-    <property name="managedConnectionFactory" ref="jmsManagedConnectionFactory" />
-    <property name="connectionManager" ref="connectionManager" />
+    <property name="serverUrl" value="vm://localhost"/>
   </bean>
 
   <bean id="jmsQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName" value="queue" />
+    <property name="jndiName" value="queue"/>
     <property name="jndiEnvironment">
       <props>
         <prop key="java.naming.factory.initial">org.apache.activemq.jndi.ActiveMQInitialContextFactory</prop>
-        <prop key="java.naming.provider.url">tcp://localhost:51626</prop>
+        <prop key="java.naming.provider.url">tcp://localhost:51616</prop>
         <prop key="queue.queue">example.MyQueue</prop>
       </props>
     </property>
+  </bean>
+
+  <!-- ###### Transaction manager ###### -->
+
+  <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
+
+  <!-- ###### Connection Manager ###### -->
+
+  <bean id="connectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+    <property name="transactionManager" ref="transactionManager"/>
+  </bean>
+
+  <!-- ###### JMS Managed Connection Factory ###### -->
+
+  <bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
+    <property name="resourceAdapter" ref="jmsResourceAdapter"/>
+  </bean>
+
+  <!-- ###### JMS Connection Factory ###### -->
+
+  <bean id="jmsConnectionFactory" class="org.jencks.factory.ConnectionFactoryFactoryBean">
+    <property name="managedConnectionFactory" ref="jmsManagedConnectionFactory"/>
+    <property name="connectionManager" ref="connectionManager"/>
   </bean>
 
 </beans>

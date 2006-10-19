@@ -333,6 +333,9 @@ public class PooledSpringXAConnection implements TopicConnection,
 				throw new RuntimeException(e);
 			}
 		}
+        
+        public void afterCommit() {
+        }
 	}
 
 	private static class ConnectionInfo {

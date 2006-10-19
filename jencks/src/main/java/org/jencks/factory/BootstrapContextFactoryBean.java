@@ -17,127 +17,92 @@
  **/
 package org.jencks.factory;
 
-import java.util.Collection;
-
-import javax.resource.spi.BootstrapContext;
+import javax.resource.spi.XATerminator;
 import javax.resource.spi.work.WorkManager;
-import javax.transaction.xa.XAException;
 
-import org.apache.geronimo.connector.BootstrapContextImpl;
+import org.apache.geronimo.connector.GeronimoBootstrapContext;
 import org.apache.geronimo.connector.work.GeronimoWorkManager;
-import org.apache.geronimo.transaction.ExtendedTransactionManager;
-import org.apache.geronimo.transaction.context.TransactionContextManager;
-import org.apache.geronimo.transaction.manager.TransactionLog;
-import org.apache.geronimo.transaction.manager.XidImporter;
+import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
+import org.springframework.beans.FatalBeanException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 /**
- * A Spring {@link FactoryBean} for creating a {@link BootstrapContext} for the JCA container
- * with the {@link WorkManager} and {@link ExtendedTransactionManager}.
+ * A Spring {@link FactoryBean} for creating a {@link GeronimoBootstrapContext} for the JCA container
+ * with the {@link WorkManager} and {@link XATerminator}.
  *
  * @version $Revision$
- * @org.apache.xbean.XBean
+ * @org.apache.xbean.XBean element="bootstrapContext"
  */
-public class BootstrapContextFactoryBean implements FactoryBean, InitializingBean, ApplicationContextAware {
+public class BootstrapContextFactoryBean implements FactoryBean, InitializingBean, DisposableBean {
+    private GeronimoBootstrapContext bootstrapContext;
 
-	private ApplicationContext applicationContext;
-    private BootstrapContext bootstrapContext;
-    private GeronimoWorkManager workManager;
-    private WorkManagerFactoryBean workManagerFactory = new WorkManagerFactoryBean();
+    private WorkManager workManager;
+    private boolean createdWorkManager;
+    private GeronimoTransactionManager transactionManager;
+    private int threadPoolSize;
 
     public Object getObject() throws Exception {
-    	if (bootstrapContext == null) {
-            bootstrapContext = new BootstrapContextImpl(getWorkManager());
-    	}
+        if (bootstrapContext == null) {
+            if (transactionManager == null) {
+                throw new FatalBeanException("transactionManager is null");
+            }
+            bootstrapContext = new GeronimoBootstrapContext(workManager, transactionManager);
+        }
         return bootstrapContext;
     }
 
     public Class getObjectType() {
-        return BootstrapContext.class;
+        return GeronimoBootstrapContext.class;
     }
 
     public boolean isSingleton() {
         return true;
     }
 
-    public void afterPropertiesSet() throws Exception {
-    }
-
-    public void setApplicationContext(ApplicationContext applicationContext) {
-    	this.applicationContext = applicationContext;
-    }
-
-
-    // Properties
-    //-------------------------------------------------------------------------
-    public GeronimoWorkManager getWorkManager() throws Exception {
-        if (workManager == null) {
-        	workManagerFactory.setApplicationContext(applicationContext);
-            workManager = workManagerFactory.getWorkManager();
+    public void destroy() throws Exception {
+        if (createdWorkManager && workManager instanceof GeronimoWorkManager) {
+            GeronimoWorkManager geronimoWorkManager = (GeronimoWorkManager) workManager;
+            geronimoWorkManager.doStop();
+            geronimoWorkManager = null;
         }
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        // transaction manager is required
+        if (transactionManager == null) {
+            throw new FatalBeanException("Geronimo transaction manager was not set");
+        }
+
+        // create a default thread pool if one was not specified
+        if (workManager == null) {
+            workManager = GeronimoDefaults.createWorkManager(transactionManager, getThreadPoolSize());
+            createdWorkManager = true;
+        }
+    }
+
+    public WorkManager getWorkManager() {
         return workManager;
     }
 
-    public void setWorkManager(GeronimoWorkManager workManager) {
+    public void setWorkManager(WorkManager workManager) {
         this.workManager = workManager;
     }
 
-    public TransactionContextManager getTransactionContextManager() throws XAException {
-        return workManagerFactory.getTransactionContextManager();
+    public GeronimoTransactionManager getTransactionManager() {
+        return transactionManager;
     }
 
-    public void setTransactionContextManager(TransactionContextManager transactionContextManager) {
-        workManagerFactory.setTransactionContextManager(transactionContextManager);
+    public void setTransactionManager(GeronimoTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
     }
 
     public int getThreadPoolSize() {
-        return workManagerFactory.getThreadPoolSize();
+        return threadPoolSize;
     }
 
     public void setThreadPoolSize(int threadPoolSize) {
-        workManagerFactory.setThreadPoolSize(threadPoolSize);
-    }
-
-    public ExtendedTransactionManager getTransactionManager() throws XAException {
-        return workManagerFactory.getTransactionManager();
-    }
-
-    public void setTransactionManager(ExtendedTransactionManager transactionManager) {
-        workManagerFactory.setTransactionManager(transactionManager);
-    }
-
-    public XidImporter getXidImporter() {
-        return workManagerFactory.getXidImporter();
-    }
-
-    public void setXidImporter(XidImporter xidImporter) {
-        workManagerFactory.setXidImporter(xidImporter);
-    }
-
-    public int getDefaultTransactionTimeoutSeconds() {
-        return workManagerFactory.getDefaultTransactionTimeoutSeconds();
-    }
-
-    public void setDefaultTransactionTimeoutSeconds(int defaultTransactionTimeoutSeconds) {
-        workManagerFactory.setDefaultTransactionTimeoutSeconds(defaultTransactionTimeoutSeconds);
-    }
-
-    public TransactionLog getTransactionLog() {
-        return workManagerFactory.getTransactionLog();
-    }
-
-    public void setTransactionLog(TransactionLog transactionLog) {
-        workManagerFactory.setTransactionLog(transactionLog);
-    }
-
-    public Collection getResourceManagers() {
-        return workManagerFactory.getResourceManagers();
-    }
-
-    public void setResourceManagers(Collection resourceManagers) {
-        workManagerFactory.setResourceManagers(resourceManagers);
+        this.threadPoolSize = threadPoolSize;
     }
 }

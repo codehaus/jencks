@@ -8,11 +8,7 @@
   || Transaction Manager
   -->
 
-  <bean id="transactionContextManager" class="org.jencks.factory.TransactionContextManagerFactoryBean"/>
-  <bean id="userTransaction" class="org.jencks.factory.GeronimoTransactionManagerFactoryBean" />
-  <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
-    <property name="userTransaction" ref="userTransaction"/>
-  </bean>
+  <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
 
   <!--
   || ActiveMQ Broker
@@ -25,11 +21,10 @@
     || A JCA container
     -->
   <bean id="jencks" class="org.jencks.JCAContainer">
+    <property name="transactionManager" ref="transactionManager"/>
 
-    <!-- lets configure the work manager and transaction manager -->
-    <property name="bootstrapContext">
-      <bean class="org.jencks.factory.BootstrapContextFactoryBean"/>
-    </property>
+    <!-- lets configure the thread pool and transaction manager -->
+    <property name="threadPoolSize" value="25"/>
 
     <!-- the JCA Resource Adapter for ActiveMQ -->
     <property name="resourceAdapter" ref="jmsResourceAdapter" />
@@ -40,23 +35,14 @@
   </bean>
 
   <bean id="connectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
-    <property name="transactionSupport">
-	  <bean class="org.jencks.factory.XATransactionFactoryBean">
-	    <property name="useTransactionCaching" value="true" />
-	    <property name="useThreadCaching" value="false" />
-	  </bean>
-    </property>
-    <property name="poolingSupport">
-	  <bean class="org.jencks.factory.SinglePoolFactoryBean">
-	    <property name="maxSize" value="2"/>
-	    <property name="minSize" value="1" />
-	    <property name="blockingTimeoutMilliseconds" value="60" />
-	    <property name="idleTimeoutMinutes" value="60" />
-	    <property name="matchOne" value="true" />
-	    <property name="matchAll" value="true" />
-	    <property name="selectOneAssumeMatch" value="true" />
-	  </bean>
-    </property>
+    <property name="transactionManager" ref="transactionManager"/>
+    <property name="transaction" value="xa"/>
+    <property name="pooling" value="true"/>
+    <property name="allConnectionsEqual" value="true"/>
+    <property name="poolMaxSize" value="2"/>
+    <property name="poolMinSize" value="1"/>
+    <property name="connectionMaxWaitMilliseconds" value="60"/>
+    <property name="connectionMaxIdleMinutes" value="60"/>
   </bean>
 
   <!--
@@ -75,7 +61,7 @@
     </property>
 
     <!-- use XA transactions -->
-    <property name="transactionManager" ref="userTransaction"/>
+    <property name="transactionManager" ref="transactionManager"/>
 
     <!-- This example uses a pooled bean -->
     <property name="ref" value="pooledReplyBean"/>
@@ -117,7 +103,7 @@
     <property name="resourceAdapter" ref="jmsResourceAdapter"/>
   </bean>
 
-  <bean id="jmsConnectionFactory" class="org.springframework.jca.support.LocalConnectionFactoryBean">
+  <bean id="jmsConnectionFactory" class="org.jencks.factory.ConnectionFactoryFactoryBean">
     <property name="managedConnectionFactory" ref="jmsManagedConnectionFactory"/>
     <property name="connectionManager" ref="connectionManager"/>
   </bean>

@@ -1,7 +1,8 @@
 package org.jencks.factory;
 
-import EDU.oswego.cs.dl.util.concurrent.SynchronizedBoolean;
 import org.jencks.SpringTestSupport;
+
+import edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.resource.spi.work.Work;
 import javax.resource.spi.work.WorkManager;
@@ -11,7 +12,7 @@ import javax.resource.spi.work.WorkManager;
  */
 public class WorkManagerFactoryBeanTest extends SpringTestSupport {
 
-    SynchronizedBoolean flag = new SynchronizedBoolean(false);
+    AtomicBoolean flag = new AtomicBoolean(false);
     Object lock = new Object();
 
     public void testWorkManager() throws Exception {

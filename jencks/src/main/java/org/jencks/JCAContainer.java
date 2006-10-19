@@ -19,7 +19,10 @@ package org.jencks;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
+import org.apache.geronimo.connector.work.GeronimoWorkManager;
 import org.jencks.factory.BootstrapContextFactoryBean;
+import org.jencks.factory.GeronimoDefaults;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -28,24 +31,33 @@ import org.springframework.context.ApplicationContextAware;
 
 import javax.resource.spi.BootstrapContext;
 import javax.resource.spi.ResourceAdapter;
+import javax.resource.spi.work.WorkManager;
 
 /**
- * Represents a base JCA container which has no dependency on Geronimo and
- * requires a mandatory {@link BootstrapContext} and {@link ResourceAdapter}
- * properties to be configured. <p/> Typically Spring users will use the
- * {@link BootstrapContextFactoryBean} to create the {@link BootstrapContext}
- * instance, with the work manager and transaction manager.
- * 
+ * Represents a base JCA container which has no dependency on Geronimo
+ * and requires a mandatory {@link BootstrapContext} and {@link ResourceAdapter}
+ * properties to be configured.
+ * <p/>
+ * Typically Spring users will use the {@link BootstrapContextFactoryBean} to create
+ * the {@link BootstrapContext} instance, with the work manager and transaction manager.
+ *
  * @version $Revision$
  * @org.apache.xbean.XBean element="jcaContainer"
  */
 public class JCAContainer implements InitializingBean, DisposableBean, ApplicationContextAware {
-    private static final transient Log log = LogFactory.getLog(JCAContainer.class);
+    private static final Log log = LogFactory.getLog(JCAContainer.class);
     private BootstrapContext bootstrapContext;
     private ResourceAdapter resourceAdapter;
     private ApplicationContext applicationContext;
     private boolean lazyLoad = false;
-    private JCAConnector[] connectors;
+
+    // optional - used to create bootstrap context when not specified
+    private GeronimoTransactionManager transactionManager;
+    private WorkManager workManager;
+    private boolean createdWorkManager;
+
+    // optional - used to create work manager when bootstrap context and work manager are not specified
+    private int threadPoolSize;
 
     public JCAContainer() {
     }
@@ -59,10 +71,17 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
             throw new IllegalArgumentException("resourceAdapter must be set");
         }
         if (bootstrapContext == null) {
-            if (bootstrapContext == null) {
-                throw new IllegalArgumentException("bootstrapContext must be set");
+            if (transactionManager == null) {
+                throw new IllegalArgumentException("bootstrapContext or transactionManager must be set");
             }
+
+            if (workManager == null) {
+                workManager = GeronimoDefaults.createWorkManager(transactionManager, threadPoolSize);
+                createdWorkManager = true;
+            }
+            bootstrapContext = GeronimoDefaults.createBootstrapContext(transactionManager, workManager);
         }
+
         resourceAdapter.start(bootstrapContext);
 
         // now lets start all of the JCAConnector instances
@@ -79,8 +98,6 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
             version = aPackage.getImplementationVersion();
         }
 
-        startConnectors();
-
         log.info("Jencks JCA Container (http://jencks.org/) has started running version: " + version);
     }
 
@@ -88,10 +105,15 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
         if (resourceAdapter != null) {
             resourceAdapter.stop();
         }
+        if (createdWorkManager && workManager instanceof GeronimoWorkManager) {
+            GeronimoWorkManager geronimoWorkManager = (GeronimoWorkManager) workManager;
+            geronimoWorkManager.doStop();
+            geronimoWorkManager = null;
+        }
     }
 
     // Properties
-    // -------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     public ApplicationContext getApplicationContext() {
         return applicationContext;
     }
@@ -124,25 +146,27 @@ public class JCAContainer implements InitializingBean, DisposableBean, Applicati
         this.lazyLoad = lazyLoad;
     }
 
-    public JCAConnector[] getConnectors() {
-        return connectors;
+    public GeronimoTransactionManager getTransactionManager() {
+        return transactionManager;
     }
 
-    public void setConnectors(JCAConnector[] connectors) {
-        this.connectors = connectors;
+    public void setTransactionManager(GeronimoTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
     }
 
+    public WorkManager getWorkManager() {
+        return workManager;
+    }
 
-    // Implementation methods
-    // -------------------------------------------------------------------------
-    protected void startConnectors() throws Exception {
-        if (connectors != null) {
-            for (int i = 0; i < connectors.length; i++) {
-                JCAConnector connector = connectors[i];
-                connector.setJcaContainer(this);
-                
-                connector.start();
-            }
-        }
+    public void setWorkManager(WorkManager workManager) {
+        this.workManager = workManager;
+    }
+
+    public int getThreadPoolSize() {
+        return threadPoolSize;
+    }
+
+    public void setThreadPoolSize(int threadPoolSize) {
+        this.threadPoolSize = threadPoolSize;
     }
 }
