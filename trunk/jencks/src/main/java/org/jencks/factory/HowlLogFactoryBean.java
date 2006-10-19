@@ -17,7 +17,7 @@ package org.jencks.factory;
 
 import java.io.File;
 
-import org.apache.geronimo.transaction.log.GeronimoHOWLLog;
+import org.apache.geronimo.transaction.log.HOWLLog;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.XidFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -25,10 +25,9 @@ import org.springframework.beans.factory.FactoryBean;
 
 /**
  * @version $Revision$ $Date$
- * @org.apache.xbean.XBean element="howlLog" 
  */
 public class HowlLogFactoryBean implements FactoryBean, DisposableBean {
-    private static GeronimoHOWLLog howlLog;
+    private HOWLLog howlLog;
 
     private String logFileDir;
     private XidFactory xidFactory;
@@ -53,11 +52,11 @@ public class HowlLogFactoryBean implements FactoryBean, DisposableBean {
 
     public Object getObject() throws Exception {
         if (howlLog == null) {
-            howlLog = new GeronimoHOWLLog(bufferClassName,
+            howlLog = new HOWLLog(bufferClassName,
                     bufferSizeKBytes,
                     checksumEnabled,
                     flushSleepTimeMilliseconds,
-                    new File(serverBaseDir, logFileDir).getAbsolutePath(),
+                    logFileDir,
                     logFileExt,
                     logFileName,
                     maxBlocksPerFile,
@@ -65,7 +64,8 @@ public class HowlLogFactoryBean implements FactoryBean, DisposableBean {
                     maxLogFiles,
                     minBuffers,
                     threadsWaitingForceThreshold,
-                    xidFactory);
+                    xidFactory,
+                    serverBaseDir);
 
             howlLog.doStart();
         }

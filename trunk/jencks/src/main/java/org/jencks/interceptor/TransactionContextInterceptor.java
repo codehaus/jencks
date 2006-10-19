@@ -16,14 +16,13 @@
 
 package org.jencks.interceptor;
 
+import java.util.Set;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.geronimo.transaction.DefaultInstanceContext;
-import org.apache.geronimo.transaction.InstanceContext;
-import org.apache.geronimo.transaction.TrackedConnectionAssociator;
-
-import java.util.HashSet;
-import java.util.Set;
+import org.apache.geronimo.connector.outbound.connectiontracking.ConnectorInstanceContext;
+import org.apache.geronimo.connector.outbound.connectiontracking.ConnectorInstanceContextImpl;
+import org.apache.geronimo.connector.outbound.connectiontracking.TrackedConnectionAssociator;
 
 /**
  * This servlet filter is used to enter in a transactional context
@@ -31,31 +30,35 @@ import java.util.Set;
  * is sent back to the client.
  *
  * @author Thierry Templier
- * @see TrackedConnectionAssociator#enter(InstanceContext)
- * @see TrackedConnectionAssociator#exit(InstanceContext)
- * @see InstanceContext
- * @see DefaultInstanceContext
+ * @see TrackedConnectionAssociator#enter(ConnectorInstanceContext)
+ * @see TrackedConnectionAssociator#exit(ConnectorInstanceContext)
+ * @see ConnectorInstanceContext
+ * @see ConnectorInstanceContextImpl
  */
 public class TransactionContextInterceptor implements MethodInterceptor {
-
     private TrackedConnectionAssociator associator;
+    private Set unshareableResources;
+    private Set applicationManagedSecurityResources;
+    private ConnectorInstanceContextImpl connectorInstanceContext;
 
     /**
      * This is the central method of the filter which allows the
      * request to enter in a transactionnal context and exit when
      * the request is sent back to the client.
-     *
-     * @see #enterContext(Set, Set)
-     * @see #exitContext(InstanceContext)
      */
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        Set unshareableResources = new HashSet();
-        Set applicationManagedSecurityResources = new HashSet();
-        InstanceContext context = associator.enter(
-                new DefaultInstanceContext(unshareableResources, applicationManagedSecurityResources));
+        if (connectorInstanceContext == null) {
+            connectorInstanceContext = new ConnectorInstanceContextImpl(unshareableResources, applicationManagedSecurityResources);
+        }
+        ConnectorInstanceContext context = associator.enter(
+                connectorInstanceContext);
         Object returnValue = invocation.proceed();
         associator.exit(context);
         return returnValue;
+    }
+
+    public TrackedConnectionAssociator getAssociator() {
+        return associator;
     }
 
     /**
@@ -64,6 +67,21 @@ public class TransactionContextInterceptor implements MethodInterceptor {
      */
     public void setAssociator(TrackedConnectionAssociator associator) {
         this.associator = associator;
+	}
+
+    public Set getUnshareableResources() {
+        return unshareableResources;
     }
 
+    public void setUnshareableResources(Set unshareableResources) {
+        this.unshareableResources = unshareableResources;
+    }
+
+    public Set getApplicationManagedSecurityResources() {
+        return applicationManagedSecurityResources;
+    }
+
+    public void setApplicationManagedSecurityResources(Set applicationManagedSecurityResources) {
+        this.applicationManagedSecurityResources = applicationManagedSecurityResources;
+    }
 }

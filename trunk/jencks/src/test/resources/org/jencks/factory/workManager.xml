@@ -4,8 +4,11 @@
 <beans>
 
   <!-- START SNIPPET: spring -->
-  <bean id="workManager" class="org.jencks.factory.WorkManagerFactoryBean">
+  <bean name="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
+
+  <bean id="workManager" class="org.jencks.factory.WorkManagerFactoryBean" destroy-method="stop">
     <property name="threadPoolSize" value="25"/>
+    <property name="transactionManager" ref="transactionManager"/>
   </bean>
   <!-- END SNIPPET: spring -->
 

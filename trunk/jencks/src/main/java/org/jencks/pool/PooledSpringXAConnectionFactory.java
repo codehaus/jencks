@@ -25,7 +25,7 @@ import javax.transaction.TransactionManager;
 
 import org.springframework.transaction.jta.JtaTransactionManager;
 
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
+import edu.emory.mathcs.backport.java.util.concurrent.ConcurrentHashMap;
 
 public class PooledSpringXAConnectionFactory implements ConnectionFactory {
 	private XAConnectionFactory connectionFactory;

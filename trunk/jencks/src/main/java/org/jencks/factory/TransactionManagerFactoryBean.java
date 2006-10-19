@@ -16,15 +16,17 @@
 
 package org.jencks.factory;
 
+import java.util.Collection;
+
 import org.apache.geronimo.transaction.log.UnrecoverableLog;
+import org.apache.geronimo.transaction.log.HOWLLog;
 import org.apache.geronimo.transaction.manager.TransactionLog;
-import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.geronimo.transaction.manager.XidFactory;
 import org.apache.geronimo.transaction.manager.XidFactoryImpl;
+import org.jencks.GeronimoPlatformTransactionManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-
-import java.util.Collection;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
  * This FactoryBean creates and configures the Geronimo implementation
@@ -33,29 +35,39 @@ import java.util.Collection;
  * @author Thierry Templier
  * @see UnrecoverableLog
  * @see org.apache.geronimo.transaction.log.HOWLLog
- * @org.apache.xbean.XBean
+ * @org.apache.xbean.XBean element="transactionManager"
  */
-public class TransactionManagerFactoryBean implements FactoryBean, InitializingBean {
+public class TransactionManagerFactoryBean implements FactoryBean, InitializingBean, DisposableBean {
+    private GeronimoPlatformTransactionManager transactionManager;
 
     private int defaultTransactionTimeoutSeconds = 600;
-    private TransactionLog transactionLog;
-    private Collection resourceManagers;
-
-    private TransactionManagerImpl transactionManagerImpl;
     private XidFactory xidFactory;
 
+    private TransactionLog transactionLog;
+    private String transactionLogDir;
+
+    private Collection resourceManagers;
+    private boolean createdTransactionLog;
+
+
     public Object getObject() throws Exception {
-        if (transactionManagerImpl == null) {
-            this.transactionManagerImpl = new TransactionManagerImpl(defaultTransactionTimeoutSeconds,
+        if (transactionManager == null) {
+            this.transactionManager = new GeronimoPlatformTransactionManager(defaultTransactionTimeoutSeconds,
                     xidFactory,
                     transactionLog,
                     resourceManagers);
         }
-        return transactionManagerImpl;
+        return transactionManager;
+    }
+
+    public void destroy() throws Exception {
+        if (createdTransactionLog && transactionLog instanceof HOWLLog) {
+            ((HOWLLog)transactionLog).doStop();
+        }
     }
 
     public Class getObjectType() {
-        return TransactionManagerImpl.class;
+        return GeronimoPlatformTransactionManager.class;
     }
 
     public boolean isSingleton() {
@@ -74,6 +86,14 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
      */
     public void setTransactionLog(TransactionLog log) {
         transactionLog = log;
+    }
+
+    public String getTransactionLogDir() {
+        return transactionLogDir;
+    }
+
+    public void setTransactionLogDir(String transactionLogDir) {
+        this.transactionLogDir = transactionLogDir;
     }
 
     public Collection getResourceManagers() {
@@ -97,7 +117,8 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
 
     public void afterPropertiesSet() throws Exception {
         if (transactionLog == null) {
-            transactionLog = new UnrecoverableLog();
+            transactionLog = GeronimoDefaults.createTransactionLog(xidFactory, transactionLogDir);
+            createdTransactionLog = true;
         }
         if (xidFactory == null) {
             xidFactory = new XidFactoryImpl();

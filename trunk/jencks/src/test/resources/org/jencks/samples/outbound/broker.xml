@@ -11,7 +11,7 @@
 --> 
  
     <transportConnectors>
-      <transportConnector uri="tcp://localhost:51626"/>
+      <transportConnector uri="tcp://localhost:51616"/>
     </transportConnectors>
         
   </broker>
