@@ -20,6 +20,7 @@ import java.io.File;
 import org.apache.geronimo.transaction.log.HOWLLog;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.XidFactory;
+import org.apache.geronimo.transaction.manager.XidFactoryImpl;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -35,6 +36,7 @@ public class HowlLogFactoryBean implements FactoryBean, DisposableBean {
     private String bufferClassName = "org.objectweb.howl.log.BlockLogBuffer";
     private int bufferSizeKBytes = 32;
     private boolean checksumEnabled = true;
+    private boolean adler32Checksum = true;
     private int flushSleepTimeMilliseconds = 50;
     private String logFileExt = "log";
     private String logFileName = "transaction";
@@ -55,6 +57,7 @@ public class HowlLogFactoryBean implements FactoryBean, DisposableBean {
             howlLog = new HOWLLog(bufferClassName,
                     bufferSizeKBytes,
                     checksumEnabled,
+                    adler32Checksum,
                     flushSleepTimeMilliseconds,
                     logFileDir,
                     logFileExt,
@@ -64,7 +67,7 @@ public class HowlLogFactoryBean implements FactoryBean, DisposableBean {
                     maxLogFiles,
                     minBuffers,
                     threadsWaitingForceThreshold,
-                    xidFactory,
+                    xidFactory != null ? xidFactory : new XidFactoryImpl(),
                     serverBaseDir);
 
             howlLog.doStart();
@@ -109,6 +112,14 @@ public class HowlLogFactoryBean implements FactoryBean, DisposableBean {
 
     public void setChecksumEnabled(boolean checksumEnabled) {
         this.checksumEnabled = checksumEnabled;
+    }
+
+    public boolean isAdler32Checksum() {
+        return adler32Checksum;
+    }
+
+    public void setAdler32Checksum(boolean adler32Checksum) {
+        this.adler32Checksum = adler32Checksum;
     }
 
     public int getFlushSleepTimeMilliseconds() {
