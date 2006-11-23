@@ -100,7 +100,11 @@ public class XAEndpoint implements MessageEndpoint, MessageListener {
                 throw new ResourceException(e);
             }
             try {
-                transaction.commit();
+                if (transactionManager.getTransaction() != transaction) {
+                    throw new IllegalStateException("Transaction is not bound to the current thread");
+                }
+                transactionManager.commit();
+                //transaction.commit();
                 log.trace("Transaction committed");
             }
             catch (RollbackException e) {
@@ -130,7 +134,11 @@ public class XAEndpoint implements MessageEndpoint, MessageListener {
     public void release() {
         if (transaction != null) {
             try {
-                transaction.rollback();
+                if (transactionManager.getTransaction() != transaction) {
+                    throw new IllegalStateException("Transaction is not bound to the current thread");
+                }
+                transactionManager.rollback();
+                // transaction.rollback();
             }
             catch (SystemException e) {
                 log.warn("Failed to rollback transaction: " + e, e);
@@ -140,7 +148,11 @@ public class XAEndpoint implements MessageEndpoint, MessageListener {
 
     protected void doRollback(Exception e) throws ResourceException {
         try {
-            transaction.rollback();
+            if (transactionManager.getTransaction() != transaction) {
+                throw new IllegalStateException("Transaction is not bound to the current thread");
+            }
+            transactionManager.rollback();
+            //transaction.rollback();
             log.trace("Transaction rolled back");
         }
         catch (SystemException e1) {
