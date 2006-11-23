@@ -28,6 +28,7 @@ import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
+import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
@@ -94,21 +95,19 @@ public class XAEndpoint implements MessageEndpoint, MessageListener {
         }
         if (beforeDeliveryCompleted && messageDelivered) {
             try {
-                transaction.delistResource(xaResource, XAResource.TMSUSPEND);
-            }
-            catch (SystemException e) {
-                throw new ResourceException(e);
-            }
-            try {
                 if (transactionManager.getTransaction() != transaction) {
                     throw new IllegalStateException("Transaction is not bound to the current thread");
                 }
-                transactionManager.commit();
-                //transaction.commit();
-                log.trace("Transaction committed");
+                if (transaction.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
+                    transactionManager.rollback();
+                    log.trace("Transaction rolled back");
+                } else {
+                    transactionManager.commit();
+                    log.trace("Transaction committed");
+                }
             }
             catch (RollbackException e) {
-                throw new ResourceException(e);
+                // The transaction has been 
             }
             catch (HeuristicMixedException e) {
                 doRollback(e);
