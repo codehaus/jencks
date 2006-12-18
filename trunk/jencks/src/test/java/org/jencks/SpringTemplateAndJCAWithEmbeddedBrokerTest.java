@@ -65,7 +65,7 @@ public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
     }
 
     protected String getDestinationName() {
-        return getClass().getName();
+        return "myTopic";
     }
 
     protected void setUp() throws Exception {
