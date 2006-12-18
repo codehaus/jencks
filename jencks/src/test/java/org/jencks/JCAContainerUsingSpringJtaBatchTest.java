@@ -56,6 +56,5 @@ public class JCAContainerUsingSpringJtaBatchTest extends JCAContainerTest {
         System.err.println("Time to send/receive " + number + " messages: " + (stop - start) + " ms");
         List list = consumer.flushMessages();
         assertEquals("Message count: " + list, number, list.size());
-        
     }
 }

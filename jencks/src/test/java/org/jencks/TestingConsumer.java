@@ -73,13 +73,13 @@ public class TestingConsumer implements MessageListener {
 
         long start = System.currentTimeMillis();
 
-        while (System.currentTimeMillis() - start < 10000) {
+        while (System.currentTimeMillis() - start < 100 * messageCount + 4000) {
             try {
                 if (hasReceivedMessages(messageCount)) {
                     break;
                 }
                 synchronized (semaphore) {
-                    semaphore.wait(1000);
+                    semaphore.wait(4000);
                 }
             }
             catch (InterruptedException e) {
