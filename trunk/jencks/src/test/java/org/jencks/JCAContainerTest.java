@@ -23,22 +23,10 @@ import java.util.List;
 import javax.jms.Destination;
 import javax.jms.TextMessage;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 /**
  * @version $Revision$
  */
 public class JCAContainerTest extends JCAContainerTestSupport {
-
-    public static void main(String[] args) {
-
-        // example from Davor Cengija
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("org/activemq/jca/spring.xml");
-
-        System.err.println("Done.");
-
-    }
 
     public void testMessageDeliveryUsingSharedMessageListener() throws Exception {
         

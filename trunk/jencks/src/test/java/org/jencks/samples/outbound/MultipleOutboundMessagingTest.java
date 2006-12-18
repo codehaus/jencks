@@ -87,8 +87,8 @@ public class MultipleOutboundMessagingTest extends AbstractDependencyInjectionSp
 	}
 
 	protected void onTearDown() throws Exception {
+        updateDatabase(DROP_SCHEMA);
 		super.onTearDown();
-		updateDatabase(DROP_SCHEMA);
 	}
 
 	private void checkStoredMessage(String message) {

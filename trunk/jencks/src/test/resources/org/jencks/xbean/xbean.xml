@@ -14,7 +14,7 @@
     </resourceAdapter>
   </jcaContainer>
   
-  <transactionManager id="tm" />
+  <transactionManager id="tm" xmlns="http://jencks.org/2.0" />
 
   <connector ref="echoBean" jcaContainer="#jca" xmlns="http://jencks.org/2.0">
     <activationSpec>

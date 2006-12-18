@@ -48,6 +48,8 @@ public abstract class JCAContainerTestSupport extends SpringTestSupport {
 
 
     protected void tearDown() throws Exception {
+        // Wait for everything to finish propertly
+        Thread.sleep(100);
         if (connection != null) {
             connection.close();
         }
