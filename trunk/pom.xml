@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jencks</groupId>
+  <artifactId>jencks-parent</artifactId>
+  <name>Jencks Parent</name>
+  <version>2.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <description>Spring and POJO enhancements to the Geronimo JCA container to implement Message Driven POJOs.</description>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <organization>
+    <name>LogicBlaze, Inc.</name>
+    <url>http://www.logicblaze.com/</url>
+  </organization>
+
+  <scm>
+    <connection>scm:svn:http://svn.codehaus.org/jencks/trunk</connection>
+    <developerConnection>scm:svn:https://${maven.username}@svn.codehaus.org/jencks/trunk</developerConnection>
+    <url>http://svn.codehaus.org/jencks/trunk</url>
+  </scm>
+
+  <repositories>
+    <!-- keep the central repo so that it is first tried -->
+    <repository>
+      <id>central</id>
+      <url>http://ibiblio.org/maven2/</url>
+    </repository>
+
+    <!--  Geronimo 1.2 + XBean 2.8 -->
+    <repository>
+      <id>apache-snapshots</id>
+      <name>Apache Snapshots</name>
+      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+
+    <!--  ActiveMQ 4.1 -->
+    <repository>
+      <id>apache-incubating</id>
+      <name>Apache Incubating</name>
+      <url>http://people.apache.org/repo/m2-incubating-repository</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  
+  <pluginRepositories>
+    <pluginRepository>
+      <id>apache-snapshots</id>
+      <name>Apache Snapshots</name>
+      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <distributionManagement>
+    <repository>
+      <id>codehaus.org</id>
+      <name>Jencks Central Repository</name>
+      <url>dav:https://dav.codehaus.org/repository/jencks/</url>
+    </repository>
+    <snapshotRepository>
+      <id>codehaus.org</id>
+      <name>Jencks Central Development Repository</name>
+      <url>dav:https://dav.codehaus.org/snapshots.repository/jencks/</url>
+    </snapshotRepository>
+    <site>
+      <id>codehaus.org</id>
+      <url>dav:https://dav.codehaus.org/jencks</url>
+    </site>
+  </distributionManagement>
+  
+  <properties>
+    <activemq-version>4.1-incubator-SNAPSHOT</activemq-version>
+    <spring-version>2.0</spring-version>
+    <geronimo-version>1.2-SNAPSHOT</geronimo-version>
+    <xbean-version>2.8-SNAPSHOT</xbean-version>
+  </properties>
+  
+  <modules>
+    <module>jencks</module>
+    <module>jencks-amqpool</module>
+  </modules>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-1</version>
+      </extension>
+    </extensions>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://svn.codehaus.org/jencks/tags/</tagBase>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.4</source>
+          <target>1.4</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
