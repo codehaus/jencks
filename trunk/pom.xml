@@ -94,7 +94,8 @@
   </distributionManagement>
   
   <properties>
-    <activemq-version>4.1-incubator-SNAPSHOT</activemq-version>
+    <activemq-version>4.1-incubator-20070103.004543-48</activemq-version>
+    <activemq-ra-version>4.1-incubator-20070103.004543-49</activemq-ra-version>
     <spring-version>2.0</spring-version>
     <geronimo-version>1.2-beta</geronimo-version>
     <xbean-version>2.8</xbean-version>
