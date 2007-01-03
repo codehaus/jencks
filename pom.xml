@@ -35,24 +35,11 @@
       <url>http://ibiblio.org/maven2/</url>
     </repository>
 
-    <!--  Geronimo 1.2 + XBean 2.8 -->
-    <repository>
-      <id>apache-snapshots</id>
-      <name>Apache Snapshots</name>
-      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-
     <!--  ActiveMQ 4.1 -->
     <repository>
-      <id>apache-incubating</id>
-      <name>Apache Incubating</name>
-      <url>http://people.apache.org/repo/m2-incubating-repository</url>
+      <id>servicemix-repo</id>
+      <name>ServiceMix Repository</name>
+      <url>http://servicemix.org/m2-repo</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -62,20 +49,6 @@
     </repository>
   </repositories>
   
-  <pluginRepositories>
-    <pluginRepository>
-      <id>apache-snapshots</id>
-      <name>Apache Snapshots</name>
-      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-
   <distributionManagement>
     <repository>
       <id>codehaus.org</id>
@@ -94,8 +67,7 @@
   </distributionManagement>
   
   <properties>
-    <activemq-version>4.1-incubator-20070103.004543-48</activemq-version>
-    <activemq-ra-version>4.1-incubator-20070103.004543-49</activemq-ra-version>
+    <activemq-version>4.1-incubator-20070103</activemq-version>
     <spring-version>2.0</spring-version>
     <geronimo-version>1.2-beta</geronimo-version>
     <xbean-version>2.8</xbean-version>
