@@ -109,6 +109,7 @@
           <excludes>
             <exclude>**/*LoadTest*</exclude>
             <exclude>**/*$*</exclude>
+            <exclude>**/*XBeanWithRegularSpring20Test*</exclude>
           </excludes>
           <useFile>true</useFile>
           <!-- 
@@ -291,7 +292,7 @@
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-ra</artifactId>
-      <version>${activemq-version}</version>
+      <version>${activemq-ra-version}</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
