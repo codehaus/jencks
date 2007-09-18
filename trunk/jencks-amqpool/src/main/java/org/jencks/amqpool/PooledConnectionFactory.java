@@ -1,13 +1,11 @@
-/**
+/*
+ * Copyright 2006 the original author or authors.
  *
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +16,6 @@
 package org.jencks.amqpool;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -48,7 +45,7 @@ import org.apache.commons.pool.impl.GenericObjectPoolFactory;
  */
 public class PooledConnectionFactory implements ConnectionFactory, Service {
     private ConnectionFactory connectionFactory;
-    private Map cache = new HashMap();
+    private Map<ConnectionKey, LinkedList<ConnectionPool>> cache = new HashMap<ConnectionKey, LinkedList<ConnectionPool>>();
     private ObjectPoolFactory poolFactory;
     private int maximumActive = 500;
     private int maxConnections = 1;
@@ -79,16 +76,16 @@ public class PooledConnectionFactory implements ConnectionFactory, Service {
 
     public synchronized Connection createConnection(String userName, String password) throws JMSException {
         ConnectionKey key = new ConnectionKey(userName, password);
-        LinkedList pools = (LinkedList) cache.get(key);
+        LinkedList<ConnectionPool> pools = cache.get(key);
         
         if (pools ==  null) {
-            pools = new LinkedList();
+            pools = new LinkedList<ConnectionPool>();
             cache.put(key, pools);
         }
 
         ConnectionPool connection = null;
         if (pools.size() == maxConnections) {
-            connection = (ConnectionPool) pools.removeFirst();
+            connection = pools.removeFirst();
         }
         
         // Now.. we might get a connection, but it might be that we need to 
@@ -131,9 +128,10 @@ public class PooledConnectionFactory implements ConnectionFactory, Service {
     }
 
     public void stop() throws Exception {
-        for (Iterator iter = cache.values().iterator(); iter.hasNext();) {
-            ConnectionPool connection = (ConnectionPool) iter.next();
-            connection.close();
+        for (LinkedList<ConnectionPool> pools : cache.values()) {
+            for (ConnectionPool pool : pools) {
+                pool.close();
+            }
         }
     }
 

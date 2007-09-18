@@ -1,13 +1,11 @@
-/**
+/*
+ * Copyright 2006 the original author or authors.
  *
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +36,7 @@ import org.apache.commons.pool.ObjectPoolFactory;
 public class ConnectionPool {
 	
     private ActiveMQConnection connection;
-    private Map cache;
+    private Map<SessionKey, SessionPool> cache;
     private AtomicBoolean started = new AtomicBoolean(false);
     private int referenceCount;
     private ObjectPoolFactory poolFactory;
@@ -47,7 +45,7 @@ public class ConnectionPool {
 	private int idleTimeout = 30*1000;
 
     public ConnectionPool(ActiveMQConnection connection, ObjectPoolFactory poolFactory) {
-        this(connection, new HashMap(), poolFactory);
+        this(connection, new HashMap<SessionKey, SessionPool>(), poolFactory);
         // Add a transport Listener so that we can notice if this connection should be expired due to 
         // a connection failure.
         connection.addTransportListener(new TransportListener(){
@@ -65,7 +63,7 @@ public class ConnectionPool {
 		});
     }
 
-    public ConnectionPool(ActiveMQConnection connection, Map cache, ObjectPoolFactory poolFactory) {
+    public ConnectionPool(ActiveMQConnection connection, Map<SessionKey, SessionPool> cache, ObjectPoolFactory poolFactory) {
         this.connection = connection;
         this.cache = cache;
         this.poolFactory = poolFactory;
@@ -83,7 +81,7 @@ public class ConnectionPool {
 
     public Session createSession(boolean transacted, int ackMode) throws JMSException {
         SessionKey key = new SessionKey(transacted, ackMode);
-        SessionPool pool = (SessionPool) cache.get(key);
+        SessionPool pool = cache.get(key);
         if (pool == null) {
             pool = createSessionPool(key);
             cache.put(key, pool);
@@ -94,9 +92,9 @@ public class ConnectionPool {
 
     synchronized public void close() {
     	if( connection!=null ) {
-	        Iterator i = cache.values().iterator();
+	        Iterator<SessionPool> i = cache.values().iterator();
 	        while (i.hasNext()) {
-	            SessionPool pool = (SessionPool) i.next();
+	            SessionPool pool = i.next();
 	            i.remove();
 	            try {
 	                pool.close();

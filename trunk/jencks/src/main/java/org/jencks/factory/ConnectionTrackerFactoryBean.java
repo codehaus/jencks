@@ -39,7 +39,7 @@ public class ConnectionTrackerFactoryBean implements FactoryBean {
         return coordinator;
     }
 
-    public Class getObjectType() {
+    public Class<?> getObjectType() {
         return ConnectionTrackingCoordinator.class;
     }
 

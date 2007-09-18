@@ -80,7 +80,7 @@ public class PoolingSupportFactoryBean implements FactoryBean {
 
     }
 
-    public Class getObjectType() {
+    public Class<?> getObjectType() {
         return PoolingSupport.class;
     }
 

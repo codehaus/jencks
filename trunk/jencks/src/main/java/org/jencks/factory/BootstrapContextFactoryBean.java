@@ -53,7 +53,7 @@ public class BootstrapContextFactoryBean implements FactoryBean, InitializingBea
         return bootstrapContext;
     }
 
-    public Class getObjectType() {
+    public Class<?> getObjectType() {
         return GeronimoBootstrapContext.class;
     }
 

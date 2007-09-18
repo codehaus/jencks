@@ -15,11 +15,12 @@
  */
 package org.jencks.factory;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 import javax.resource.spi.BootstrapContext;
 import javax.resource.spi.work.WorkManager;
 
-import edu.emory.mathcs.backport.java.util.concurrent.Executor;
-import edu.emory.mathcs.backport.java.util.concurrent.Executors;
 import org.apache.geronimo.connector.GeronimoBootstrapContext;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.LocalTransactions;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.NoPool;
@@ -97,8 +98,8 @@ public final class GeronimoDefaults {
             return new UnrecoverableLog();
         } else {
             HowlLogFactoryBean howlLogFactoryBean = new HowlLogFactoryBean();
-            howlLogFactoryBean.setLogFileDir(logDir);
             howlLogFactoryBean.setXidFactory(xidFactory);
+            howlLogFactoryBean.setLogFileDir(logDir);
             return (TransactionLog) howlLogFactoryBean.getObject();
         }
     }

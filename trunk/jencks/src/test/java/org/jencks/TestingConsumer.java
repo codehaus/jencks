@@ -37,7 +37,7 @@ import javax.jms.MessageListener;
 public class TestingConsumer implements MessageListener {
     private static final Log log = LogFactory.getLog(TestingConsumer.class);
 
-    private List messages = new ArrayList();
+    private List<Message> messages = new ArrayList<Message>();
     private Object semaphore;
 
     public TestingConsumer() {
@@ -51,8 +51,8 @@ public class TestingConsumer implements MessageListener {
     /**
      * @return all the messages on the list so far, clearing the buffer
      */
-    public synchronized List flushMessages() {
-        List answer = new ArrayList(messages);
+    public synchronized List<Message> flushMessages() {
+        List<Message> answer = new ArrayList<Message>(messages);
         messages.clear();
         return answer;
     }

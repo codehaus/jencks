@@ -20,6 +20,7 @@ import javax.resource.spi.ConnectionManager;
 import javax.transaction.TransactionManager;
 
 import org.apache.geronimo.connector.outbound.GenericConnectionManager;
+import org.apache.geronimo.connector.outbound.SubjectSource;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.NoTransactions;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PoolingSupport;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.TransactionSupport;
@@ -27,6 +28,7 @@ import org.apache.geronimo.connector.outbound.connectionmanagerconfig.NoPool;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.SinglePool;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PartitionedPool;
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTracker;
+import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.DisposableBean;
@@ -46,12 +48,12 @@ import org.springframework.beans.FatalBeanException;
 public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBean, DisposableBean {
     private GenericConnectionManager connectionManager;
 
-    private TransactionManager transactionManager;
+    private RecoverableTransactionManager transactionManager;
 
     private TransactionSupport transactionSupport;
     private String transaction;
 
-    private boolean containerManagedSecurity;
+    private SubjectSource subjectSource;
     private ConnectionTracker connectionTracker;
 
     private PoolingSupport poolingSupport;
@@ -73,7 +75,7 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
             this.connectionManager = new GenericConnectionManager(
                     transactionSupport,
                     poolingSupport,
-                    containerManagedSecurity,
+                    subjectSource,
                     connectionTracker,
                     transactionManager,
                     getClass().getName(),
@@ -91,7 +93,7 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
         }
     }
 
-    public Class getObjectType() {
+    public Class<?> getObjectType() {
         return ConnectionManager.class;
     }
 
@@ -114,14 +116,14 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
         poolingSupport = support;
     }
 
-    public TransactionManager getTransactionManager() {
+    public RecoverableTransactionManager getTransactionManager() {
         return transactionManager;
     }
 
     /**
      * Set the transaction manager for the Geronimo Connection Manager.
      */
-    public void setTransactionManager(TransactionManager manager) {
+    public void setTransactionManager(RecoverableTransactionManager manager) {
         transactionManager = manager;
     }
 
@@ -161,15 +163,19 @@ public class ConnectionManagerFactoryBean implements FactoryBean, InitializingBe
         connectionTracker = tracker;
     }
 
-    public boolean isContainerManagedSecurity() {
-        return containerManagedSecurity;
-    }
-
     /**
      * Enables/disables container managed security
      */
     public void setContainerManagedSecurity(boolean containerManagedSecurity) {
-        this.containerManagedSecurity = containerManagedSecurity;
+	    // TODO: warn for deprecated method
+    }
+
+    public SubjectSource getSubjectSource() {
+	    return subjectSource;
+    }
+
+    public void setSubjectSource(SubjectSource subjectSource) {
+	    this.subjectSource = subjectSource;
     }
 
     public boolean isPooling() {
