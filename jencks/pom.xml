@@ -132,7 +132,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-mock</artifactId>
-      <version>2.0</version>
+      <version>${spring-version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -158,62 +158,14 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>org.apache.geronimo.modules</groupId>
+      <groupId>org.apache.geronimo.components</groupId>
       <artifactId>geronimo-transaction</artifactId>
       <version>${geronimo-version}</version>
-      <exclusions>
-          <exclusion>
-              <groupId>org.apache.geronimo.modules</groupId>
-              <artifactId>geronimo-j2ee</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>org.apache.geronimo.modules</groupId>
-              <artifactId>geronimo-core</artifactId>
-          </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.geronimo.modules</groupId>
+      <groupId>org.apache.geronimo.components</groupId>
       <artifactId>geronimo-connector</artifactId>
       <version>${geronimo-version}</version>
-      <exclusions>
-          <exclusion>
-              <groupId>org.apache.geronimo.modules</groupId>
-              <artifactId>geronimo-kernel</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>org.apache.geronimo.modules</groupId>
-              <artifactId>geronimo-system</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>org.apache.geronimo.modules</groupId>
-              <artifactId>geronimo-security</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>org.apache.geronimo.modules</groupId>
-              <artifactId>geronimo-core</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>org.apache.geronimo.modules</groupId>
-              <artifactId>geronimo-j2ee</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>org.apache.geronimo.modules</groupId>
-              <artifactId>geronimo-common</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>org.apache.geronimo.modules</groupId>
-              <artifactId>geronimo-management</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>org.apache.geronimo.modules</groupId>
-              <artifactId>geronimo-naming</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>org.apache.geronimo.modules</groupId>
-              <artifactId>geronimo-deployment</artifactId>
-          </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>jencks</groupId>
@@ -223,7 +175,12 @@
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
+      <artifactId>spring-aop</artifactId>
+      <version>${spring-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jms</artifactId>
       <version>${spring-version}</version>
     </dependency>
     <dependency>

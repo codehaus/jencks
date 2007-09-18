@@ -24,7 +24,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.DisposableBean;
 
-import edu.emory.mathcs.backport.java.util.concurrent.Executor;
+import java.util.concurrent.Executor;
 
 /**
  * A Spring {@link FactoryBean} for creating a {@link GeronimoWorkManager} using a {@link GeronimoTransactionManager}.
@@ -48,7 +48,7 @@ public class WorkManagerFactoryBean implements FactoryBean, InitializingBean, Di
         return workManager;
     }
 
-    public Class getObjectType() {
+    public Class<?> getObjectType() {
         return GeronimoWorkManager.class;
     }
 

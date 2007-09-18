@@ -5,8 +5,8 @@
   xmlns:amq="http://activemq.org/config/1.0" xmlns:amqra="http://activemq.org/ra/1.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
-  http://activemq.org/config/1.0 http://people.apache.org/repository/org.apache.activemq/xsds/activemq-core-4.1-incubator-SNAPSHOT.xsd
-  http://activemq.org/ra/1.0 http://people.apache.org/repository/org.apache.activemq/xsds/activemq-ra-4.1-incubator-SNAPSHOT.xsd
+  http://activemq.org/config/1.0 http://activemq.apache.org/config/1.0/core/activemq-core-5.0-SNAPSHOT.xsd
+  http://activemq.org/ra/1.0 http://activemq.apache.org/config/1.0/ra/activemq-ra-5.0-SNAPSHOT.xsd
   http://jencks.org/2.0 http://snapshots.repository.codehaus.org/org/jencks/jencks/2.0-SNAPSHOT/jencks-2.0-SNAPSHOT.xsd">
 
   <!-- JCA Container -->

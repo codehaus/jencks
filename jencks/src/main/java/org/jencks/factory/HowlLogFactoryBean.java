@@ -20,7 +20,6 @@ import java.io.File;
 import org.apache.geronimo.transaction.log.HOWLLog;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.XidFactory;
-import org.apache.geronimo.transaction.manager.XidFactoryImpl;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -67,7 +66,7 @@ public class HowlLogFactoryBean implements FactoryBean, DisposableBean {
                     maxLogFiles,
                     minBuffers,
                     threadsWaitingForceThreshold,
-                    xidFactory != null ? xidFactory : new XidFactoryImpl(),
+                    xidFactory != null ? xidFactory : GeronimoDefaults.createXidFactory(),
                     serverBaseDir);
 
             howlLog.doStart();
@@ -82,7 +81,7 @@ public class HowlLogFactoryBean implements FactoryBean, DisposableBean {
         }
     }
 
-    public Class getObjectType() {
+    public Class<?> getObjectType() {
         return TransactionLog.class;
     }
 

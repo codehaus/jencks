@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.jms.Destination;
+import javax.jms.Message;
 import javax.jms.TextMessage;
 
 import org.springframework.context.ConfigurableApplicationContext;
@@ -54,7 +55,7 @@ public class JCAContainerUsingSpringJtaBatchTest extends JCAContainerTest {
         consumer.waitForMessagesToArrive(number);
         long stop = System.currentTimeMillis();
         System.err.println("Time to send/receive " + number + " messages: " + (stop - start) + " ms");
-        List list = consumer.flushMessages();
+        List<Message> list = consumer.flushMessages();
         assertEquals("Message count: " + list, number, list.size());
     }
 }

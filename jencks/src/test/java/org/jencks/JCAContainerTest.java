@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.jms.Destination;
+import javax.jms.Message;
 import javax.jms.TextMessage;
 
 /**
@@ -41,7 +42,7 @@ public class JCAContainerTest extends JCAContainerTestSupport {
         TestingConsumer consumer = (TestingConsumer) applicationContext.getBean("echoBean");
         consumer.waitForMessageToArrive();
 
-        List list = consumer.flushMessages();
+        List<Message> list = consumer.flushMessages();
         assertEquals("Message count: " + list, 1, list.size());
     }
 

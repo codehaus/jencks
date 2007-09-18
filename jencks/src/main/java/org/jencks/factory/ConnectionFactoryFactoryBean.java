@@ -49,7 +49,7 @@ public class ConnectionFactoryFactoryBean implements FactoryBean {
         return getConnectionFactory();
     }
 
-    public Class getObjectType() {
+    public Class<?> getObjectType() {
         try {
             Object connectionFactory = getConnectionFactory();
             if (connectionFactory != null) {

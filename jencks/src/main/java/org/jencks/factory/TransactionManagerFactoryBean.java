@@ -46,16 +46,15 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
     private TransactionLog transactionLog;
     private String transactionLogDir;
 
-    private Collection resourceManagers;
     private boolean createdTransactionLog;
 
 
     public Object getObject() throws Exception {
         if (transactionManager == null) {
-            this.transactionManager = new GeronimoPlatformTransactionManager(defaultTransactionTimeoutSeconds,
+            this.transactionManager = new GeronimoPlatformTransactionManager(
+                    defaultTransactionTimeoutSeconds,
                     xidFactory,
-                    transactionLog,
-                    resourceManagers);
+                    transactionLog);
         }
         return transactionManager;
     }
@@ -66,7 +65,7 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
         }
     }
 
-    public Class getObjectType() {
+    public Class<?> getObjectType() {
         return GeronimoPlatformTransactionManager.class;
     }
 
@@ -96,10 +95,6 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
         this.transactionLogDir = transactionLogDir;
     }
 
-    public Collection getResourceManagers() {
-        return resourceManagers;
-    }
-
     public XidFactory getXidFactory() {
         return xidFactory;
     }
@@ -111,8 +106,8 @@ public class TransactionManagerFactoryBean implements FactoryBean, InitializingB
     /**
      * Set the resource managers
      */
-    public void setResourceManagers(Collection resourceManagers) {
-        this.resourceManagers = resourceManagers;
+    public void setResourceManagers(Collection<?> resourceManagers) {
+        // TODO: warn about deprecated method
     }
 
     public void afterPropertiesSet() throws Exception {

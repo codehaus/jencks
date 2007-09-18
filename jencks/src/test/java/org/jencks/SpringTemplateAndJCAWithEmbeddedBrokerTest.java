@@ -20,6 +20,7 @@ package org.jencks;
 import java.util.List;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.Message;
 
 import junit.framework.TestCase;
 
@@ -51,7 +52,7 @@ public class SpringTemplateAndJCAWithEmbeddedBrokerTest extends TestCase {
         TestingConsumer consumer = (TestingConsumer) applicationContext.getBean("consumerBean");
         consumer.waitForMessagesToArrive(messageCount);
 
-        List list = consumer.flushMessages();
+        List<Message> list = consumer.flushMessages();
         assertEquals("Message count", messageCount, list.size());
 
         log.info("Received all: " + list.size() + " messages");

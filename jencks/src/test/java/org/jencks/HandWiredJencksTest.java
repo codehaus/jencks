@@ -1,6 +1,11 @@
 package org.jencks;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.jms.Connection;
 import javax.jms.Message;
@@ -20,16 +25,11 @@ import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.ra.ActiveMQActivationSpec;
 import org.apache.activemq.ra.ActiveMQResourceAdapter;
 import org.apache.geronimo.connector.ActivationSpecWrapper;
-import org.apache.geronimo.connector.ResourceAdapterWrapper;
 import org.apache.geronimo.connector.GeronimoBootstrapContext;
+import org.apache.geronimo.connector.ResourceAdapterWrapper;
 import org.apache.geronimo.connector.work.GeronimoWorkManager;
-import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
 import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
-
-import edu.emory.mathcs.backport.java.util.concurrent.CountDownLatch;
-import edu.emory.mathcs.backport.java.util.concurrent.Executor;
-import edu.emory.mathcs.backport.java.util.concurrent.Executors;
-import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
+import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
 
 public class HandWiredJencksTest extends TestCase {
 
@@ -116,7 +116,7 @@ public class HandWiredJencksTest extends TestCase {
             };
 
             // Geronimo wrapper
-            ResourceAdapterWrapper raWrapper = new ResourceAdapterWrapper(ra, bootstrapContext);
+            ResourceAdapterWrapper raWrapper = new ResourceAdapterWrapper("name", ra, new HashMap<String, String>(), bootstrapContext, tm);
             raWrapper.doStart();
             ActivationSpecWrapper asWrapper = new ActivationSpecWrapper(as, raWrapper);
             asWrapper.activate(messageEndpointFactory);

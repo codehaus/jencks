@@ -15,10 +15,10 @@
  */
 package org.jencks;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -30,14 +30,12 @@ import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.TransactionManagerMonitor;
 import org.apache.geronimo.transaction.manager.XidFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import edu.emory.mathcs.backport.java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @version $Revision$ $Date$
@@ -45,7 +43,7 @@ import edu.emory.mathcs.backport.java.util.concurrent.ConcurrentHashMap;
 public class GeronimoPlatformTransactionManager extends GeronimoTransactionManager implements PlatformTransactionManager {
     
     private final PlatformTransactionManager platformTransactionManager;
-    private final Map suspendedResources = new ConcurrentHashMap();
+    private final Map<Transaction, SuspendedResourcesHolder> suspendedResources = new ConcurrentHashMap<Transaction, SuspendedResourcesHolder>();
 
     public GeronimoPlatformTransactionManager() throws XAException {
         platformTransactionManager = new JtaTransactionManager(this, this);
@@ -64,12 +62,8 @@ public class GeronimoPlatformTransactionManager extends GeronimoTransactionManag
         registerTransactionAssociationListener();
     }
 
-    public GeronimoPlatformTransactionManager(int defaultTransactionTimeoutSeconds,
-            XidFactory xidFactory,
-            TransactionLog transactionLog,
-            Collection resourceManagers) throws XAException {
-
-        super(defaultTransactionTimeoutSeconds, xidFactory, transactionLog, resourceManagers);
+    public GeronimoPlatformTransactionManager(int defaultTransactionTimeoutSeconds, XidFactory xidFactory, TransactionLog transactionLog) throws XAException {
+        super(defaultTransactionTimeoutSeconds, xidFactory, transactionLog);
         platformTransactionManager = new JtaTransactionManager(this, this);
         registerTransactionAssociationListener();
     }
@@ -91,13 +85,13 @@ public class GeronimoPlatformTransactionManager extends GeronimoTransactionManag
             public void threadAssociated(Transaction transaction) {
                 try {
                     if (transaction.getStatus() == Status.STATUS_ACTIVE) {
-                        SuspendedResourcesHolder holder = (SuspendedResourcesHolder) suspendedResources.remove(transaction);
+                        SuspendedResourcesHolder holder = suspendedResources.remove(transaction);
                         if (holder != null && holder.getSuspendedSynchronizations() != null) {
                             TransactionSynchronizationManager.setActualTransactionActive(true);
                             TransactionSynchronizationManager.setCurrentTransactionReadOnly(holder.isReadOnly());
                             TransactionSynchronizationManager.setCurrentTransactionName(holder.getName());
                             TransactionSynchronizationManager.initSynchronization();
-                            for (Iterator it = holder.getSuspendedSynchronizations().iterator(); it.hasNext();) {
+                            for (Iterator<?> it = holder.getSuspendedSynchronizations().iterator(); it.hasNext();) {
                                 TransactionSynchronization synchronization = (TransactionSynchronization) it.next();
                                 synchronization.resume();
                                 TransactionSynchronizationManager.registerSynchronization(synchronization);
@@ -112,8 +106,8 @@ public class GeronimoPlatformTransactionManager extends GeronimoTransactionManag
                 try {
                     if (transaction.getStatus() == Status.STATUS_ACTIVE) {
                         if (TransactionSynchronizationManager.isSynchronizationActive()) {
-                            List suspendedSynchronizations = TransactionSynchronizationManager.getSynchronizations();
-                            for (Iterator it = suspendedSynchronizations.iterator(); it.hasNext();) {
+                            List<?> suspendedSynchronizations = TransactionSynchronizationManager.getSynchronizations();
+                            for (Iterator<?> it = suspendedSynchronizations.iterator(); it.hasNext();) {
                                 ((TransactionSynchronization) it.next()).suspend();
                             }
                             TransactionSynchronizationManager.clearSynchronization();
@@ -141,14 +135,14 @@ public class GeronimoPlatformTransactionManager extends GeronimoTransactionManag
 
         private final Object suspendedResources;
 
-        private final List suspendedSynchronizations;
+        private final List<?> suspendedSynchronizations;
 
         private final String name;
 
         private final boolean readOnly;
 
         public SuspendedResourcesHolder(
-                Object suspendedResources, List suspendedSynchronizations, String name, boolean readOnly) {
+                Object suspendedResources, List<?> suspendedSynchronizations, String name, boolean readOnly) {
 
             this.suspendedResources = suspendedResources;
             this.suspendedSynchronizations = suspendedSynchronizations;
@@ -160,7 +154,7 @@ public class GeronimoPlatformTransactionManager extends GeronimoTransactionManag
             return suspendedResources;
         }
 
-        public List getSuspendedSynchronizations() {
+        public List<?> getSuspendedSynchronizations() {
             return suspendedSynchronizations;
         }
 
