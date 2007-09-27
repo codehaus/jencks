@@ -184,6 +184,12 @@
       <version>${spring-version}</version>
     </dependency>
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>${spring-version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>jencks</groupId>
       <artifactId>xapool-without-pool</artifactId>
       <version>1.4</version>
@@ -239,8 +245,8 @@
           <groupId>xerces</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>xml-apis</artifactId>
           <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -251,8 +257,12 @@
       <scope>test</scope>
       <exclusions>
         <exclusion>
-          <artifactId>jmdns</artifactId>
           <groupId>activemq</groupId>
+          <artifactId>jmdns</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -279,16 +289,16 @@
       <version>1.1</version>
       <exclusions>
         <exclusion>
+          <groupId>geronimo-spec</groupId>
           <artifactId>geronimo-spec-jta</artifactId>
-          <groupId>geronimo-spec</groupId>
         </exclusion>
         <exclusion>
+          <groupId>geronimo-spec</groupId>
           <artifactId>geronimo-spec-j2ee-connector</artifactId>
-          <groupId>geronimo-spec</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>commons-primitives</artifactId>
           <groupId>commons-primitives</groupId>
+          <artifactId>commons-primitives</artifactId>
         </exclusion>
       </exclusions>
       <optional>true</optional>
@@ -296,6 +306,11 @@
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-jms_1.1_spec</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.1_spec</artifactId>
       <version>1.0</version>
     </dependency>
     <dependency>

@@ -76,9 +76,9 @@
   </distributionManagement>
   
   <properties>
-    <activemq-version>5.0-SNAPSHOT</activemq-version>
+    <activemq-version>4.1.1</activemq-version>
     <spring-version>2.0.6</spring-version>
-    <geronimo-version>2.0</geronimo-version>
+    <geronimo-version>2.0.1</geronimo-version>
     <xbean-version>3.1</xbean-version>
   </properties>
   
