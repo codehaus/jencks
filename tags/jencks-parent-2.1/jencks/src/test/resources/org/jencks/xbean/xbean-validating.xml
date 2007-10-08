@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- START SNIPPET: spring -->
+<s:beans xmlns:s="http://www.springframework.org/schema/beans" xmlns="http://jencks.org/2.0"
+  xmlns:amq="http://activemq.org/config/1.0" xmlns:amqra="http://activemq.org/ra/1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+  http://activemq.org/config/1.0 http://activemq.apache.org/config/1.0/core/activemq-core-4.1.1.xsd
+  http://activemq.org/ra/1.0 http://activemq.apache.org/config/1.0/ra/activemq-ra-4.1.1.xsd
+  http://jencks.org/2.0 http://snapshots.repository.codehaus.org/org/jencks/jencks/2.0-SNAPSHOT/jencks-2.0-SNAPSHOT.xsd">
+
+  <!-- JCA Container -->
+  <jcaContainer id="jca">
+
+    <bootstrapContext>
+      <bootstrapContext threadPoolSize="25" transactionManager="#tm"/>
+    </bootstrapContext>
+
+    <resourceAdapter>
+      <amqra:resourceAdapter serverUrl="tcp://localhost:51616" />
+    </resourceAdapter>
+  </jcaContainer>
+  
+  <transactionManager id="tm" />
+
+  <connector ref="echoBean" jcaContainer="#jca">
+    <activationSpec>
+      <amqra:activationSpec destination="test.spring.inboundConnectorA" destinationType="javax.jms.Topic" />
+    </activationSpec>
+  </connector>
+  
+  <connector ref="echoBean" jcaContainer="#jca">
+    <activationSpec>
+      <amqra:activationSpec destination="test.spring.inboundConnectorB" destinationType="javax.jms.Queue" />
+    </activationSpec>
+  </connector>
+
+  <!-- Message Driven POJO -->
+  <s:bean id="echoBean" class="org.jencks.TestBean" scope="singleton"/>
+
+  <!--  lets create an embedded ActiveMQ Broker -->
+  <amq:broker useJmx="false" persistent="false">
+    <amq:transportConnectors>
+      <amq:transportConnector uri="tcp://localhost:51616" />
+    </amq:transportConnectors>
+  </amq:broker>
+  
+</s:beans>
+<!-- END SNIPPET: spring -->
+

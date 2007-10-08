@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- START SNIPPET: jms -->
+<beans xmlns:j="http://jencks.org/2.0"
+    xmlns:amq="http://activemq.org/config/1.0"
+    xmlns:amqra="http://activemq.org/ra/1.0">
+
+  <!-- ###### ActiveMQ Configuration ###### -->
+
+  <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+    <property name="config" value="classpath:org/jencks/broker.xml"/>
+  </bean>
+
+  <bean id="activeMQResourceAdapter" class="org.apache.activemq.ra.ActiveMQResourceAdapter">
+    <property name="serverUrl" value="tcp://localhost:51616"/>
+  </bean>
+
+  <!-- ###### Transaction manager ###### -->
+
+  <j:transactionManager id="transactionManager"/>
+
+  <!-- ###### JCA Container ###### -->
+
+  <!-- START SNIPPET: jcaContainer -->
+  <j:jcaContainer id="jcaContainer"
+      transactionManager="#transactionManager"
+      resourceAdapter="#activeMQResourceAdapter"
+      threadPoolSize="25"/>
+  <!-- END SNIPPET: jcaContainer -->
+
+  <!-- ###### JCA Connector ###### -->
+
+  <!-- START SNIPPET: jcaConnector -->
+  <j:jcaConnector id="jcaConnector"
+    jcaContainer="#jcaContainer"
+    ref="echoBean">
+
+    <!-- subscription details -->
+    <j:activationSpec>
+      <bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+        <property name="destination" value="TestTopic"/>
+        <property name="destinationType" value="javax.jms.Topic"/>
+      </bean>
+    </j:activationSpec>
+  </j:jcaConnector>
+  <!-- END SNIPPET: jcaConnector -->
+
+  <!-- ###### Message Driven POJO ###### -->
+
+  <bean id="echoBean" class="org.jencks.TestBean" singleton="true"/>
+</beans>
+<!-- END SNIPPET: jms -->
