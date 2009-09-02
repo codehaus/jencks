@@ -11,8 +11,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Revision$
  */
 public abstract class SpringTestSupport extends TestCase {
+
     protected Log log = LogFactory.getLog(getClass());
     protected ConfigurableApplicationContext applicationContext;
+
+    static {
+        org.apache.log4j.PropertyConfigurator.configure(SpringTestSupport.class.getClassLoader().getResource("log4j.properties"));
+    }
 
     protected void setUp() throws Exception {
         applicationContext = createApplicationContext();

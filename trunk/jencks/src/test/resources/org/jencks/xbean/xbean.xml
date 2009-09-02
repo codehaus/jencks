@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- START SNIPPET: spring -->
-<beans xmlns:amqra="http://activemq.org/ra/1.0">
+<beans xmlns:amqra="http://activemq.apache.org/schema/ra">
 
   <!-- JCA Container -->
-  <jcaContainer id="jca" xmlns="http://jencks.org/2.0">
+  <jcaContainer id="jca" xmlns="http://jencks.org/2.0" depends-on="broker">
     <bootstrapContext>
       <bootstrapContext threadPoolSize="25" transactionManager="#tm" />
     </bootstrapContext>
@@ -33,6 +33,7 @@
 
   <!-- ActiveMQ Broker -->
   <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+    <property name="start" value="true" />
     <property name="config" value="classpath:org/jencks/broker.xml" />
   </bean>
 
