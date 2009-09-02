@@ -4,8 +4,8 @@
 
 <!-- START SNIPPET: jms -->
 <beans xmlns:j="http://jencks.org/2.0"
-    xmlns:amq="http://activemq.org/config/1.0"
-    xmlns:amqra="http://activemq.org/ra/1.0">
+    xmlns:amq="http://activemq.apache.org/schema/core"
+    xmlns:amqra="http://activemq.apache.org/schema/ra">
 
   <!-- ###### ActiveMQ Configuration ###### -->
 

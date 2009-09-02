@@ -125,8 +125,9 @@ public class ConnectionPool {
 	 * @return true if this connection has expired.
 	 */
 	synchronized public boolean expiredCheck() {
-		if( connection == null )
-			return true;
+        if (connection == null) {
+            return true;
+        }
         long t = System.currentTimeMillis();
 		if( hasFailed || idleTimeout> 0 && t > lastUsed+idleTimeout ) {
 			if( referenceCount == 0 ) {

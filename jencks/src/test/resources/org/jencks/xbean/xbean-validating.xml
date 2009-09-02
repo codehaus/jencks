@@ -2,12 +2,12 @@
 
 <!-- START SNIPPET: spring -->
 <s:beans xmlns:s="http://www.springframework.org/schema/beans" xmlns="http://jencks.org/2.0"
-  xmlns:amq="http://activemq.org/config/1.0" xmlns:amqra="http://activemq.org/ra/1.0"
+  xmlns:amq="http://activemq.apache.org/schema/core" xmlns:amqra="http://activemq.apache.org/schema/ra"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
-  http://activemq.org/config/1.0 http://activemq.apache.org/config/1.0/core/activemq-core-4.1.1.xsd
-  http://activemq.org/ra/1.0 http://activemq.apache.org/config/1.0/ra/activemq-ra-4.1.1.xsd
-  http://jencks.org/2.0 http://snapshots.repository.codehaus.org/org/jencks/jencks/2.0-SNAPSHOT/jencks-2.0-SNAPSHOT.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+  http://activemq.apache.org/schema/core http://activemq.apache.org/config/1.0/core/activemq-core-5.2.0.xsd
+  http://activemq.apache.org/schema/ra http://activemq.apache.org/config/1.0/ra/activemq-ra-5.2.0.xsd
+  http://jencks.org/2.0 http://repo2.maven.org/maven2/org/jencks/jencks/2.1/jencks-2.1.xsd">
 
   <!-- JCA Container -->
   <jcaContainer id="jca">
