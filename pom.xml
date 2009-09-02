@@ -69,6 +69,7 @@
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
           <tagBase>https://svn.codehaus.org/jencks/tags/</tagBase>
+          <preparationGoals>clean install verify</preparationGoals>
         </configuration>
       </plugin>
       <plugin>
