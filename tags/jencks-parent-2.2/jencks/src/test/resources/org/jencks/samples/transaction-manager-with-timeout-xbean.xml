@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<beans xmlns:j="http://jencks.org/2.0">
+  <!-- START SNIPPET: tm -->
+  <j:transactionManager id="transactionManager" defaultTransactionTimeoutSeconds="60"/>
+  <!-- END SNIPPET: tm -->
+</beans>

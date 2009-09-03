@@ -1,0 +1,85 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jencks</groupId>
+  <artifactId>jencks-parent</artifactId>
+  <name>Jencks Parent</name>
+  <version>2.2</version>
+  <packaging>pom</packaging>
+
+  <description>Spring and POJO enhancements to the Geronimo JCA container to implement Message Driven POJOs.</description>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <organization>
+    <name>LogicBlaze, Inc.</name>
+    <url>http://www.logicblaze.com/</url>
+  </organization>
+
+  <scm>
+    <connection>scm:svn:https://svn.codehaus.org/jencks/tags/jencks-parent-2.2</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/jencks/tags/jencks-parent-2.2</developerConnection>
+    <url>scm:svn:https://svn.codehaus.org/jencks/tags/jencks-parent-2.2</url>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>codehaus.org</id>
+      <name>Jencks Central Repository</name>
+      <url>dav:https://dav.codehaus.org/repository/jencks/</url>
+    </repository>
+    <snapshotRepository>
+      <id>codehaus.org</id>
+      <name>Jencks Central Development Repository</name>
+      <url>dav:https://dav.codehaus.org/snapshots.repository/jencks/</url>
+    </snapshotRepository>
+    <site>
+      <id>codehaus.org</id>
+      <url>dav:https://dav.codehaus.org/jencks</url>
+    </site>
+  </distributionManagement>
+  
+  <properties>
+    <activemq-version>5.2.0</activemq-version>
+    <spring-version>2.5.6</spring-version>
+    <geronimo-version>2.1.2</geronimo-version>
+    <xbean-version>3.5</xbean-version>
+  </properties>
+  
+  <modules>
+    <module>jencks</module>
+    <module>jencks-amqpool</module>
+  </modules>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://svn.codehaus.org/jencks/tags/</tagBase>
+          <preparationGoals>clean install verify</preparationGoals>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

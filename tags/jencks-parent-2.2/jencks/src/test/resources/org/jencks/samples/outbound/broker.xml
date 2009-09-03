@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+
+  <broker useJmx="false" persistent="false" xmlns="http://activemq.apache.org/schema/core">
+
+<!--  
+    <persistenceAdapter>
+      <journaledJDBC journalLogFiles="5" dataDirectory="foo"/>
+    </persistenceAdapter>
+--> 
+ 
+    <transportConnectors>
+      <transportConnector uri="tcp://localhost:51616"/>
+    </transportConnectors>
+        
+  </broker>
+  
+</beans>

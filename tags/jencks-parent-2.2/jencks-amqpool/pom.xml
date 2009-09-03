@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jencks</groupId>
+    <artifactId>jencks-parent</artifactId>
+    <version>2.2</version>
+  </parent>
+
+  <groupId>org.jencks</groupId>
+  <artifactId>jencks-amqpool</artifactId>
+  <name>Jencks ActiveMQ Pool</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.xbean</groupId>
+        <artifactId>maven-xbean-plugin</artifactId>
+        <version>${xbean-version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>mapping</goal>
+            </goals>
+            <configuration>
+              <namespace>http://jencks.org/amqpool/2.0</namespace>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <excludes>
+            <exclude>**/*LoadTest*</exclude>
+            <exclude>**/*$*</exclude>
+          </excludes>
+          <useFile>true</useFile>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-core</artifactId>
+      <version>${activemq-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-ra</artifactId>
+      <version>${activemq-version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.jencks</groupId>
+      <artifactId>jencks</artifactId>
+      <version>${pom.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>
