@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- START SNIPPET: jca -->
+<beans>
+
+  <!-- ###### Transaction manager ###### -->
+
+  <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean"/>
+
+  <!-- ###### Connection Manager ###### -->
+
+  <!-- START SNIPPET: connectionManager -->
+  <bean id="connectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+    <property name="transactionManager" ref="transactionManager"/>
+  </bean>
+  <!-- END SNIPPET: connectionManager -->
+
+  <!-- ###### JDBC Managed Connection Factory ###### -->
+
+  <!-- START SNIPPET: mcf -->
+  <bean id="jdbcManagedConnectionFactory" class="org.jencks.tranql.DataSourceMCF">
+    <property name="driverName" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:."/>
+    <property name="user" value="sa"/>
+    <property name="password" value=""/>
+  </bean>
+  <!-- END SNIPPET: mcf -->
+
+  <!-- ###### JDBC Data Source ###### -->
+
+  <!-- START SNIPPET: ds -->
+  <bean id="dataSource" class="org.jencks.factory.ConnectionFactoryFactoryBean">
+    <property name="managedConnectionFactory" ref="jdbcManagedConnectionFactory"/>
+    <property name="connectionManager" ref="connectionManager"/>
+  </bean>
+  <!-- END SNIPPET: ds -->
+
+</beans>
+<!-- END SNIPPET: jca -->
